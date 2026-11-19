@@ -1,0 +1,4 @@
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});

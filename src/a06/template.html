@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confident and Wrong: How AI Inflates Our Sense of Knowing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}
+.qq{font:600 clamp(18px,2.2vw,21px)/1.45 var(--body);color:#fff;max-width:42ch;margin:0}
+.ai{background:#0F2240;border:1px solid #3A4E72;border-radius:10px;padding:12px 14px;max-width:42ch;width:100%;margin:0;color:#E9EEF6;font-size:18px;line-height:1.45}
+.ai b{display:block;font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#FCB316;margin-bottom:4px}
+.ai[hidden]{display:none}
+.copts{display:grid;gap:8px;width:100%;max-width:520px}
+.copts[hidden]{display:none}
+.copts button{min-height:48px;padding:10px 14px;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;font:600 17px/1.35 var(--body);text-align:left;cursor:pointer}
+.copts button:hover{border-color:#FCB316}
+.copts button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.copts button[aria-pressed="true"]{border-color:#FCB316;background:#22375C}
+.copts button:disabled:not([aria-pressed="true"]){opacity:.6;border-color:#8FA3C2;cursor:default}
+.cconf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:520px}
+@media (max-width:520px){.cconf{grid-template-columns:1fr}}
+.cconf[hidden]{display:none}
+.cconf button{min-height:48px;padding:8px 10px;border-radius:10px;border:2px solid #FCB316;background:transparent;color:#fff;font:700 16px/1.3 var(--body);cursor:pointer}
+.cconf button small{display:block;font:500 13px var(--body);color:#C9D3E3}
+.cconf button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.clab{font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;margin:0}
+.clab[hidden]{display:none}
+.rlist{margin:8px 0 14px;padding-left:20px;color:#E9EEF6;font-size:16px;line-height:1.5}
+.rlist .ok{color:#7DD3A8}.rlist .no{color:#FFB38A}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Generative AI · Topic 6</div>
+      <h1 id="title">Confident and wrong <em>Fluency is not understanding</em></h1>
+      <p class="dek">With an AI assistant, people solved more reasoning problems, and thought they had solved even more. Judging your own accuracy is a skill, and AI can quietly switch it off.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#cT">How sure are you?</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the prefrontal cortex, at the front, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Confident and wrong</b> · The Learning Brain, Generative AI, episode 6</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Two hundred and forty-six people solved 20 logical-reasoning problems from the Law School Admission Test (LSAT), with an AI assistant. Their scores went up by about 3 points over a norm group. But they thought they had done about 4 points better than they actually did. Daniela Fernandes, Robin Welsch and colleagues reported this in 2026.</p>
+    <p>Normally on this kind of task, the weakest performers overestimate themselves the most. That is the Dunning–Kruger pattern. With AI, it disappeared: everyone overestimated, by about the same amount.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>246</strong><span>people solving 20 LSAT reasoning problems with AI</span></div>
+      <div role="listitem"><strong>+3 points</strong><span>in scores, against a norm group without AI</span></div>
+      <div role="listitem"><strong>+4 points</strong><span>more than that, in how well they thought they had done</span></div>
+      <div role="listitem"><strong>452</strong><span>people in a second study, which found the same pattern</span></div>
+    </div>
+  </div>
+
+  <section class="night" aria-labelledby="cT">
+    <div class="col">
+      <h2 class="sec" id="cT"><span class="n">Try it</span>How sure are you?</h2>
+      <p>Eight short reasoning puzzles, each with an assistant’s answer. The answers were written for this page, not produced by a real AI, and some may be wrong. Pick your answer, then say how sure you are. You’ll see how you did at the end, not before. About 3 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="cScreen">
+          <p class="qq" id="cQ" aria-live="polite">Press Start.</p>
+          <p class="ai" id="cA" hidden></p>
+          <div class="copts" id="cO" hidden role="group" aria-label="Your answer"></div>
+          <p class="clab" id="cL" hidden>How sure are you?</p>
+          <div class="cconf" id="cC" hidden role="group" aria-label="How sure are you?"><button type="button" data-c="0">Guessing<small>about 1 in 3</small></button><button type="button" data-c="1">Fairly sure<small>about 7 in 10</small></button><button type="button" data-c="2">Certain<small>no doubt</small></button></div>
+          <p class="prog" id="cProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="cPhase">Ready</p>
+          <p class="mtitle" id="cTitle">Answer, then rate</p>
+          <p class="mtext" id="cText" aria-live="polite">At the end, you’ll see how many you expected to get right, and how many you did.</p>
+          <div id="cRes"></div>
+          <div class="mrow"><button class="nbtn" id="cGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Know-how</span>More AI literacy, less self-accuracy</h2>
+    <p>People who knew more about how AI works were more confident, but less accurate about their own performance. That is the opposite of what you might expect.</p>
+    <h2 class="sec"><span class="n">One prompt, no check</span>No feedback, no correction</h2>
+    <p>Most people sent a single prompt per question and accepted the answer. Without testing the reasoning, they got no feedback on where they were wrong. And people working with the AI did not beat the AI working alone.</p>
+    <h2 class="sec"><span class="n">Metacognition</span>Fluent answers feel like understanding</h2>
+    <p>This is the metacognition problem from Series 1, sharpened. Our feeling of knowing tracks how fluent something feels, not how accurate it is. A smooth, confident answer feels like understanding. Judging your own accuracy is a skill, and AI can quietly switch it off.</p>
+    <h2 class="sec"><span class="n">A caution</span>Puzzles, one model, online samples</h2>
+    <p>These are reasoning puzzles, with one model, in online samples. But they fit a wider finding about fluency and the feeling of knowing.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each study in the video, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Make reflection a routine</h3>
+      <p>Before students see an AI answer, have them predict their confidence, then check. Ask them to explain the AI’s reasoning back, or find one flaw in it. On some tasks, grade calibration, not just correctness. And make it a routine, not a one-off.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>AI can make students smarter on the task. Only reflection makes them wiser about it.</h2>
+    <ol class="tips">
+      <li><b>Predict, then check</b><span>Confidence first, then the answer.</span></li>
+      <li><b>Explain it back</b><span>Or find one flaw in the AI’s reasoning.</span></li>
+      <li><b>Grade calibration</b><span>On some tasks, not just correctness.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://arxiv.org/abs/2409.16708">Fernandes, D., Villa, S., Nicholls, S., Haavisto, O., Buschek, D., Schmidt, A., Kosch, T., Shen, C., &amp; Welsch, R. (2026). AI makes you smarter but none the wiser: The disconnect between performance and metacognition. <i>Computers in Human Behavior</i>. Preprint: arXiv:2409.16708.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['pfc'],labels:['pfc'],labelT:{pfc:0.8},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- how sure are you? ----------
+   8 puzzles, 3 options each, with a simulated assistant answer (3 of 8 wrong). Pick an answer, then a confidence.
+   No feedback until the end: expected (sum of confidence) vs actual, and what happened where the assistant was wrong. */
+const CQ=[
+ ['All roses are flowers. Some flowers fade quickly. Does it follow that some roses fade quickly?','Yes. Roses are flowers, and some flowers fade quickly, so some roses must fade quickly.',['Yes, it follows','No, it doesn’t follow','It follows for most roses'],1,0,'No. The flowers that fade quickly might not include any roses.'],
+ ['If it rains, the match is cancelled. The match was cancelled. Did it rain?','Not necessarily. The match could have been cancelled for another reason.',['Yes, it must have','Not necessarily','No, it can’t have'],1,1,'Not necessarily.'],
+ ['Linda studied philosophy and campaigns for social justice. Which is more likely?','That she is a bank teller. Two things together can never be more likely than one of them alone.',['She is a bank teller','She is a bank teller and active in a feminist group','Both are equally likely'],0,0,'She is a bank teller. Adding a second condition can only make it less likely.'],
+ ['A shirt costs $40 after a 20% discount. What was the price before the discount?','$48. Add the 20% back: 40 + 8 = 48.',['$48','$50','$60'],1,0,'$50. 20% off $50 is $10, leaving $40. The 20% is of the original price, not of $40.'],
+ ['Every student in the class passed the test. Sam did not pass. What follows?','Sam is not in the class.',['Sam is not in the class','Sam missed the test','Nothing follows'],0,0,'Sam is not in the class.'],
+ ['A train leaves at 10:50 and the trip takes 1 hour 25 minutes. When does it arrive?','12:15. 10:50 plus 1 hour is 11:50, and 25 minutes more is 12:15.',['12:05','12:15','12:25'],1,1,'12:15.'],
+ ['No cats are dogs. Some pets are cats. Which must be true?','No pets are dogs. Cats can’t be dogs, and pets are cats, so pets can’t be dogs.',['Some pets are not dogs','No pets are dogs','Some dogs are not pets'],0,1,'Some pets are not dogs: the pets that are cats. Nothing says other pets can’t be dogs.'],
+ ['Halve a number, then add 10, and you get 16. What was the number?','12. Half of 12 is 6, and 6 + 10 is 16.',['3','12','13'],1,1,'12.']];
+/* each: [question, assistant text, options, correct index, assistant index, explanation]; CQ[i][4]!==CQ[i][3] means the assistant is wrong */
+const CV=[1/3,0.7,1],CN=['Guessing','Fairly sure','Certain'];
+let cr=null;
+function cPick(opts){return new Promise(res=>{cr.res=res;const o=$('cO');o.innerHTML=opts.map(([t,j])=>`<button type="button" data-j="${j}" aria-pressed="false">${t}</button>`).join('');o.hidden=false;o.querySelector('button').focus()})}
+$('cO').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!cr||!cr.res)return;const r=cr.res;cr.res=null;b.setAttribute('aria-pressed','true');$('cO').querySelectorAll('button').forEach(x=>x.disabled=true);r(+b.dataset.j)});
+function cConf(){return new Promise(res=>{cr.cres=res;$('cL').hidden=false;const c=$('cC');c.hidden=false;c.querySelector('button').focus()})}
+$('cC').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!cr||!cr.cres)return;const r=cr.cres;cr.cres=null;$('cC').hidden=true;$('cL').hidden=true;r(+b.dataset.c)});
+const f1=x=>(Math.round(x*10)/10).toString();
+$('cGo').addEventListener('click',async()=>{if(cr)return;cr={};const g=$('cGo');g.disabled=true;g.textContent='In progress';$('cRes').innerHTML='';
+ const order=shuf([...CQ]);const log=[];
+ $('cPhase').textContent='Answer and rate';$('cTitle').textContent='Your call';$('cText').textContent='No feedback until the end.';
+ for(let i=0;i<8;i++){const [q,a,opts,ok,ai,ex]=order[i];$('cProg').textContent=`Puzzle ${i+1} of 8`;$('cQ').textContent=q;$('cA').innerHTML=`<b>Assistant</b>${a}`;$('cA').hidden=false;
+  const pick=await cPick(shuf(opts.map((t,j)=>[t,j])));if(!cr)return;
+  const conf=await cConf();if(!cr)return;$('cO').hidden=true;
+  log.push({q,opts,ok,ai,ex,pick,conf,right:pick===ok,aiWrong:ai!==ok,withAI:pick===ai})}
+ $('cQ').textContent='Done.';$('cA').hidden=true;$('cProg').textContent='';$('cPhase').textContent='Your results';
+ const got=log.filter(x=>x.right).length,exp=log.reduce((s,x)=>s+CV[x.conf],0),diff=exp-got;
+ const aw=log.filter(x=>x.aiWrong),fol=aw.filter(x=>x.withAI),folSure=fol.filter(x=>x.conf>0).length;
+ $('cRes').innerHTML=`<div class="res wl2"><p class="gh">Out of 8</p>${barRow('You expected',exp,8,'about '+f1(exp),'#FCB316')}${barRow('You got right',got,8,got+' of 8','#7DD3A8')}</div><p class="gh">Your answers</p><ul class="rlist">${log.map(x=>`<li>${x.right?'<b class="ok">Right</b>':'<b class="no">Wrong</b>'} (${CN[x.conf].toLowerCase()}). ${x.q}${x.right?'':` <b>${x.ex}</b>`}${x.aiWrong?' <i>The assistant was wrong here.</i>':''}</li>`).join('')}</ul>`;
+ const folTxt=fol.length?` The assistant was wrong on 3 puzzles, and you went with it on ${fol.length===1?'one':fol.length===2?'two':'all three'}${folSure?`, ${folSure===fol.length?(fol.length===1?'feeling':'each time feeling'):'sometimes feeling'} at least fairly sure`:''}. Its wrong answers sounded just as fluent as its right ones.`:' The assistant was wrong on 3 puzzles, and you didn’t follow it on any of them.';
+ let title,text;
+ if(diff>=1.5){title='More confident than correct';text=`You expected to get about ${f1(exp)} right, and got ${got}.`+folTxt+' Fluent answers feel like understanding. That is the gap the study found.'}
+ else if(diff<=-1.5){title='More correct than confident';text=`You expected about ${f1(exp)}, and got ${got}: you did better than you thought.`+folTxt+' In the study, people with AI tended to overestimate, but underconfidence is still a gap between feeling and fact.'}
+ else if(fol.length){title='Well calibrated overall';text=`You expected about ${f1(exp)} and got ${got}, which is close.`+folTxt+' Look at the confidence you gave those: calibration matters most question by question.'}
+ else{title='Well calibrated, and not fooled';text=`You expected about ${f1(exp)} and got ${got}, and you didn’t go with any of the assistant’s 3 wrong answers. Most people in the study sent one prompt and accepted the answer. Checking the reasoning is what kept you accurate.`}
+ $('cTitle').textContent=title;$('cText').textContent=text;g.textContent='Try again';g.disabled=false;g.focus();cr=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['With an AI assistant, people’s scores on LSAT reasoning problems…',['Went up by about 3 points over a norm group','Went down','Didn’t change'],0,'Fernandes, Welsch and colleagues, 2026.'],
+ ['How well did they think they had done?',['About 4 points better than they actually did','About right','Worse than they did'],0,'Better performance, worse self-judgement.'],
+ ['Normally the weakest overestimate most. With AI…',['Everyone overestimated, by about the same amount','The weakest overestimated even more','No one overestimated'],0,'The Dunning–Kruger pattern disappeared.'],
+ ['People who knew more about how AI works were…',['More confident, but less accurate about themselves','Better calibrated','Less confident'],0,'The opposite of what you might expect.'],
+ ['How did most people use the AI?',['One prompt per question, then accepted the answer','Several prompts, testing the reasoning','They ignored it'],0,'So they got no feedback on where they were wrong.'],
+ ['Did people working with the AI beat the AI working alone?',['No','Yes, by a lot','Yes, slightly'],0,'A second study, with 452 people, found the same pattern.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: AI raised scores, but people’s sense of how well they had done rose even more. Fluency is not understanding.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'With an AI assistant, people’s scores on LSAT reasoning problems…',o:['Went up, but they thought they had done even better','Went down','Went up, and they judged them accurately'],a:0,f:'About 3 points up, and they overestimated by about 4 more.'},
+ {q:'What happened to the Dunning–Kruger pattern with AI?',o:['It disappeared: everyone overestimated by about the same','It got stronger','Nothing changed'],a:0,f:'Normally the weakest overestimate most.'},
+ {q:'People who knew more about how AI works were…',o:['More confident, but less accurate about themselves','Better calibrated','Less confident'],a:0,f:'The opposite of what you might expect.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','a06');
+})();
+</script>
+</body>
+</html>

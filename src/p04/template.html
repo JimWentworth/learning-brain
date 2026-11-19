@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Only the Centre Is Sharp: Eye Movements and Reading</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+
+.ptabs{display:flex;gap:6px;margin:18px 0 0;border-bottom:2px solid var(--night-line);flex-wrap:wrap}
+.ptabs button{appearance:none;background:transparent;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;color:#C9D3E3;font:700 18px var(--body);padding:10px 16px 8px;cursor:pointer;min-height:48px}
+.ptabs button[aria-selected="true"]{color:#fff;border-bottom-color:var(--orange)}
+.ptabs button:hover{color:#fff}
+.ptabs button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.ppanel{padding-top:6px}
+.ppanel:focus-visible{outline:3px solid #FCB316;outline-offset:4px}
+.ppanel[hidden]{display:none}
+.iguide{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;margin-top:22px}
+@media (max-width:760px){.iguide{grid-template-columns:minmax(0,1fr)}}
+.iguide h3{font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin:0 0 8px}
+.iguide ol,.iguide ul{margin:0 0 18px;padding-left:1.3em;color:#E9EEF6;font-size:17px;line-height:1.5}
+.iguide li{margin:0 0 8px}
+.iguide p{color:#E9EEF6;font-size:17px;line-height:1.5;margin:0 0 16px}
+.iguide .itime{display:inline-block;background:#1B2E50;border:1px solid var(--night-line);border-radius:16px;padding:3px 12px;font-weight:700;color:#fff;margin:0 0 14px}
+.icard{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:18px 20px}
+.pscreen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.pscreen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.pchoices{display:flex;gap:10px;flex-wrap:wrap}
+.pchoices[hidden]{display:none}
+.pchoices button{appearance:none;min-height:48px;padding:6px 18px;text-align:left;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer}
+.pchoices button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.pchoices button.ok{border-color:#7DD3A8;background:#173B33}.pchoices button.no{border-color:#FFB38A;background:#3B2420}
+.pchoices button:disabled{cursor:default}
+.mtext b.ok{color:#7DD3A8}.mtext b.no{color:#FFB38A}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.res .row{display:grid;grid-template-columns:150px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6;margin:6px 0}
+@media (max-width:520px){.res .row{grid-template-columns:100px minmax(0,1fr) 76px}}
+.res .bar{height:14px;background:#1B2E50;border-radius:7px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:7px}
+.res b{text-align:right;font-variant-numeric:tabular-nums}
+
+__COLLCSS__
+</style>
+<style>.xvnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Perception · Topic 4</div>
+      <h1 id="title">Only the centre <em>is sharp</em></h1>
+      <p class="dek">You feel you see a whole page at once. In fact only a tiny patch is sharp at any moment, and your eyes jump several times a second to build the picture. That has consequences for every slide you show.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#tryT">Try it first</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the visual cortex, at the back, and the intraparietal sulcus, at the top, which helps guide where the eyes go next, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<main id="main">
+<article>
+  <section class="night" aria-labelledby="tryT" style="margin-top:0">
+    <div class="col">
+      <h2 class="sec" id="tryT"><span class="n">Try it first</span>See like your fovea</h2>
+      <p>A page of text, sharp only where you point. Find one fact in a dense paragraph, then in a laid-out notice.</p>
+    </div>
+    <div class="wide">
+      <div class="ptabs" role="tablist" aria-label="Versions of this activity">
+        <button type="button" role="tab" id="tabS" aria-controls="panS" aria-selected="true">For students</button>
+        <button type="button" role="tab" id="tabI" aria-controls="panI" aria-selected="false" tabindex="-1">For instructors</button>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panS" aria-labelledby="tabS" tabindex="0">
+        <div class="lab">
+          <div class="pscreen" id="sScreen">
+            <div id="fvBox" tabindex="0" role="application" aria-label="Reading window. Move the pointer over the text, or use the arrow keys, to move the sharp window." style="position:relative;width:100%;max-width:520px;min-height:260px;background:#fff;border-radius:6px;color:#13294B;font:17px/1.55 var(--body);cursor:crosshair;touch-action:none;overflow:hidden">
+              <div id="fvBlur" aria-hidden="true" style="padding:18px 20px;filter:blur(4.5px);user-select:none"></div>
+              <div id="fvSharp" aria-hidden="true" style="position:absolute;inset:0;padding:18px 20px;user-select:none;clip-path:circle(0px at 0 0)"></div>
+              <div id="fvCover" style="position:absolute;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;color:#3D4A5C;font-weight:600;padding:20px;text-align:center">The text appears when you press Start.</div>
+            </div>
+            <p class="prog" id="fvT" aria-live="off">&nbsp;</p>
+          </div>
+          <div>
+            <p class="phase" id="sPhase">Ready</p>
+            <p class="mtitle" id="sTitle">See like your fovea</p>
+            <p class="mtext" id="sText" aria-live="polite">Only a small circle of the text will be sharp, roughly the size of the sharp centre of your vision. Move it with the pointer (or arrow keys) to find the answer. Two rounds, timed.</p>
+            <div class="pchoices" id="sCh" role="group" aria-label="Your answer" hidden></div>
+            <div id="sRes"></div>
+            <div class="mrow"><button class="nbtn" id="sGo" type="button">Start</button><button class="nbtn ghost" id="fvGot" type="button" hidden>I found it</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panI" aria-labelledby="tabI" tabindex="0" hidden>
+        <div class="iguide">
+          <div>
+            <span class="itime">About 10 minutes</span>
+            <h3>Run it in class</h3>
+            <ol><li>Students use their own devices; this one needs a pointer, finger or arrow keys for each person.</li><li>Run round 1 (dense paragraph) and round 2 (labelled layout). Students note both times.</li><li>Collect a few times on the board. Ask why round 2 was quicker.</li><li>Show one of your own slides. Ask: where would your eyes land first? How many jumps to find the key point?</li></ol>
+          </div>
+          <div class="icard">
+            <h3>Ask the room</h3>
+            <ul><li>What did you have to do to find the answer in round 1?</li><li>What about the layout in round 2 let you jump straight to it?</li><li>If students are reading this slide, can they also listen to me?</li></ul>
+            <h3>Connect it to your course</h3>
+            <p>Every word on a slide costs eye movements, a few per line. Put the key point where the eye lands, use labels and short lines, and avoid making students read dense text while you talk.</p>
+            <h3>Good to know</h3><p>Round 2 is easier partly because it is laid out with labels, which is the point. The two rounds aren’t a controlled experiment.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col lede">
+    <p>The fovea, the small pit at the centre of the retina, covers only about the central 2 degrees of what you see. Outside it, detail falls away fast. To read, the eyes must keep moving the fovea onto the next few letters.</p>
+    <p>Reading is a series of brief stops, called fixations, usually 200 to 250 milliseconds each, separated by fast jumps called saccades that last 20 to 50 milliseconds. Keith Rayner, who spent decades measuring this, compared reading to a slide show of short segments of text.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>~2°</strong><span>of the visual field falls on the fovea, the sharp centre</span></div>
+      <div role="listitem"><strong>200–250 ms</strong><span>a typical fixation when reading</span></div>
+      <div role="listitem"><strong>20–50 ms</strong><span>a typical saccade, the jump between fixations</span></div>
+      <div role="listitem"><strong>3–4 / 14–15</strong><span>letters to the left and right that a skilled reader takes in per fixation</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The perceptual span</span>A small window that moves</h2>
+    <p>Using displays that change with each eye movement, researchers measured how much text a reader actually uses during one fixation. For skilled readers of English, it is about three or four letters to the left of where they are looking and 14 or 15 letters to the right. The rest of the line is a blur of shapes and spaces that helps plan the next jump.</p>
+    <h2 class="sec"><span class="n">Why it feels whole</span>The brain stitches it together</h2>
+    <p>We don’t experience a page as a small sharp spot jumping about, because the brain combines what it took in across fixations, and because we seldom notice what we didn’t look at. The activity above makes the hidden process visible, in simplified form: real readers also get some information from just outside the fovea.</p>
+    <h2 class="sec"><span class="n">For learning</span>Every word on a slide costs a jump</h2>
+    <p>A slide full of sentences takes many fixations to read, and while students read they are not looking at you or the diagram. A slide with short labelled lines lets the eye go straight to what matters. The Digital Learning series looks at the evidence on reading slides aloud and on extra text.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Check your intuition</span>Predict the findings</h2>
+      <p>For each study on this page, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Every word costs a jump. Spend them on what matters.</h2>
+    <ol class="tips">
+      <li><b>Put the point where the eye lands</b><span>Top left, large, and short.</span></li>
+      <li><b>Use labels and short lines</b><span>Structure lets the eye jump straight to the answer.</span></li>
+      <li><b>Don’t compete with your own slide</b><span>If students must read, pause talking.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1037/0033-2909.124.3.372">Rayner, K. (1998). Eye movements in reading and information processing: 20 years of research. <i>Psychological Bulletin, 124</i>(3), 372–422.</a></li>
+        <li><a href="https://doi.org/10.3758/PBR.17.6.834">Rayner, K., Slattery, T. J., &amp; Bélanger, N. N. (2010). Eye movements, the perceptual span, and reading speed. <i>Psychonomic Bulletin &amp; Review, 17</i>(6), 834–839.</a></li>
+        <li><a href="https://doi.org/10.3758/s13414-011-0219-2">Schotter, E. R., Angele, B., &amp; Rayner, K. (2012). Parafoveal processing in reading. <i>Attention, Perception, &amp; Psychophysics, 74</i>, 5–35.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The reading window is a simplified illustration of foveal vision, not a gaze-contingent experiment. The two notices are made up for this activity. The brain drawing is a simplified illustration.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.v1.lab=[960,770];BR.R.v1.al='right';BR.R.ips.lab=[520,-70];BR.R.ips.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['v1','ips'],labels:['v1','ips'],labelT:{v1:0.8,ips:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+
+
+
+/* ---------- tabs ---------- */
+(function(){const tl=document.querySelector('.ptabs');if(!tl)return;const tabs=[...tl.querySelectorAll('[role=tab]')];
+ function sel(t,focus){tabs.forEach(b=>{const on=b===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;$(b.getAttribute('aria-controls')).hidden=!on});if(focus)t.focus()}
+ tabs.forEach((b,i)=>{b.addEventListener('click',()=>sel(b));b.addEventListener('keydown',e=>{let j=null;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;if(j!==null){e.preventDefault();sel(tabs[j],true)}})})})();
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?Math.min(100,val/mx*100):0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+let RUN=null;
+function ask(opts,lab){return new Promise(res=>{const c=$('sCh');c.setAttribute('aria-label',lab||'Your answer');c.innerHTML=opts.map((t,j)=>`<button type="button" data-v="${j}">${t}</button>`).join('');c.hidden=false;RUN.res=res;c.querySelector('button').focus()})}
+$('sCh').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!RUN||!RUN.res||b.disabled)return;const r=RUN.res;RUN.res=null;$('sCh').querySelectorAll('button').forEach(x=>x.disabled=true);r(+b.dataset.v)});
+function mark(right,chosen){$('sCh').querySelectorAll('button').forEach((b,j)=>{if(j===right)b.classList.add('ok');else if(j===chosen)b.classList.add('no')})}
+function hideCh(){$('sCh').hidden=true;$('sCh').innerHTML=''}
+function nextBtn(label){return new Promise(res=>{const g=$('sGo');g.textContent=label;g.hidden=false;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.hidden=true;res()}})}
+function say(phase,title,text){if(phase!=null)$('sPhase').textContent=phase;if(title!=null)$('sTitle').textContent=title;if(text!=null)$('sText').innerHTML=text}
+function startRun(fn){$('sGo').addEventListener('click',async()=>{if(RUN)return;RUN={};const g=$('sGo');g.hidden=true;$('sRes').innerHTML='';try{await fn()}finally{hideCh();g.onclick=null;g.textContent='Try again';g.hidden=false;g.disabled=false;RUN=null}})}
+
+/* ---------- fovea window ---------- */
+const TXT=[`<p style="margin:0"><b>Notice for the field trip.</b> The bus leaves from the north entrance of the science building, not the main entrance as stated in last week’s email, and students should arrive fifteen minutes early so attendance can be taken before departure. Lunch is provided by the museum, but bring water. The trip has moved from the original date of March 3 because of a planned maintenance closure; the new date is March 17, a Tuesday, and the return time is unchanged.</p>`,
+`<p style="margin:0 0 10px"><b>Lab safety session</b></p><p style="margin:0"><b>Where:</b> Room 210, chemistry building<br><b>When:</b> Thursday, 2 p.m.<br><b>Bring:</b> goggles and your lab notebook<br><b>Note:</b> counts toward your lab grade</p>`];
+const QS=[['What is the new date of the trip?',['March 3','March 17','March 15'],1],['Which room is the session in?',['Room 120','Room 201','Room 210'],2]];
+const R=36;let fx=40,fy=40,live=false;
+function place(){$('fvSharp').style.clipPath=live?`circle(${R}px at ${fx}px ${fy}px)`:'circle(0px at 0 0)'}
+const fvB=$('fvBox');
+function mv(e){if(!live)return;const r=fvB.getBoundingClientRect();fx=e.clientX-r.left;fy=e.clientY-r.top;place()}
+fvB.addEventListener('pointermove',mv);fvB.addEventListener('pointerdown',mv);
+fvB.addEventListener('keydown',e=>{if(!live)return;const d={ArrowLeft:[-20,0],ArrowRight:[20,0],ArrowUp:[0,-20],ArrowDown:[0,20]}[e.key];if(!d)return;e.preventDefault();fx=Math.max(0,Math.min(fvB.clientWidth,fx+d[0]));fy=Math.max(0,Math.min(fvB.clientHeight,fy+d[1]));place()});
+function setText(i){$('fvBlur').innerHTML=TXT[i];$('fvSharp').innerHTML=TXT[i];$('fvCover').style.display='none';live=true;fx=40;fy=34;place()}
+function cover(){live=false;place();$('fvCover').style.display='flex'}
+function waitGot(t0){return new Promise(res=>{const b=$('fvGot');b.hidden=false;const iv=setInterval(()=>{$('fvT').textContent=`${Math.floor((performance.now()-t0)/1000)} s`},250);b.onclick=()=>{clearInterval(iv);b.onclick=null;b.hidden=true;res((performance.now()-t0)/1000)}})}
+startRun(async()=>{const times=[];cover();
+ for(let i=0;i<2;i++){
+  say(`Round ${i+1} of 2`,QS[i][0],(i===0?'A dense paragraph. ':'The same kind of notice, laid out with labels. ')+'Move the sharp window to find the answer, then press “I found it”.');
+  setText(i);fvB.focus();const t=await waitGot(performance.now());if(!RUN)return;cover();
+  const a=await ask(QS[i][1],QS[i][0]);if(!RUN)return;mark(QS[i][2],a);times.push(t);
+  say(null,null,(a===QS[i][2]?'<b class="ok">Right.</b> ':`<b class="no">Not quite.</b> It was ${QS[i][1][QS[i][2]]}. `)+`You took ${t.toFixed(1)} seconds.`);
+  if(i===0){await nextBtn('Start round 2');if(!RUN)return;hideCh()}}
+ $('fvT').textContent=' ';
+ const mx=Math.max(...times);$('sRes').innerHTML='<div class="res">'+times.map((t,i)=>barRow(i?'Laid out':'Dense',t,mx,t.toFixed(1)+' s','#FCB316')).join('')+'</div>';
+ say('What happened',times[1]<times[0]?'The layout let your eyes jump':'Layout usually helps',
+  'With only a small sharp window, you had to search the dense paragraph a few letters at a time. Your eyes do the same on any page: they move the fovea from spot to spot several times a second. Labels and short lines tell the eye where to jump.')});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['How much of the visual field does the fovea, the sharp centre, cover?',['About 2 degrees','About 20 degrees','About 90 degrees'],0,'Detail falls away quickly outside it.'],
+ ['How long does a typical fixation in reading last?',['200–250 milliseconds','About 1 second','About 20 milliseconds'],0,'With a lot of variation between readers.'],
+ ['How long does a typical saccade, the jump between fixations, last?',['20–50 milliseconds','About half a second','About 2 seconds'],0,'Depending on how far the eyes move.'],
+ ['For skilled readers of English, the perceptual span reaches how far to the right of fixation?',['About 14–15 letters','About 3–4 letters','A whole line'],0,'And only 3–4 letters to the left.'],
+ ['Rayner compared reading to…',['A slide show of short segments','A continuous film','A photograph'],0,'Information is taken in during fixations only.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: we read through a small moving window, a few letters at a time.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'The sharp centre of vision covers about…',o:['2 degrees','20 degrees','Everything in view'],a:0,f:'The fovea.'},
+ {q:'A typical fixation in reading lasts about…',o:['200–250 milliseconds','2 seconds','10 milliseconds'],a:0,f:'Then a quick saccade to the next spot.'},
+ {q:'Skilled readers take in more letters…',o:['To the right of where they look','To the left','Equally on both sides'],a:0,f:'14–15 to the right, 3–4 to the left, in English.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','p04');
+})();
+</script>
+</body>
+</html>

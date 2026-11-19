@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Hippocampus: Making New Memories</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__CSS__
+/* ---- page-specific ---- */
+.trace{position:relative;background:#fff;border:1px solid var(--rule);border-radius:6px;aspect-ratio:1/1;touch-action:none}
+.trace canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+.index-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:28px;align-items:center;margin-top:24px}
+@media (max-width:900px){.index-grid{grid-template-columns:minmax(0,1fr)}}
+.slider{margin-top:20px}
+.slider label{display:block;font-weight:600;margin-bottom:6px}
+.slider input{width:100%;accent-color:var(--accent-ink);height:32px}
+.rely{display:grid;gap:12px;margin-top:14px}
+.rely div{display:grid;grid-template-columns:130px 1fr 52px;gap:12px;align-items:center;font-size:17px}
+.rely .track{height:18px;background:var(--rule);border-radius:9px;overflow:hidden}
+.rely .track i{display:block;height:100%}
+.rely b{text-align:right;font-variant-numeric:tabular-nums}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);margin:24px 0}
+@media (max-width:760px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.facts div{padding:16px 16px 14px 0}
+.facts strong{display:block;font-family:var(--display);font-weight:900;font-size:clamp(36px,4.6vw,56px);line-height:1;color:var(--accent-ink);letter-spacing:-.02em}
+.facts span{font-size:16px;color:var(--ink-2)}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink)}
+@media (max-width:760px){.tips{grid-template-columns:minmax(0,1fr)}}
+.tips li{list-style:none;padding:20px 20px 20px 0;border-right:1px solid var(--rule)}
+.tips li:last-child{border-right:0}
+.tips b{display:block;font-family:var(--display);font-size:26px;line-height:1.15;margin-bottom:6px}
+.tips span{font-size:17px;color:var(--ink-2)}
+.card a{color:inherit;text-decoration:none}
+.card a::after{content:' →'}
+.hero h1{font-size:clamp(44px,6vw,84px)}
+@media (max-width:560px){.pstage{aspect-ratio:1.05/1}}
+.mirror1{max-width:560px;margin:24px auto 0}
+.sort{align-items:start;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:24px;margin-top:20px}
+.zones{display:grid;gap:16px}
+@media (max-width:760px){.sort{grid-template-columns:minmax(0,1fr)}.zones{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}}
+.drop{border:2px dashed #5B6F93;border-radius:10px;padding:12px;min-height:120px;transition:border-color .15s,background .15s}
+.drop.over,.drop.target{border-color:var(--orange);background:rgba(255,95,5,.08)}
+.pool h3,.zhead{font:800 15px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--night-muted);margin:2px 2px 10px}
+.zhead{display:block;width:100%;text-align:left;background:none;border:0;padding:6px 2px;cursor:pointer;color:#fff;font-size:17px;min-height:40px}
+.zone[data-z="1"] .zhead::before{content:'✓ ';color:#3CC9B8}.zone[data-z="0"] .zhead::before{content:'✗ ';color:#F08CBE}
+.pool ul:empty::after{content:"All sorted.";color:var(--night-muted);font-size:17px;padding:4px 2px}
+.drop ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;min-height:48px}
+.cardx{display:flex;align-items:center;gap:10px;width:100%;text-align:left;min-height:48px;padding:10px 12px;border-radius:8px;border:1.5px solid #8FA3C2;background:#1A2F55;color:#fff;font:600 17px/1.3 var(--body);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.cardx:hover{border-color:#C9D3E3}
+.cardx[aria-pressed="true"]{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange)}
+.cardx.dragging{opacity:.3}
+.cardx .mk{margin-left:auto;font-weight:800;flex:none}
+.cardx.right{border-color:#3CC9B8}.cardx.right .mk{color:#3CC9B8}
+.cardx.wrong{border-color:#F08CBE}.cardx.wrong .mk{color:#F08CBE}
+.cardx.sel{background:#24406F}
+.ghost{position:fixed;z-index:60;pointer-events:none;width:auto;max-width:320px;box-shadow:0 10px 30px rgba(0,0,0,.45);cursor:grabbing;transform:rotate(-2deg)}
+.sortbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0 8px}
+.sortbar p{margin:0;color:var(--night-muted);font-size:17px}
+.next{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.next:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.ghostbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:transparent;color:#fff;border:2px solid #8FA3C2}
+.explain{margin-top:24px}
+.whyp .ability{font-family:var(--display);font-size:clamp(22px,2.4vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.whyp .verdict{font-size:18px;color:#E9EEF6;line-height:1.5;margin:0}
+.whyp .verdict b.ok{color:#3CC9B8}.why .verdict b.no{color:#F08CBE}
+.whyp .tag{display:inline-block;margin-top:12px;font-size:15px;font-weight:700;color:#13294B;background:#C9D3E3;border-radius:12px;padding:3px 10px}
+.pop{margin:56px 0 24px}
+.poptabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid var(--ink);margin-top:20px}
+.poptabs button{appearance:none;background:none;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;padding:12px 16px 10px;min-height:48px;font:700 19px/1.2 var(--display);color:var(--ink-2);cursor:pointer;text-align:left}
+.poptabs button small{display:block;font:600 14px var(--body);color:var(--ink-2);margin-top:2px}
+.poptabs button:hover{color:var(--ink)}
+.poptabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent-ink)}
+@media (max-width:560px){.poptabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}.poptabs button{font-size:17px;padding:10px 8px 8px}}
+.popp{padding:22px 0 8px}
+.popp[hidden]{display:none}
+.popmeta{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:16px;color:var(--ink-2);margin-bottom:10px}
+.verdictchip{font:700 14px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:12px;background:#E6EBF2;color:var(--ink)}
+.verdictchip.good{background:#D7F2EE;color:#0B5D52}.verdictchip.bad{background:#FBE0EC;color:#8A1C4A}.verdictchip.mixed{background:#FFE9D9;color:#8A3400}
+.popdesc{font-size:19px;line-height:1.55;max-width:760px;margin:0 0 18px}
+.popcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+@media (max-width:760px){.popcols{grid-template-columns:minmax(0,1fr)}}
+.popcols div{border-top:3px solid var(--ink);padding-top:12px}
+.popcols h3{font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;margin:0 0 8px}
+.popcols .pr h3{color:#0B5D52}.popcols .pr{border-color:#1E9E8D}
+.popcols .pw h3{color:#8A1C4A}.popcols .pw{border-color:#C7457F}
+.popcols ul{margin:0;padding-left:20px;display:grid;gap:8px;font-size:17px;line-height:1.5}
+.popnote{margin-top:18px;background:#fff;border:1px solid var(--rule);border-left:4px solid var(--accent-ink);border-radius:6px;padding:14px 16px;font-size:17px;line-height:1.5;max-width:860px}
+.popnote b{display:block;font-family:var(--display);font-size:20px;margin-bottom:4px}
+.popsrc{font-size:15px;color:var(--ink-2);margin-top:14px}
+__COLLCSS__
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Brain regions</div>
+      <h1 id="title">The Hippocampus <em>Making New Memories</em></h1>
+      <p class="dek">Without it, you can still talk, think and learn a skill. What you can’t do is remember what happened ten minutes ago.</p>
+      <div class="byline"><span>About 9 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#mirrorT">Try the mirror test</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the brain from the side, with the hippocampus glowing orange deep inside the temporal lobe."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2½ minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>The hippocampus: making new memories</b> · The Learning Brain</span><span>Captions are on; turn them off in the player.</span></div>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>In 1953, a surgeon in Hartford, Connecticut, operated on a 27-year-old man named Henry Molaison to stop his severe epileptic seizures. He removed tissue from deep inside both sides of the brain, including about two-thirds of the hippocampus on each side.</p>
+    <p>The seizures eased. But Molaison, known in research as H.M., could no longer form new memories of facts or events. He lived with that for the next 55 years. Tests he took part in showed what the hippocampus does, and his became one of the most studied cases in neuroscience.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>1953</strong><span>surgery, at age 27</span></div>
+      <div role="listitem"><strong>⅔</strong><span>of the hippocampus removed on each side</span></div>
+      <div role="listitem"><strong>55 years</strong><span>unable to form new memories of events</span></div>
+      <div role="listitem"><strong>2,401</strong><span>slices of his brain, 0.7 mm thick, studied after his death</span></div>
+    </div>
+  </div>
+
+  <section class="night" aria-labelledby="predT">
+    <div class="col">
+      <h2 class="sec" id="predT"><span class="n">Predict</span>What could H.M. still do?</h2>
+      <p>After the surgery, some kinds of memory worked and some didn’t. Sort these eight abilities before reading which. For each, ask yourself: does it need a new memory of a fact or an event, or something he already had?</p>
+      <p class="note" id="sortHelp">Drag each card into a box. Or tap a card, then tap a box.</p>
+    </div>
+    <div class="wide">
+      <div class="sort">
+        <div class="pool drop" data-z="pool">
+          <h3 id="poolH">Abilities</h3>
+          <ul aria-labelledby="poolH"></ul>
+        </div>
+        <div class="zones">
+          <div class="zone drop" data-z="1"><button class="zhead" data-z="1">He could</button><ul aria-label="He could"></ul></div>
+          <div class="zone drop" data-z="0"><button class="zhead" data-z="0">He couldn’t</button><ul aria-label="He couldn’t"></ul></div>
+        </div>
+      </div>
+      <div class="sortbar"><button class="next" id="check" disabled>Check my sort</button><button class="ghostbtn" id="fix" hidden>Move them to the right boxes</button><button class="ghostbtn" id="restart">Start over</button><p id="sortStatus" aria-live="polite">0 of 8 sorted.</p></div>
+      <div class="index-grid explain">
+        <div class="stage pstage"><canvas id="predC" role="img" aria-label="Drawing of the brain from the side, with the hippocampus marked as removed. After checking, the region each ability relies on is lit and labelled."></canvas></div>
+        <div class="whyp" id="why" aria-live="polite"><p class="ability">Sort all eight, then check.</p><p class="verdict">The brain drawing marks what H.M. lost. After you check, tap any card to see why it belongs where it does and which part of the brain it relies on.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <p>The pattern has two lessons. Because many older memories survived, the hippocampus is not where memories are kept for good; it is needed to make new ones. And because he could still learn a skill, skill learning must rely on other parts of the brain.</p>
+  </div>
+
+  <section aria-labelledby="mirrorT" style="margin:40px 0;padding:24px 0">
+    <div class="col">
+      <h2 class="sec" id="mirrorT" style="color:var(--ink);margin-top:24px"><span class="n" style="color:var(--accent-ink)">Try it</span>The mirror test</h2>
+      <p style="color:var(--ink)">The psychologist Brenda Milner asked H.M. to trace a star while seeing his hand only in a mirror. He made fewer errors over three days, though each session felt new to him. Try the same kind of task below. Your pen moves as if seen in a mirror: push up and it goes down. Stay inside the grey band and go round a few times. Notice whether it gets easier.</p>
+    </div>
+    <div class="wide">
+      <div class="mirror1">
+        <div class="trace"><canvas id="mirror" role="img" aria-label="Star-shaped track for tracing. The pen moves upside down from the pointer."></canvas></div>
+        <p class="meter" id="mStatus" aria-live="polite">Your pen is the orange ring. It moves upside down from your pointer. Press and drag; tracing starts when the ring reaches the grey band. Go all the way round the star.</p>
+        <p class="note">This needs a mouse, trackpad or touch screen. If you can’t try it, the point still holds: practice can improve a skill without any memory of the practice.</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="pull">A skill can improve with practice <em>even when you can’t remember practising.</em></p>
+
+  <section class="pop" aria-labelledby="popT">
+    <div class="col">
+      <h2 class="sec" id="popT"><span class="n">In popular culture</span>Amnesia on screen</h2>
+      <p>Films love memory loss, but most get it wrong. A 2004 review of amnesia in 60 films found that most bear little relation to real conditions. Here is how three well-known ones compare with H.M.</p>
+    </div>
+    <div class="wide">
+      <div class="poptabs" role="tablist" aria-label="Films about memory loss" id="popTabs"></div>
+      <div id="popPanels"></div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">How it works</span>An index for each memory</h2>
+    <p>The hippocampus is a curved strip of tissue deep inside each temporal lobe. The anatomist Julius Caesar Aranzi named it in 1587 for its shape: <i>hippocampus</i> is Greek for seahorse.</p>
+    <p>When you live through an event, different parts of the cortex handle its sights, its sounds and the words you hear. The hippocampus links those parts into one memory. In the “indexing” view proposed by Timothy Teyler and Pascal DiScenna in 1986, it keeps something like an index that points to where each part is kept, so a single cue can bring the whole memory back.</p>
+  </div>
+
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The cellular change</span>Connections that stay stronger</h2>
+    <p>In 1966, Terje Lømo was recording from the hippocampus of anaesthetised rabbits in Oslo. He noticed that a brief burst of signals made one set of connections pass on signals more strongly, and the change lasted for hours. With Timothy Bliss he described it in detail in 1973.</p>
+    <p>The effect is now called long-term potentiation. It is one of the main ways scientists think connections between neurons store what we learn, and it was first found in the hippocampus.</p>
+
+    <h2 class="sec"><span class="n">Over days and nights</span>From hippocampus to cortex</h2>
+    <p>A new memory doesn’t stay dependent on the hippocampus forever. Over the following days, weeks and longer, especially during sleep, it is replayed and gradually comes to rely more on networks in the cortex. Researchers call this systems consolidation.</p>
+    <figure class="linklab" aria-labelledby="consT" style="margin-top:24px">
+      <h3 id="consT" style="font-size:24px;font-weight:800;margin-bottom:4px">How much a memory relies on each</h3>
+      <div class="slider"><label for="nights">Time since learning: <span id="nl">the same day</span></label><input type="range" id="nights" min="0" max="5" step="1" value="0" aria-describedby="consNote"></div>
+      <div class="rely" aria-live="polite">
+        <div><span>Hippocampus</span><span class="track"><i id="hBar" style="background:var(--accent-ink)"></i></span><b id="hV"></b></div>
+        <div><span>Cortex</span><span class="track"><i id="cBar" style="background:var(--ink)"></i></span><b id="cV"></b></div>
+      </div>
+      <figcaption id="consNote">Schematic. The direction of the shift is well supported; the speed varies with the memory and is not shown to scale.</figcaption>
+    </figure>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>What the hippocampus needs</h2>
+    <ol class="tips" style="padding:0;margin:0">
+      <li><b>Attention</b><span>It can only link what you took in. Multitasking while studying leaves it less to work with.</span></li>
+      <li><b>Time</b><span>Several short sessions on different days give it more chances to take in and link the material than one long session.</span></li>
+      <li><b>Sleep</b><span>New memories are replayed during sleep. Studying late and sleeping little cuts that short.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://www.nature.com/articles/ncomms4122">Annese, J., et al. (2014). Postmortem examination of patient H.M.’s brain based on histological sectioning and digital 3D reconstruction. <i>Nature Communications</i>.</a></li>
+        <li><a href="https://www.livescience.com/42898-patient-hm-postmortem-brain.html">Live Science (2014). Famous amnesia patient’s brain cut into 2,401 slices.</a></li>
+        <li><a href="https://mechanism.ucsd.edu/bill/teaching/f10/phil149/corkin.whatnewwithHM.2002.pdf">Corkin, S. (2002). What’s new with the amnesic patient H.M.? <i>Nature Reviews Neuroscience</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC1350458/">Bliss, T. V. P., &amp; Lømo, T. (1973). Long-lasting potentiation of synaptic transmission in the dentate area of the anaesthetized rabbit. <i>Journal of Physiology</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC1693150">Lømo, T. (2003). The discovery of long-term potentiation. <i>Philosophical Transactions of the Royal Society B</i>.</a></li>
+        <li><a href="https://scholar.google.com/scholar?q=Teyler+DiScenna+1986+hippocampal+memory+indexing+theory">Teyler, T. J., &amp; DiScenna, P. (1986). The hippocampal memory indexing theory. <i>Behavioral Neuroscience</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC535990">Baxendale, S. (2004). Memories aren’t made of this: amnesia at the movies. <i>BMJ</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/20493889/">Smith, C. N., et al. (2010). Losing memories overnight: a unique form of human amnesia. <i>Neuropsychologia</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/15685217/">Frankland, P. W., &amp; Bontempi, B. (2005). The organization of recent and remote memories. <i>Nature Reviews Neuroscience</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawings are simplified illustrations. The mirror test here is a version of the task, not the original apparatus.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+
+/* hero */
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.47,s:fitS(W,H,1.32),t,active:['hip'],labels:['hip','tem'],labelT:{hip:0.8,tem:1.2},draw:RM?1:ez(t/1.6),glow:RM?1:A2(t),labSize:Math.max(16,Math.round(15*W/560)),deep:0.45})});
+function A2(t){return 0.75+0.25*Math.sin(t*1.6)}
+
+/* video captions + transcript */
+(function(){const v=document.getElementById('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ document.getElementById('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(1).join(' ')})();
+
+/* ---------- mirror tracing ----------
+   The pen (orange ring) is the pointer flipped top to bottom. Tracing starts when a pressed pen reaches the band.
+   The track is split into 40 short pieces; a lap is complete when the pen has passed through 38 of them.
+   No scoring: the point is to notice it getting easier. The ring turns red while it is off the band. */
+const mc=document.getElementById('mirror'),mx=mc.getContext('2d'),mStatus=document.getElementById('mStatus');
+const BINS=40,NEED=38;let MW=0,MH=0,pen=null,path=[],tracing=false,outside=false,seen=new Set(),penDown=false,held=false,laps=0;
+const band=()=>Math.max(16,MW*0.04);
+function starPts(){const cx=MW/2,cy=MH/2+MH*0.03,R=MW*0.4,r=MW*0.17,p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r:R;p.push([cx+Math.cos(a)*rr,cy+Math.sin(a)*rr])}return p}
+function distSeg(p,a,b){const dx=b[0]-a[0],dy=b[1]-a[1],L=dx*dx+dy*dy;let u=((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L;u=Math.max(0,Math.min(1,u));return[Math.hypot(a[0]+u*dx-p[0],a[1]+u*dy-p[1]),u]}
+function nearest(p){const S=starPts();let best=[1e9,0];for(let i=0;i<10;i++){const[d,u]=distSeg(p,S[i],S[(i+1)%10]);if(d<best[0])best=[d,i+u]}return best}
+const binOf=pos=>Math.min(BINS-1,Math.floor(pos/10*BINS));
+function binPts(k){const S=starPts(),i=Math.floor(k/4),u0=(k%4)/4,u1=u0+0.25,A=S[i],B=S[(i+1)%10];return[[A[0]+(B[0]-A[0])*u0,A[1]+(B[1]-A[1])*u0],[A[0]+(B[0]-A[0])*u1,A[1]+(B[1]-A[1])*u1]]}
+function msize(){const d=Math.min(2,devicePixelRatio||1);MW=mc.clientWidth;MH=mc.clientHeight;mc.width=MW*d;mc.height=MH*d;mx.setTransform(d,0,0,d,0,0);if(tracing){tracing=false;path=[];seen=new Set()}mdraw()}
+function mdraw(){mx.clearRect(0,0,MW,MH);const S=starPts();mx.lineJoin='round';mx.lineCap='round';
+ const loop=()=>{mx.beginPath();S.concat([S[0]]).forEach((p,i)=>i?mx.lineTo(...p):mx.moveTo(...p))};
+ mx.strokeStyle='#E3E8F0';mx.lineWidth=band()*2;loop();mx.stroke();
+ mx.strokeStyle='#FFD3B8';seen.forEach(k=>{const[p,q]=binPts(k);mx.beginPath();mx.moveTo(...p);mx.lineTo(...q);mx.stroke()});
+ mx.strokeStyle='#13294B';mx.lineWidth=2;mx.setLineDash([6,6]);loop();mx.stroke();mx.setLineDash([]);
+ if(path.length>1){mx.strokeStyle='#B84300';mx.lineWidth=3;mx.beginPath();path.forEach((p,i)=>i?mx.lineTo(p[0],p[1]):mx.moveTo(p[0],p[1]));mx.stroke()}
+ if(pen){mx.strokeStyle=outside&&tracing?'#C8102E':'#B84300';mx.lineWidth=3;mx.beginPath();mx.arc(pen[0],pen[1],11,0,7);mx.stroke();mx.fillStyle=mx.strokeStyle;mx.beginPath();mx.arc(pen[0],pen[1],3,0,7);mx.fill()}
+ const fs=Math.max(16,MW*0.032);mx.font=`600 ${fs}px ${BODY}`;mx.fillStyle='#13294B';
+ if(tracing)mx.fillText(`${Math.round(seen.size/NEED*100)}% of the way round`,14,fs+10);
+ else if(!pen){mx.textAlign='center';mx.fillText('Move your pointer here to find your pen',MW/2,MH/2+fs/2);mx.textAlign='left'}}
+function local(e){const r=mc.getBoundingClientRect();return[e.clientX-r.left,MH-(e.clientY-r.top)]}
+const LAPMSG=['Round once. Go round again: most people find the second lap smoother.','Round twice. Did that feel easier? Keep going.','Most people find each lap smoother than the last. H.M.’s tracing improved the same way, though he never remembered practising.'];
+function step(p){path.push(p);const[d,pos]=nearest(p);if(d>band())outside=true;else{outside=false;seen.add(binOf(pos))}
+ if(seen.size>=NEED){tracing=false;held=true;laps++;mStatus.textContent=LAPMSG[Math.min(laps,3)-1]}}
+function begin(){tracing=true;path=[pen];outside=false;seen=new Set();step(pen);mStatus.textContent='Tracing. Keep pressing and go all the way round, in either direction.'}
+mc.addEventListener('pointerdown',e=>{e.preventDefault();penDown=true;held=false;try{mc.setPointerCapture(e.pointerId)}catch(_){}pen=local(e);
+ if(nearest(pen)[0]<=band())begin();else mStatus.textContent='Keep pressing and move until your pen (the orange ring) is on the grey band. It moves upside down from your pointer.';mdraw()});
+mc.addEventListener('pointermove',e=>{let ev=e.getCoalescedEvents?e.getCoalescedEvents():[];if(!ev.length)ev=[e];
+ ev.forEach(x=>{pen=local(x);if(tracing)step(pen);else if(penDown&&!held&&nearest(pen)[0]<=band())begin()});mdraw()});
+function lift(){penDown=false;held=false;if(tracing){tracing=false;path=[];seen=new Set();mStatus.textContent='You let go before getting round. Press and trace again.'}mdraw()}
+mc.addEventListener('pointerup',lift);mc.addEventListener('pointercancel',lift);
+mc.addEventListener('pointerleave',e=>{if(!penDown&&e.pointerType==='mouse'){pen=null;mdraw()}});
+msize();addEventListener('resize',msize);
+
+/* ---------- prediction game: what could H.M. still do? ----------
+   Facts: Corkin 2002 and interviews; Milner (mirror drawing, 1962). Regions are the main ones linked to each kind of memory. */
+const GAME=[
+ {a:'Hold a normal conversation',c:1,why:'His language and intelligence were unaffected. A conversation runs on knowledge he already had and on working memory, which holds the last few seconds.',tag:'Working memory',r:['pfc']},
+ {a:'Keep a number in mind by repeating it to himself',c:1,why:'As long as he kept repeating it, the number stayed in working memory, which doesn’t need the hippocampus.',tag:'Working memory',r:['pfc']},
+ {a:'Recall that number after a short distraction',c:0,why:'Once his attention moved on, the number had to be stored as a new memory, and that needs the hippocampus. It was gone, and he didn’t remember being given one.',tag:'New facts and events',r:['hip']},
+ {a:'Solve crossword puzzles',c:1,why:'Crosswords were his favourite pastime. He could answer clues that drew on words and facts he learned before 1953.',tag:'Knowledge from before 1953',r:['tem']},
+ {a:'Say where he was born and which towns he lived in',c:1,why:'Much of what he knew about his life before the surgery survived. Over the years it had come to rely on the cortex.',tag:'Knowledge from before 1953',r:['tem']},
+ {a:'Learn the name of a researcher he saw regularly for decades',c:0,why:'Suzanne Corkin studied him from 1962 until his death in 2008, and he never learned her name. A new name is a new fact.',tag:'New facts and events',r:['hip']},
+ {a:'Get better at mirror drawing over three days',c:1,why:'His errors fell from day to day. Learning a movement skill relies on other systems, including the cerebellum and the striatum.',tag:'Skill learning',r:['cer','str']},
+ {a:'Remember that he had done the mirror drawing before',c:0,why:'Each session felt new to him. The skill improved, but remembering the practice sessions is a memory of events, which needs the hippocampus.',tag:'New facts and events',r:['hip']}];
+let shown=[],showT=0;const G0=performance.now();
+
+const LAB={pfc:[[60,-70],'left'],str:[[520,-70],'left'],tem:[[200,580],'right'],hip:[[600,720],'right'],cer:[[1010,650],'right']};
+const NARROW={pfc:'prefrontal',tem:'temporal'};
+const LABN={pfc:[[80,-90],'left'],str:[[600,-90],'left'],tem:[[150,620],'right'],hip:[[900,830],'right'],cer:[[1000,690],'right']};
+function fitBrain(W,H,keys,size,LAB){const ws={};ctx.font=`700 ${size}px ${BODY}`;keys.forEach(k=>ws[k]=ctx.measureText(BR.R[k].name).width+10);
+ for(let s=Math.min(W/1150,H/(860*1.16+60));s>0.05;s*=0.97){let lo=-500*s,hi=500*s,top=-340*1.16*s,bot=380*1.16*s;
+  keys.forEach(k=>{const[[lx,ly],al]=LAB[k],x=(lx-500)*s,y=(ly-300)*1.16*s;if(al==='right')lo=Math.min(lo,x-ws[k]);else hi=Math.max(hi,x+ws[k]);top=Math.min(top,y-size);bot=Math.max(bot,y+size)});
+  if(hi-lo<=W-16&&bot-top<=H-16)return{s,cx:(W-(hi+lo))/2,cy:(H-(bot+top))/2}}return{s:0.05,cx:W/2,cy:H/2}}
+const pc=stage('predC',({W,H,t})=>{const narrow=W<560,keep={};
+ const LL=narrow?LABN:LAB;for(const k in LL){keep[k]=[BR.R[k].lab,BR.R[k].al,BR.R[k].name];BR.R[k].lab=LL[k][0];BR.R[k].al=LL[k][1]}
+ BR.R.hip.name='hippocampus (removed)';if(narrow)for(const k in NARROW)BR.R[k].name=NARROW[k];
+ const labels=[...new Set([...shown,'hip'])],size=Math.max(16,Math.round(15*W/600)),{s,cx,cy}=fitBrain(W,H,Object.keys(LL),size,LL);
+ const u=RM?1:sat((t-showT)/0.8),act=shown.filter(k=>k!=='hip');
+ brainDraw({cx,cy,s,t,active:act,gmap:Object.fromEntries(act.map(k=>[k,u])),labels,labelT:Object.fromEntries(labels.map(k=>[k,0])),labSize:size,deep:0.5,glow:1});
+ const P=[cx+(640-500)*s,cy+(366-300)*s*1.16],pulse=shown.includes('hip')&&!RM?0.6+0.4*Math.sin(t*5):1;
+ ctx.save();ctx.globalAlpha=pulse;ctx.strokeStyle='#F08CBE';ctx.lineWidth=3;ctx.setLineDash([6,6]);ctx.beginPath();ctx.ellipse(P[0],P[1],120*s,44*s,0,0,7);ctx.stroke();ctx.restore();
+ for(const k in keep){[BR.R[k].lab,BR.R[k].al,BR.R[k].name]=keep[k]}});
+function show(r){shown=r;showT=(performance.now()-G0)/1000;pc.kick()}
+
+/* Sorting: pointer drag (mouse and touch) or tap a card then tap a box; keyboard works the same way (Enter on card, Enter on box). */
+const sortEl=document.querySelector('.sort'),poolUL=sortEl.querySelector('.pool ul'),ZUL={1:sortEl.querySelector('.zone[data-z="1"] ul'),0:sortEl.querySelector('.zone[data-z="0"] ul'),pool:poolUL};
+const checkB=document.getElementById('check'),fixB=document.getElementById('fix'),stat=document.getElementById('sortStatus'),why=document.getElementById('why');
+let place={},checked=false,selected=null,moved=new Set();
+function shuffled(){const idx=GAME.map((_,i)=>i);for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]]}
+ for(let k=1;k<idx.length;k++)if(GAME[idx[k]].a.startsWith('Remember that he had done')&&GAME[idx[k-1]].a.startsWith('Get better')||GAME[idx[k]].a.startsWith('Recall that number')&&GAME[idx[k-1]].a.startsWith('Keep a number')){[idx[k],idx[0]]=[idx[0],idx[k]]}return idx}
+function cardEl(i){const b=document.createElement('button');b.className='cardx';b.dataset.i=i;b.setAttribute('aria-pressed','false');b.innerHTML=`<span>${GAME[i].a}</span><span class="mk" aria-hidden="true"></span><span class="sr st"></span>`;return b}
+function reset(){checked=false;selected=null;place={};moved=new Set();Object.values(ZUL).forEach(u=>u.innerHTML='');
+ shuffled().forEach(i=>{const li=document.createElement('li');li.appendChild(cardEl(i));poolUL.appendChild(li);place[i]='pool'});
+ fixB.hidden=true;show([]);why.innerHTML='<p class="ability">Sort all eight, then check.</p><p class="verdict">The brain drawing marks what H.M. lost. After you check, tap any card to see why it belongs where it does and which part of the brain it relies on.</p>';update()}
+function update(){const n=Object.values(place).filter(z=>z!=='pool').length;checkB.disabled=checked||n<GAME.length;
+ if(!checked)stat.textContent=n<GAME.length?`${n} of ${GAME.length} sorted.`:'All sorted. Check when you’re ready.';
+ document.querySelectorAll('.zhead').forEach(h=>h.classList.toggle('armed',!!selected))}
+function moveTo(i,z){if(checked&&!sortEl.classList.contains('fixing'))return;const b=sortEl.querySelector(`.cardx[data-i="${i}"]`);const li=b.parentElement;ZUL[z].appendChild(li);place[i]=z;select(null);update()}
+function select(i){selected=i;sortEl.querySelectorAll('.cardx').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.i===i)));
+ sortEl.querySelectorAll('.drop').forEach(d=>d.classList.toggle('target',i!==null&&!checked))}
+function explain(i){const g=GAME[i],z=place[i],ok=String(g.c)===String(z)&&!moved.has(i);sortEl.querySelectorAll('.cardx').forEach(b=>b.classList.toggle('sel',+b.dataset.i===i));
+ why.innerHTML=`<p class="ability">${g.a}</p><p class="verdict"><b class="${ok?'ok':'no'}">${ok?'You had this right.':moved.has(i)?'You had this in the other box.':'This one goes in the other box.'}</b> He ${g.c?'could':'couldn’t'}. ${g.why}</p><span class="tag">${g.tag}</span>`;show(g.r);const ex=document.querySelector('.explain').getBoundingClientRect();if(ex.top>innerHeight-120||ex.bottom<0)document.querySelector('.explain').scrollIntoView({behavior:RM?'auto':'smooth',block:'start'})}
+function check(){checked=true;let right=0;select(null);
+ sortEl.querySelectorAll('.cardx').forEach(b=>{const i=+b.dataset.i,ok=String(GAME[i].c)===String(place[i]);if(ok)right++;b.classList.add(ok?'right':'wrong');b.querySelector('.mk').textContent=ok?'✓':'✗';b.querySelector('.st').textContent=ok?' (correct)':' (in the wrong box)';b.setAttribute('aria-pressed','false')});
+ stat.textContent=`${right} of ${GAME.length} in the right box.`+(right<GAME.length?' Tap a card marked ✗ to see why.':'');fixB.hidden=right===GAME.length;update();
+ why.innerHTML=`<p class="ability">${right} of ${GAME.length} right</p><p class="verdict">He kept working memory, knowledge from before 1953 and the ability to learn new skills. What he lost was the ability to form new memories of facts and events. Tap any card to see why.</p>`;show(['pfc','tem','cer','str','hip'])}
+function fix(){sortEl.classList.add('fixing');sortEl.querySelectorAll('.cardx.wrong').forEach(b=>{const i=+b.dataset.i;moved.add(i);moveTo(i,String(GAME[i].c));b.classList.remove('wrong');b.classList.add('right','moved');b.querySelector('.mk').textContent='✓';b.querySelector('.st').textContent=' (moved to the right box)'});sortEl.classList.remove('fixing');fixB.hidden=true;stat.textContent='Every card is now in the right box. Tap any card to see why.'}
+checkB.onclick=check;fixB.onclick=fix;document.getElementById('restart').onclick=reset;
+document.querySelectorAll('.zhead').forEach(h=>h.onclick=()=>{if(selected!==null&&!checked)moveTo(selected,h.dataset.z)});
+sortEl.querySelectorAll('.drop').forEach(d=>d.addEventListener('click',e=>{if(selected===null||checked||e.target.closest('.cardx')||e.target.closest('.zhead'))return;moveTo(selected,d.dataset.z)}));
+/* pointer drag */
+let drag=null,lastY=0;function autoScroll(){if(!drag||!drag.moving)return;const m=70,v=lastY<m?-(m-lastY)/4:lastY>innerHeight-m?(lastY-(innerHeight-m))/4:0;if(v)scrollBy(0,v);requestAnimationFrame(autoScroll)}
+sortEl.addEventListener('pointerdown',e=>{const b=e.target.closest('.cardx');if(!b||e.button>0)return;drag={b,i:+b.dataset.i,x:e.clientX,y:e.clientY,id:e.pointerId,moving:false,g:null,over:null}});
+addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+ if(!drag.moving){if(checked||Math.hypot(dx,dy)<6)return;drag.moving=true;const r=drag.b.getBoundingClientRect();drag.ox=drag.x-r.left;drag.oy=drag.y-r.top;
+  const g=drag.b.cloneNode(true);g.classList.add('ghost');g.style.width=r.width+'px';document.body.appendChild(g);drag.g=g;drag.b.classList.add('dragging');select(null);requestAnimationFrame(autoScroll)}
+ lastY=e.clientY;e.preventDefault();drag.g.style.left=(e.clientX-drag.ox)+'px';drag.g.style.top=(e.clientY-drag.oy)+'px';
+ const el=document.elementFromPoint(e.clientX,e.clientY),d=el&&el.closest('.drop');if(drag.over!==d){drag.over&&drag.over.classList.remove('over');d&&d.classList.add('over');drag.over=d}},{passive:false});
+function endDrag(e){if(!drag||e.pointerId!==drag.id)return;const D=drag;drag=null;
+ if(D.moving){D.g.remove();D.b.classList.remove('dragging');D.over&&D.over.classList.remove('over');const el=e.type==='pointerup'&&document.elementFromPoint(e.clientX,e.clientY),d=el&&el.closest('.drop');if(d)moveTo(D.i,d.dataset.z)}
+ else if(e.type==='pointerup'){if(checked)explain(D.i);else select(selected===D.i?null:D.i)}}
+addEventListener('pointerup',endDrag);addEventListener('pointercancel',endDrag);
+/* keyboard: Enter/Space on a card fires click without pointer events */
+sortEl.addEventListener('click',e=>{const b=e.target.closest('.cardx');if(!b||e.detail!==0)return;const i=+b.dataset.i;if(checked)explain(i);else select(selected===i?null:i)});
+reset();
+
+
+/* ---------- in popular culture: tabs ---------- */
+const POP=[
+ {id:'dates',title:'50 First Dates',year:2004,kind:'Romantic comedy',imdb:'https://www.imdb.com/title/tt0343660/',verdict:['bad','Not a real condition'],
+  desc:'Henry, a veterinarian in Hawaii, falls for Lucy. After a car accident, she wakes each morning with no memory of the day before, so he has to win her over again every day.',
+  right:['Lucy knows who she is and remembers her life before the accident, as H.M. did.','Her family relies on reminders, such as a video she watches each morning, to fill in what she can’t keep.'],
+  wrong:['Her condition, “Goldfield’s syndrome,” was invented for the film.','She remembers a whole day and loses it overnight. H.M. lost new information within minutes, as soon as his attention moved on.','A 2004 review of amnesia in films said her condition matches no known neurological or psychiatric disorder.'],
+  note:['Then real life copied the film','In 2010, researchers described a woman who, after a car accident, said she remembered each day normally but lost it overnight. They found no brain damage and judged the cause psychological. She said she hadn’t seen the film, though Drew Barrymore was her favourite actress.'],
+  src:'Baxendale (2004), BMJ; Smith et al. (2010), Neuropsychologia.'},
+ {id:'memento',title:'Memento',year:2000,kind:'Thriller',imdb:'https://www.imdb.com/title/tt0209144/',verdict:['good','Closest to H.M.'],
+  desc:'Leonard can’t form new memories after an attack in which his wife was killed. He hunts for her killer using notes, Polaroid photos and tattoos, and the story is told in reverse order so the viewer is as lost as he is.',
+  right:['He keeps his identity and most memories from before the injury, as H.M. did.','He forgets new people and conversations, so he relies on notes and photos, the kind of outside aids people with amnesia use.','The 2004 film review singled it out as one of the more accurate portrayals.'],
+  wrong:['Leonard says he has “no short-term memory.” His short-term memory works: he can follow a conversation. What fails is turning it into lasting memory.','He is unusually sharp otherwise. Real amnesia often comes with other problems, such as with attention or planning.'],
+  src:'Baxendale (2004), BMJ.'},
+ {id:'nemo',title:'Finding Nemo',year:2003,kind:'Animated adventure',imdb:'https://www.imdb.com/title/tt0266543/',verdict:['mixed','Partly right'],
+  desc:'Dory, a blue tang fish who forgets things moments after she learns them, helps Marlin cross the ocean to find his son.',
+  right:['She has trouble learning and keeping new information, remembering names, and knowing where she is going or why. The 2004 review praised this.','She still knows who she is and how to do things, such as reading.'],
+  wrong:['Like Leonard, she calls it “short-term memory loss.” The real problem in amnesia like H.M.’s is forming lasting memories.'],
+  src:'Baxendale (2004), BMJ.'}];
+(function(){const tabs=document.getElementById('popTabs'),panels=document.getElementById('popPanels');
+ POP.forEach((f,i)=>{const b=document.createElement('button');b.role='tab';b.id='tab-'+f.id;b.setAttribute('aria-controls','pp-'+f.id);b.setAttribute('aria-selected',i===0);b.tabIndex=i===0?0:-1;b.innerHTML=`${f.title}<small>${f.year}</small>`;tabs.appendChild(b);
+  const p=document.createElement('div');p.className='popp';p.id='pp-'+f.id;p.role='tabpanel';p.setAttribute('aria-labelledby','tab-'+f.id);p.tabIndex=0;p.hidden=i!==0;
+  p.innerHTML=`<div class="popmeta"><span class="verdictchip ${f.verdict[0]}">${f.verdict[1]}</span><span>${f.year} · ${f.kind}</span><a href="${f.imdb}">${f.title} on IMDb</a></div>
+  <p class="popdesc">${f.desc}</p><div class="popcols"><div class="pr"><h3>What it gets right</h3><ul>${f.right.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="pw"><h3>What it gets wrong</h3><ul>${f.wrong.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>
+  ${f.note?`<div class="popnote"><b>${f.note[0]}</b>${f.note[1]}</div>`:''}<p class="popsrc">Source: ${f.src}</p>`;panels.appendChild(p)});
+ const all=()=>[...tabs.querySelectorAll('[role=tab]')];
+ function sel(b,focus){all().forEach(x=>{const on=x===b;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1;document.getElementById(x.getAttribute('aria-controls')).hidden=!on});if(focus)b.focus()}
+ tabs.addEventListener('click',e=>{const b=e.target.closest('[role=tab]');if(b)sel(b)});
+ tabs.addEventListener('keydown',e=>{const L=all(),i=L.indexOf(document.activeElement);if(i<0)return;let j=null;
+  if(e.key==='ArrowRight')j=(i+1)%L.length;else if(e.key==='ArrowLeft')j=(i-1+L.length)%L.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=L.length-1;
+  if(j!==null){e.preventDefault();sel(L[j],true)}})})();
+/* ---------- consolidation slider ---------- */
+const NL=['the same day','one night later','a week later','a month later','a year later','many years later'];const HV=[90,80,62,45,28,15];
+const nights=document.getElementById('nights');function cons(){const i=+nights.value;const h=HV[i],c=100-h;document.getElementById('nl').textContent=NL[i];document.getElementById('hBar').style.width=h+'%';document.getElementById('cBar').style.width=c+'%';document.getElementById('hV').textContent=h>60?'high':h>35?'medium':'low';document.getElementById('cV').textContent=c>60?'high':c>35?'medium':'low';nights.setAttribute('aria-valuetext',NL[i])}
+nights.oninput=cons;cons();
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Why did H.M. have brain surgery in 1953?',o:['To treat memory loss','To stop severe epileptic seizures','To remove a tumour'],a:1,f:'The surgery eased his seizures but left him unable to form new memories of facts and events.'},
+ {q:'Many of H.M.’s older memories survived. What does that show?',o:['The hippocampus is needed to make new memories, not to store them for good','The hippocampus stores all memories permanently','Older memories are stored in the hippocampus of the other side'],a:0,f:'Older memories had come to rely on the cortex, so they survived the surgery.'},
+ {q:'Which change was first found in the hippocampus, in rabbits?',o:['A burst of signals making connections stronger for hours','New neurons replacing old ones overnight','The hippocampus growing larger with use'],a:0,f:'Lømo, then Bliss and Lømo (1973), described long-term potentiation.'}];
+const box=document.getElementById('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+
+/* ---------- collection ---------- */
+__COLLJS__
+renderColl('coll','hippocampus');
+})();
+</script>
+</body>
+</html>

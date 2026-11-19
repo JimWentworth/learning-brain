@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Larks, Owls and 8 a.m.: Chronotype and Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}
+.kform{display:grid;gap:12px;width:100%;max-width:560px}
+.kform fieldset{border:1px solid #3A4E72;border-radius:10px;padding:8px 12px 12px;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.kform legend{font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#FCB316;padding:0 6px}
+.kform label{display:block;font:600 14px var(--body);color:#C9D3E3}
+.kform select{display:block;width:100%;margin-top:4px;min-height:42px;font:600 16px var(--body);border-radius:8px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;padding:0 6px}
+.kform select:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.kscale{width:100%;max-width:560px;height:auto;display:block}
+.kscale[hidden]{display:none}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Habits of the Learner · Topic 3</div>
+      <h1 id="title">Larks, owls and 8 a.m. <em>Know your clock, then work with it</em></h1>
+      <p class="dek">Some people wake up sharp; others hit their stride late at night. Among university students, owls are common, and early classes hit them hardest.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#kT">Lark or owl?</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the prefrontal cortex, at the front, and the brainstem, at the base, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Larks, owls and 8 a.m.</b> · The Learning Brain, Habits of the Learner, episode 3</span><span>Captions are on; turn them off in the player.</span></div>
+    <p class="vnote"><b>About this video.</b> It gives a split of 31% evening types and under 8% morning types in one student group. We couldn’t confirm those figures, so this page says only that evening types usually outnumber morning types among students.</p>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Some people wake up sharp. Others hit their stride late at night. Researchers call this your chronotype: lark, owl, or somewhere in between. Among university students, owls are common, and evening types usually outnumber morning types.</p>
+    <p>At the National University of Singapore, Sing Chen Yeo, Joshua Gooley and colleagues used Wi-Fi logs to estimate lecture attendance for more than 23,000 students. Attendance at 8 a.m. classes was about 10 percentage points lower than at later times.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>23,391</strong><span>students whose Wi-Fi logs showed class attendance</span></div>
+      <div role="listitem"><strong>~10 points</strong><span>lower attendance at 8 a.m. than at later times</span></div>
+      <div role="listitem"><strong>~1 hour</strong><span>less sleep before an early class</span></div>
+      <div role="listitem"><strong>33,818</strong><span>students: more days with morning classes went with lower grades</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Early classes</span>Less sleep, lower grades</h2>
+    <p>Watch data from 181 students showed about an hour less sleep before an early class, because they woke earlier than usual. And across nearly 34,000 students, the more days a week they had morning classes, the lower their grade point average tended to be.</p>
+    <h2 class="sec"><span class="n">Owls</span>Timing hits owls hardest</h2>
+    <p>In Dutch high schools, Vincent van der Vinne, Giulia Zerbini and colleagues found that late chronotypes did worse on early-morning exams, but the gap shrank later in the day. Lab studies call this the synchrony effect: demanding tasks tend to go best at your own peak time.</p>
+  </div>
+
+  <section class="night" aria-labelledby="kT">
+    <div class="col">
+      <h2 class="sec" id="kT"><span class="n">Try it</span>Lark or owl?</h2>
+      <p>Enter when you usually fall asleep and wake up, on days with and without an alarm. The page estimates your chronotype from the middle of your sleep on free days, the measure researchers often use. It’s a rough guide, not a diagnosis. Nothing you enter leaves this page.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="kScreen">
+          <form class="kform" id="kF">
+            <fieldset><legend>Days with an alarm (classes, work)</legend>
+              <label for="kWs">Fall asleep<select id="kWs"></select></label>
+              <label for="kWw">Wake up<select id="kWw"></select></label>
+            </fieldset>
+            <fieldset><legend>Free days (no alarm)</legend>
+              <label for="kFs">Fall asleep<select id="kFs"></select></label>
+              <label for="kFw">Wake up<select id="kFw"></select></label>
+            </fieldset>
+            <div class="mrow" style="justify-content:center"><button class="nbtn" type="submit">Find my chronotype</button></div>
+          </form>
+          <svg class="kscale" id="kSvg" viewBox="0 0 560 90" hidden role="img" aria-labelledby="kSvgT"><title id="kSvgT">Where your mid-sleep falls</title></svg>
+        </div>
+        <div>
+          <p class="phase" id="kPhase">Your clock</p>
+          <p class="mtitle" id="kTitle">Free days tell the truth</p>
+          <p class="mtext" id="kText" aria-live="polite">On days without an alarm, your sleep shows your body clock most clearly.</p>
+          <div id="kRes"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">A caution</span>Mostly correlations</h2>
+    <p>These are mostly correlations. At one American university, morning types still had slightly better grades even after class times were taken into account. And chronotype can shift, even within a semester.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each study in the video, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Try this</h3>
+      <p>Notice when you feel sharpest, and put your hardest study there. If you can choose, avoid stacking early classes. If you can’t, keep your wake time steady so the early start hurts less. And save routine tasks for your low hours.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Know your clock. Then work with it.</h2>
+    <ol class="tips">
+      <li><b>Hardest work at your peak</b><span>Notice when you feel sharpest.</span></li>
+      <li><b>Avoid stacking early classes</b><span>If you can choose.</span></li>
+      <li><b>Routine tasks for low hours</b><span>And keep your wake time steady.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1038/s41562-023-01531-x">Yeo, S. C., Lai, C. K. Y., Tan, J., Lim, S., Chandramoghan, Y., Tan, T. K., &amp; Gooley, J. J. (2023). Early morning university classes are associated with impaired sleep and academic performance. <i>Nature Human Behaviour, 7</i>(4), 502–514.</a></li>
+        <li><a href="https://doi.org/10.1177/0748730414564786">van der Vinne, V., Zerbini, G., Siersema, A., et al. (2015). Timing of examinations affects school performance differently in early and late chronotypes. <i>Journal of Biological Rhythms, 30</i>(1), 53–60.</a></li>
+        <li><a href="https://doi.org/10.1080/07420528.2017.1281287">Enright, T., &amp; Refinetti, R. (2017). Chronotype, class times, and academic achievement of university students. <i>Chronobiology International, 34</i>(4), 445–450.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.stem.lab=[520,735];BR.R.stem.al='right';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['pfc','stem'],labels:['pfc','stem'],labelT:{pfc:0.8,stem:1.0},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- lark or owl? ----------
+   MCTQ-style estimate: mid-sleep on free days (MSF), corrected for catch-up sleep when free-day sleep is longer:
+   MSFsc = MSF - (SDf - SDweek)/2, SDweek = (5*SDw + 2*SDf)/7. Times in minutes after noon.
+   Bands (rough): before 3:30 a.m. lark-leaning; 3:30-5:00 in between; after 5:00 owl-leaning. Social jet lag = MSF - MSW. */
+const fmt=m=>{const t=((m+720)%1440+1440)%1440,h=Math.floor(t/60),mi=Math.round(t%60);return `${h===0?12:h>12?h-12:h}:${String(mi).padStart(2,'0')} ${t<720?'a.m.':'p.m.'}`};
+const SL=[];for(let m=480;m<=1020;m+=30)SL.push(m);  /* 8 p.m. - 5 a.m. */
+const WK=[];for(let m=960;m<=1560;m+=30)WK.push(m);  /* 4 a.m. - 2 p.m. */
+const fill=(id,arr,v)=>{$(id).innerHTML=arr.map(m=>`<option value="${m}">${fmt(m)}</option>`).join('');$(id).value=v};
+fill('kWs',SL,720);fill('kWw',WK,1140);fill('kFs',SL,780);fill('kFw',WK,1260);
+$('kF').addEventListener('submit',e=>{e.preventDefault();
+ const ws=+$('kWs').value,ww=+$('kWw').value,fs=+$('kFs').value,fw=+$('kFw').value;
+ if(ww<=ws||fw<=fs){$('kTitle').textContent='Check the times';$('kText').textContent='Each wake time needs to be after the time you fall asleep.';$('kRes').innerHTML='';$('kSvg').hidden=true;return}
+ const SDw=ww-ws,SDf=fw-fs,MSW=ws+SDw/2,MSF=fs+SDf/2,SDweek=(5*SDw+2*SDf)/7;
+ const MSFsc=SDf>SDw?MSF-(SDf-SDweek)/2:MSF;const sjl=(MSF-MSW)/60;
+ const am=MSFsc-720; /* minutes after midnight */
+ const X=m=>40+(m-60)/(480-60)*480; /* scale 1 a.m. .. 8 a.m. */
+ const x=Math.max(40,Math.min(520,X(am)));
+ $('kSvg').innerHTML=`<title id="kSvgT">Your mid-sleep on free days: ${fmt(MSFsc)}</title><rect x="40" y="30" width="${X(210)-40}" height="18" fill="#7DD3A8" opacity=".55"/><rect x="${X(210)}" y="30" width="${X(300)-X(210)}" height="18" fill="#C9D3E3" opacity=".55"/><rect x="${X(300)}" y="30" width="${520-X(300)}" height="18" fill="#FCB316" opacity=".55"/>`+
+  `<text x="${(40+X(210))/2}" y="22" text-anchor="middle" font-size="12" fill="#E9EEF6">lark-leaning</text><text x="${(X(210)+X(300))/2}" y="22" text-anchor="middle" font-size="12" fill="#E9EEF6">in between</text><text x="${(X(300)+520)/2}" y="22" text-anchor="middle" font-size="12" fill="#E9EEF6">owl-leaning</text>`+
+  [60,180,300,420].map(m=>`<text x="${X(m)}" y="68" text-anchor="middle" font-size="12" fill="#C9D3E3">${fmt(m+720)}</text>`).join('')+`<path d="M${x} 52 l-7 12 h14z" fill="#fff"/><text x="${x}" y="86" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">you</text>`;
+ $('kSvg').hidden=false;
+ const band=am<210?'L':am<=300?'M':'O';
+ $('kRes').innerHTML=`<div class="res wl2"><p class="gh">Your numbers</p>${barRow('Sleep, alarm days',SDw/60,11,(Math.round(SDw/6)/10)+' h','#C9D3E3')}${barRow('Sleep, free days',SDf/60,11,(Math.round(SDf/6)/10)+' h','#FCB316')}${barRow('Social jet lag',Math.max(0,sjl),5,(Math.round(Math.max(0,sjl)*10)/10)+' h','#FFB38A')}</div>`;
+ let title,text;
+ if(band==='L'){title='Lark-leaning';text=`On free days, the middle of your sleep falls around ${fmt(MSFsc)}, earlier than most students. Mornings are likely your stronger time for hard work.`}
+ else if(band==='M'){title='In between';text=`On free days, the middle of your sleep falls around ${fmt(MSFsc)}, in between, like most people. Notice when you feel sharpest, and put your hardest study there.`}
+ else{title='Owl-leaning';text=`On free days, the middle of your sleep falls around ${fmt(MSFsc)}, which is late, as is common in students. Early classes and exams are likely to hit you hardest; hard study may go better later in the day.`}
+ if(sjl>=2)text+=` Your sleep shifts by about ${Math.round(sjl*10)/10} hours between alarm days and free days. Researchers call that social jet lag: like crossing time zones every weekend.`;
+ else if(sjl>=1)text+=` Your sleep shifts by about ${Math.round(sjl*10)/10} hours on free days, a moderate social jet lag.`;
+ if(SDf-SDw>=90)text+=' You sleep much longer on free days, a sign you are catching up on lost sleep during the week.';
+ $('kTitle').textContent=title;$('kText').textContent=text});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['At NUS, attendance at 8 a.m. classes was…',['About 10 percentage points lower','About the same','Higher'],0,'Yeo, Gooley and colleagues, 2023.'],
+ ['Before an early class, students slept…',['About an hour less','About the same','An hour more'],0,'They woke earlier than usual.'],
+ ['More days a week with morning classes went with…',['A lower grade point average','A higher one','No difference'],0,'Across nearly 34,000 students.'],
+ ['In Dutch high schools, late chronotypes did worst on…',['Early-morning exams','Afternoon exams','No particular exams'],0,'The gap shrank later in the day.'],
+ ['The synchrony effect: demanding tasks tend to go best…',['At your own peak time','First thing in the morning','Late at night for everyone'],0,'Larks peak earlier; owls later.'],
+ ['At one American university, after class times were taken into account, morning types…',['Still had slightly better grades','Did worse','Did the same'],0,'Enright and Refinetti, 2017. Chronotype isn’t the whole story.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: early starts cost owls the most, in attendance, sleep and grades. Put your hardest work at your own peak.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Attendance at 8 a.m. classes at NUS was…',o:['About 10 percentage points lower','About the same','Higher'],a:0,f:'From Wi-Fi logs of more than 23,000 students.'},
+ {q:'Before an early class, students slept…',o:['About an hour less','About the same','More'],a:0,f:'Because they woke earlier than usual.'},
+ {q:'The synchrony effect says demanding tasks go best…',o:['At your own peak time','Always in the morning','Always at night'],a:0,f:'Late chronotypes did worse on early-morning exams.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','h03');
+})();
+</script>
+</body>
+</html>

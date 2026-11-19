@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Impostor Feelings: Common, Real, and Not Evidence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}.bscen{font:600 clamp(19px,2.4vw,22px)/1.45 var(--body);color:#fff;max-width:40ch;min-height:5.8em;margin:0}
+.bopts{display:grid;grid-template-columns:repeat(var(--nb,3),minmax(0,1fr));gap:8px;width:100%;max-width:600px}
+@media (max-width:520px){.bopts{grid-template-columns:1fr}}
+.bopts[hidden]{display:none}
+.bopts button{min-height:52px;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer;padding:4px 8px}
+.bopts button small{display:block;font-size:13px;color:#C9D3E3;font-weight:600}
+.bopts button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.bopts button.ok{border-color:#7DD3A8;background:#173B33}.bopts button.no{border-color:#FFB38A;background:#3B2420}
+.bopts button:disabled{cursor:default}
+.bfb{font-size:18px;line-height:1.45;color:#E9EEF6;margin:0;min-height:3em;max-width:44ch}
+.bfb b.ok{color:#7DD3A8}.bfb b.no{color:#FFB38A}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Belonging · Topic 11</div>
+      <h1 id="title">Impostor feelings <em>Feeling like an impostor is not evidence that you are one</em></h1>
+      <p class="dek">Ever feel that everyone else belongs here, and you somehow slipped through? That one day you will be found out? That feeling is often called the impostor phenomenon.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#bT">Ease the doubt, or deepen it?</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the amygdala, deep inside, and the prefrontal cortex, at the front, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Impostor feelings</b> · The Learning Brain, Belonging, episode 11</span><span>Captions are on; turn them off in the player.</span></div>
+    <p class="vnote"><b>About this video.</b> It says about half of the studies in the review were of students. We couldn’t confirm that, so this page leaves it out.</p>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>The idea goes back to psychologists Pauline Clance and Suzanne Imes in 1978. People with impostor feelings credit their success to luck or extra effort, not ability, and fear being exposed as a fraud.</p>
+    <p>In 2020, Dena Bravata and colleagues systematically reviewed 62 studies, with over 14,000 participants. Reported rates ranged from 9% to 82%. That huge range depended mostly on which questionnaire was used, and where the cutoff was set.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>62</strong><span>studies, with more than 14,000 participants</span></div>
+      <div role="listitem"><strong>9% to 82%</strong><span>reported rates, depending mostly on the questionnaire and cutoff</span></div>
+      <div role="listitem"><strong>Men and women</strong><span>both commonly reported impostor feelings</span></div>
+      <div role="listitem"><strong>No studies</strong><span>in the review tested a treatment</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">What came with it</span>Depression, anxiety, burnout</h2>
+    <p>Impostor feelings were common in both men and women. They often came with depression and anxiety, and were linked to burnout and poorer job performance.</p>
+    <h2 class="sec"><span class="n">Belonging</span>The doubt grows in isolation</h2>
+    <p>Impostor feelings and belonging doubts overlap. When students think they are the only one who feels this way, the doubt grows. Learning that others share it can help, as the belonging studies in topic 1 suggest.</p>
+  </div>
+
+  <section class="night" aria-labelledby="bT">
+    <div class="col">
+      <h2 class="sec" id="bT"><span class="n">Try it</span>Ease the doubt, or deepen it?</h2>
+      <p>Eight things an instructor might say or do. For each, decide: does it help ease impostor feelings, or deepen them? You’ll get feedback after each one.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="bScreen">
+          <p class="bscen" id="bScen" aria-live="polite">Press Start.</p>
+          <div class="bopts" id="bOpts" hidden role="group" aria-label="Eases or deepens the doubt?" style="--nb:2"><button type="button" data-k="E">Eases it</button><button type="button" data-k="D">Deepens it</button></div>
+          <p class="prog" id="bProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="bPhase">Ready</p>
+          <p class="mtitle" id="bTitle">Ease the doubt, or deepen it?</p>
+          <p class="bfb" id="bFb" aria-live="polite">The question is always: does it tell students that doubt is common, and that success comes from work they can see?</p>
+          <div id="bRes"></div>
+          <div class="mrow"><button class="nbtn" id="bGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">A caution</span>Not a diagnosis; no tested treatments</h2>
+    <p>It is not a clinical diagnosis, and the measures vary widely. No study in the review tested a treatment. So be wary of quick fixes.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each study in the video, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">For teaching</h3>
+      <p>Normalize doubt: say that struggle and uncertainty are common, even among experts. Share your own early struggles. Praise strategy and progress, and make the standards clear.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Feeling like an impostor is not evidence that you are one.</h2>
+    <ol class="tips">
+      <li><b>Normalize doubt</b><span>Even experts feel it.</span></li>
+      <li><b>Share your own early struggles</b><span>Specifically.</span></li>
+      <li><b>Clear standards</b><span>And praise for strategy and progress.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1037/h0086006">Clance, P. R., &amp; Imes, S. A. (1978). The imposter phenomenon in high achieving women: Dynamics and therapeutic intervention. <i>Psychotherapy: Theory, Research &amp; Practice, 15</i>(3), 241–247.</a></li>
+        <li><a href="https://doi.org/10.1007/s11606-019-05364-1">Bravata, D. M., Watts, S. A., Keefer, A. L., et al. (2020). Prevalence, predictors, and treatment of impostor syndrome: A systematic review. <i>Journal of General Internal Medicine, 35</i>(4), 1252–1275.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.amy.lab=[330,740];BR.R.amy.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['amy','pfc'],labels:['amy','pfc'],labelT:{amy:0.8,pfc:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- classifier ---------- */
+const NM={E:'Eases it',D:'Deepens it'};
+const CASES=[
+ ['“Most people in this room will feel out of their depth at some point. I did too.”','E','Eases it: doubt is named as common, even for the instructor.'],
+ ['Telling a struggling student that “top students never find this hard”','D','Deepens it: it suggests struggle means you don’t belong.'],
+ ['Describing a specific time you struggled early in your career, and what you did','E','Eases it: a concrete story makes the message believable.'],
+ ['Praising only students who seem to get it instantly','D','Deepens it: success looks like luck or talent, not work.'],
+ ['Making grading criteria clear, so students can see what success is built from','E','Eases it: success becomes something students can trace to their work.'],
+ ['“If you’re here, you obviously belong. Stop worrying.”','D','Deepens it, often: it dismisses the feeling instead of normalizing it.'],
+ ['Praising a student’s strategy and progress on a hard problem','E','Eases it: success is linked to work they can repeat.'],
+ ['Promoting a one-off workshop as a cure for impostor syndrome','D','Deepens it, or at best untested: calling it a cure overpromises, and no study in the review tested a treatment.']];
+let br=null;
+function bAnswer(){return new Promise(res=>{br.res=res;const o=$('bOpts');o.hidden=false;o.querySelectorAll('button').forEach(b=>{b.disabled=false;b.classList.remove('ok','no')});o.querySelector('button').focus()})}
+$('bOpts').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!br||!br.res)return;const r=br.res;br.res=null;r(b.dataset.k)});
+function bWait(label){return new Promise(res=>{const g=$('bGo');g.textContent=label;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.disabled=true;g.textContent='In progress';res()}})}
+$('bGo').addEventListener('click',async()=>{if(br||$('bGo').onclick)return;br={};const g=$('bGo');g.disabled=true;g.textContent='In progress';$('bRes').innerHTML='';
+ const order=shuf([...CASES]);const n=order.length;let right=0;const tot={},got={},miss={};Object.keys(NM).forEach(k=>{tot[k]=0;got[k]=0;miss[k]=0});
+ $('bTitle').textContent='Eases or deepens the doubt?';
+ for(let i=0;i<n;i++){const [txt,k,ex]=order[i];tot[k]++;$('bPhase').textContent=`Case ${i+1} of ${n}`;$('bScen').textContent=txt;$('bProg').textContent='';$('bFb').textContent='';
+  const a=await bAnswer();if(!br)return;const ok=a===k;if(ok){right++;got[k]++}else miss[k]++;
+  $('bOpts').querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.k===k)b.classList.add('ok');else if(b.dataset.k===a)b.classList.add('no')});
+  $('bFb').innerHTML=(ok?'<b class="ok">Right.</b> ':`<b class="no">Not quite.</b> You chose “${NM[a]}”. `)+ex;$('bProg').textContent=`${right} of ${i+1} right so far.`;
+  if(i<n-1){await bWait('Next case');if(!br)return}}
+ $('bOpts').hidden=true;$('bScen').textContent='Done.';$('bProg').textContent='';$('bPhase').textContent='Your results';
+ $('bRes').innerHTML=`<div class="res wl2">${Object.keys(NM).map(k=>barRow(NM[k],got[k],tot[k],got[k]+' of '+tot[k],'#FCB316')).join('')}</div>`;
+ const weak=Object.keys(miss).filter(k=>miss[k]>0).map(k=>'“'+NM[k]+'”');const wj=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];const missed=weak.length===Object.keys(NM).length?(weak.length===2?'cases in both groups':'cases in every group'):'some '+wj(weak)+' cases';let title,text;
+
+ if(right>=7){title='You can ease it';text=`${right} of 8 right. Name doubt as common, share real struggles, and make success traceable to strategy and progress.`}
+ else if(right>=5){title='Mostly there';text=`${right} of 8 right. You missed ${missed}. Dismissing the feeling, or praising only effortless talent, tends to deepen it.`}
+ else{title='Worth another look';text=`${right} of 8 right. Easing impostor feelings means normalizing doubt and linking success to work students can see, not talent or luck.`}
+ $('bTitle').textContent=title;$('bFb').textContent=text;g.onclick=null;g.textContent='Try again';g.disabled=false;g.focus();br=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['The impostor phenomenon was first described in…',['1978','2008','1878'],0,'Clance and Imes.'],
+ ['The 2020 review covered how many studies?',['62','6','620'],0,'With more than 14,000 participants.'],
+ ['Reported rates ranged from 9% to 82%, mostly because of…',['Different questionnaires and cutoffs','Different countries only','Different years'],0,'The measures vary widely.'],
+ ['Impostor feelings were…',['Common in both men and women','Found only in women','Found only in men'],0,'Bravata and colleagues, 2020.'],
+ ['They were linked to…',['Depression, anxiety, burnout and poorer job performance','Better performance','Nothing measurable'],0,'Often alongside other difficulties.'],
+ ['Is impostor syndrome a clinical diagnosis?',['No','Yes','Only in some countries'],0,'And no study in the review tested a treatment.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: impostor feelings are common, hard to measure, and linked to real costs. Normalizing doubt helps; quick fixes are untested.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Reported rates of impostor feelings ranged from…',o:['9% to 82%, depending mostly on the questionnaire','About 50% everywhere','Under 1%'],a:0,f:'Bravata and colleagues, 2020.'},
+ {q:'Impostor feelings were common in…',o:['Both men and women','Only women','Only students'],a:0,f:'And they often came with depression and anxiety.'},
+ {q:'How many studies in the review tested a treatment?',o:['None','Most','About half'],a:0,f:'Be wary of quick fixes.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','b11');
+})();
+</script>
+</body>
+</html>

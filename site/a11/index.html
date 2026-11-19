@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trust, but Verify: Fabricated Citations and Lateral Reading</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+
+:root{
+  /* Layout idea: a magazine spread. Light reading pages, dark "night" spreads for the brain and the video.
+     Contrast (WCAG AA): ink 13.4:1 and ink-2 8.0:1 on paper; accent-ink 5.1:1 on paper; on night, text 11.3:1, muted 8.6:1, orange 5.6:1. */
+  --paper:#F4F6F9; --ink:#13294B; --ink-2:#3D4C66; --rule:#C9D2DF;
+  --accent-ink:#B84300;   /* orange for text/marks on light backgrounds */
+  --orange:#FF5F05;       /* bright orange only on dark backgrounds */
+  --night:#0D1C35; --night-2:#0A172C; --night-ink:#E9EEF6; --night-muted:#AEB9CC; --night-line:#2A426B;
+  --ok:#1C7A55; --no:#B42A4A;
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --body:'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.6}
+a{color:var(--ink);text-decoration-color:var(--accent-ink);text-underline-offset:3px}
+.night a,.hero a{color:var(--night-ink);text-decoration-color:var(--orange)}
+:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px;border-radius:4px}
+.night :focus-visible{outline-color:var(--orange)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.label{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+.night .label,.hero .label,.watch .label{color:var(--orange)}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:var(--ink);padding:8px 14px;z-index:10}
+.skip:focus{left:8px}
+
+/* Hero */
+.hero{position:relative;background:var(--night);color:var(--night-ink);overflow:hidden}
+.hero-inner{position:relative;max-width:1180px;margin:0 auto;padding:56px 24px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:end}
+@media (max-width:900px){.hero-inner{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(44px,8.4vw,118px);overflow-wrap:break-word;line-height:.9;font-weight:900;letter-spacing:-.035em;margin:16px 0 22px}
+.hero h1 em{display:block;font-weight:300;font-style:italic;color:var(--orange)}
+.dek{font-family:var(--display);font-weight:300;font-size:clamp(21px,2.3vw,27px);line-height:1.35;max-width:28ch;margin:0;color:var(--night-ink)}
+.byline{margin-top:24px;font-size:16px;color:var(--night-muted);display:flex;gap:18px;flex-wrap:wrap}
+.byline b{color:var(--night-ink);font-weight:600}
+.hero-brain{position:relative;aspect-ratio:1.35/1}
+.hero-brain canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Watch */
+.watch{background:var(--night);color:var(--night-ink);padding:8px 0 64px}
+.frame{border-radius:6px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 1px var(--night-line);background:#000}
+.frame video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.watch .meta{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:16px;color:var(--night-muted)}
+.watch .meta b{color:var(--night-ink);font-family:var(--display);font-weight:600;font-size:21px}
+details.transcript{margin-top:14px;border-top:1px solid var(--night-line);padding-top:12px}
+details.transcript summary{cursor:pointer;font-weight:600;color:var(--night-ink)}
+details.transcript p{color:#C9D3E3;max-width:70ch}
+
+/* Article */
+.col{max-width:700px;margin:0 auto;padding:0 24px}
+.wide{max-width:1140px;margin:0 auto;padding:0 24px}
+article p{margin:0 0 1.15em}
+.lede{padding-top:64px}
+.lede p:first-child::first-letter{font-family:var(--display);font-weight:900;float:left;font-size:92px;line-height:.82;padding:8px 12px 0 0;color:var(--accent-ink)}
+h2.sec{font-size:clamp(34px,4.6vw,52px);font-weight:800;letter-spacing:-.02em;line-height:1.04;margin:84px 0 20px}
+h2.sec .n{display:block;font-family:var(--body);font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:12px}
+.night h2.sec{color:#fff}.night h2.sec .n{color:var(--orange)}
+.pull{font-family:var(--display);font-weight:800;font-size:clamp(38px,6vw,78px);line-height:1;letter-spacing:-.03em;margin:84px auto;max-width:1120px;padding:0 24px;color:var(--ink)}
+.pull em{font-style:italic;font-weight:300;color:var(--accent-ink)}
+.note{font-size:16px;color:var(--ink-2);border-left:3px solid var(--accent-ink);padding-left:12px;margin:0 0 1.2em}
+.night .note{color:var(--night-muted);border-color:var(--orange)}
+figure{margin:40px auto 56px}
+figcaption{font-size:16px;color:var(--ink-2);line-height:1.5;margin-top:12px;max-width:70ch}
+.night figcaption{color:var(--night-muted)}
+
+/* Night spread + explorer */
+.night{background:var(--night);color:var(--night-ink);padding:76px 0 68px;margin:84px 0}
+.night p{color:#C9D3E3}
+.explorer{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:28px;align-items:start;margin-top:28px}
+@media (max-width:900px){.explorer{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;aspect-ratio:1.45/1}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{appearance:none;font:600 16px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:40px}
+.chip:hover{border-color:#8FA3C2}
+.chip[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:#13294B}
+.panel{background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;padding:24px;min-height:300px}
+.panel h3{font-size:34px;font-weight:800;color:var(--orange);margin:6px 0 10px;line-height:1.1}
+.panel .where{font-size:16px;color:var(--night-muted);margin:0 0 14px}
+.panel p{color:#E9EEF6;margin:0 0 12px}
+.panel .ep{font-size:16px;color:var(--night-muted);border-top:1px solid var(--night-line);padding-top:12px;margin-top:14px}
+
+/* Big number + link lab */
+.num-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:32px;align-items:center}
+@media (max-width:820px){.num-row{grid-template-columns:minmax(0,1fr)}}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(110px,16vw,210px);line-height:.85;letter-spacing:-.05em;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.big-sub{font-family:var(--display);font-size:clamp(26px,3vw,36px);font-weight:600;margin-top:8px}
+.linklab{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:20px}
+.linklab canvas{width:100%;aspect-ratio:2/1;display:block}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.btn{appearance:none;font:600 16px var(--body);border-radius:999px;padding:10px 18px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;min-height:44px}
+.btn.sec{background:transparent;color:var(--ink)}
+.night .btn{background:var(--orange);border-color:var(--orange);color:#13294B}
+.night .btn.sec{background:transparent;color:var(--night-ink);border-color:#8FA3C2}
+.meter{font-size:16px;color:var(--ink-2)}
+.meter b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Memory composer */
+.composer{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:28px;align-items:center;margin-top:24px}
+@media (max-width:900px){.composer{grid-template-columns:minmax(0,1fr)}}
+.composer .stage{aspect-ratio:1.4/1}
+.parts{display:grid;gap:10px}
+.part{display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:left;font:600 18px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:8px;padding:12px 14px;cursor:pointer;min-height:48px}
+.part span{font-weight:400;color:var(--night-muted);font-size:16px}
+.part[aria-pressed="true"]{border-color:var(--orange);background:rgba(255,95,5,.12)}
+.status{min-height:3em;font-size:17px;color:#E9EEF6;margin:10px 0 0}
+
+/* Case box */
+.box{border-top:6px solid var(--ink);background:#fff;padding:26px 28px;margin:40px 0;border-radius:0 0 6px 6px;box-shadow:0 1px 0 var(--rule)}
+.box h3{font-size:28px;font-weight:800;margin-bottom:10px}
+.timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);margin:20px 0 6px}
+@media (max-width:640px){.timeline{grid-template-columns:minmax(0,1fr)}}
+.timeline div{padding:14px 14px 10px 0}
+.timeline strong{display:block;font-family:var(--display);font-size:40px;font-weight:900;color:var(--accent-ink);line-height:1}
+.timeline span{font-size:16px;color:var(--ink-2)}
+.dd{width:100%;border-collapse:collapse;margin:16px 0 8px;font-size:17px}
+.dd th,.dd td{border-bottom:1px solid var(--rule);padding:10px 8px;text-align:left;vertical-align:top}
+.dd thead th{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.dd tbody th{font-weight:600;color:var(--ink)}
+.yes{color:var(--ok);font-weight:700}.no{color:var(--no);font-weight:700}
+
+/* Why */
+.why{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center}
+@media (max-width:820px){.why{grid-template-columns:minmax(0,1fr)}}
+.ways{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.ways button{width:100%;text-align:left;font:300 italic clamp(30px,4vw,46px)/1.15 var(--display);color:var(--ink);background:none;border:none;border-bottom:1px solid var(--rule);padding:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ways button span{font:400 16px var(--body);color:var(--ink-2)}
+.ways button[aria-pressed="true"]{color:var(--accent-ink);font-weight:600}
+.why .mini{background:var(--night);border-radius:6px;aspect-ratio:1.35/1;position:relative}
+.why .mini canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Quiz */
+.quiz{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:26px}
+.q{border-top:1px solid var(--rule);padding:18px 0 6px}
+.q:first-child{border-top:0;padding-top:0}
+.q .qt{font-family:var(--display);font-size:22px;font-weight:600;line-height:1.25;margin:0 0 12px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;font:400 17px var(--body);color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:6px;padding:11px 14px;cursor:pointer;min-height:44px}
+.opt:hover{border-color:var(--ink-2)}
+.opt.right{border-color:var(--ok);background:#E7F4EE}
+.opt.wrong{border-color:var(--no);background:#FBEAEE}
+.fb{font-size:16.5px;color:var(--ink-2);min-height:1.4em;margin:10px 0 0}
+.score{font-family:var(--display);font-size:21px;margin-top:14px}
+
+/* Collection */
+.coll{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:20px}
+.card{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:14px 16px}
+.card b{display:block;font-family:var(--display);font-size:20px;line-height:1.2;margin-bottom:4px}
+.card span{font-size:15px;color:var(--ink-2)}
+.card.here{background:var(--ink);border-color:var(--ink)}
+.card.here b{color:#fff}.card.here span{color:#C9D3E3}
+
+footer.sources{margin:84px 0 0;padding:36px 0 60px;border-top:2px solid var(--ink)}
+footer.sources ol{padding-left:20px;font-size:16px;color:var(--ink-2)}
+footer.sources li{margin:6px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:560px){body{font-size:18px}.panel,.quiz,.box{padding:18px}}
+
+.hero h1{font-size:clamp(44px,6vw,84px)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);margin:24px 0}
+@media (max-width:760px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.facts div{padding:16px 16px 14px 0}
+.facts strong{display:block;font-family:var(--display);font-weight:900;font-size:clamp(34px,4.4vw,54px);line-height:1;color:var(--accent-ink);letter-spacing:-.02em}
+.facts span{font-size:16px;color:var(--ink-2)}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);padding:0;margin:0}
+@media (max-width:760px){.tips{grid-template-columns:minmax(0,1fr)}}
+.tips li{list-style:none;padding:20px 20px 20px 0;border-right:1px solid var(--rule)}
+.tips li:last-child{border-right:0}
+.tips b{display:block;font-family:var(--display);font-size:26px;line-height:1.15;margin-bottom:6px}
+.tips span{font-size:17px;color:var(--ink-2)}
+/* read the map */
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.mapgrid{grid-template-columns:minmax(0,1fr)}}
+.arena{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;aspect-ratio:1.25/1;touch-action:manipulation}
+.arena canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:8px}
+.arena canvas:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.cells{list-style:none;padding:0;margin:0 0 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cells li{display:flex;align-items:center;gap:10px;font-size:17px;color:var(--night-muted);padding:6px 10px;border:1.5px solid var(--night-line);border-radius:8px}
+.cells li i{width:18px;height:18px;border-radius:50%;border:3px solid currentColor;flex:none}
+.cells li.on{color:#fff;border-color:#C9D3E3;font-weight:700}
+.cells li.on i{background:currentColor}
+.mapgrid .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.mapgrid .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.mapgrid .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.mapgrid .mtext b.ok{color:#3CC9B8}.mapgrid .mtext b.no{color:#F08CBE}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.gbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:transparent;color:#fff;border:2px solid #8FA3C2}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscore{font-size:16px;color:var(--night-muted);margin-top:12px}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}.bscen{font:600 clamp(19px,2.4vw,22px)/1.45 var(--body);color:#fff;max-width:40ch;min-height:5.8em;margin:0}
+.bopts{display:grid;grid-template-columns:repeat(var(--nb,3),minmax(0,1fr));gap:8px;width:100%;max-width:600px}
+@media (max-width:520px){.bopts{grid-template-columns:1fr}}
+.bopts[hidden]{display:none}
+.bopts button{min-height:52px;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer;padding:4px 8px}
+.bopts button small{display:block;font-size:13px;color:#C9D3E3;font-weight:600}
+.bopts button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.bopts button.ok{border-color:#7DD3A8;background:#173B33}.bopts button.no{border-color:#FFB38A;background:#3B2420}
+.bopts button:disabled{cursor:default}
+.bfb{font-size:18px;line-height:1.45;color:#E9EEF6;margin:0;min-height:3em;max-width:44ch}
+.bfb b.ok{color:#7DD3A8}.bfb b.no{color:#FFB38A}
+.cite{background:#0F2240;border:1px solid #3A4E72;border-radius:10px;padding:12px 14px;max-width:46ch;width:100%;margin:0;color:#E9EEF6;font-size:17px;line-height:1.5}
+.cite b{display:block;font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#FCB316;margin-bottom:4px}
+.cite[hidden]{display:none}
+.jb{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.jb[hidden]{display:none}
+.gfb{font:600 17px/1.45 var(--body);color:#E9EEF6;min-height:1.5em;margin:0;text-align:center;max-width:44ch}
+.gfb b.ok{color:#7DD3A8}.gfb b.no{color:#FFB38A}
+.rlist{margin:8px 0 14px;padding-left:20px;color:#E9EEF6;font-size:16px;line-height:1.5}
+.rlist .ok{color:#7DD3A8}.rlist .no{color:#FFB38A}
+.coll{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.card{display:flex;flex-direction:column}
+.card a{color:inherit;text-decoration:none;display:flex;flex-direction:column;height:100%}
+.card a::after{content:none}
+.card p{font-size:16px;line-height:1.4;color:var(--ink-2);margin:2px 0 8px}
+.card i{font-style:normal;font-size:15px;color:var(--ink-2);margin-bottom:8px}
+.card .st{margin-top:auto;font-size:15px;font-weight:700;color:var(--ink-2)}
+.card.live{border-color:var(--ink)}
+.card.live .st{color:var(--accent-ink)}.card.live .st::after{content:' →'}
+.card.live:hover{box-shadow:0 4px 14px rgba(19,41,75,.15)}
+.card.here p,.card.here i,.card.here .st{color:#C9D3E3}
+
+.collsub{grid-column:1/-1;font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin:14px 0 0}
+.collsub:first-child{margin-top:0}
+
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+<script src="../assets/nav.js" data-page="a11"></script>
+
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Generative AI · Topic 11</div>
+      <h1 id="title">Trust, but verify <em>Fluency is free; verification is the skill</em></h1>
+      <p class="dek">ChatGPT invented many of the citations it gave, and the fake ones looked real. Professional fact checkers show how to check: leave the page, and see what others say.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#kT">Check the reading list</a></span><span><a href="#bT">Lateral or vertical?</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the prefrontal cortex, at the front, and the occipital lobe, at the back, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Trust, but verify</b> · The Learning Brain, Generative AI, episode 11</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Researchers asked two versions of ChatGPT to write 84 short literature reviews, then checked all 636 citations against library databases. With the older model, GPT-3.5, 55% of the citations did not exist. With GPT-4, 18% did not. William Walters and Esther Isabelle Wilder reported this in 2023.</p>
+    <p>The fabricated citations looked real, with plausible titles, often in real journals. Even among real citations, many had substantive errors, such as wrong volumes or pages: 43% for the older model, and 24% for the newer one.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>636</strong><span>citations in 84 AI-written literature reviews, all checked</span></div>
+      <div role="listitem"><strong>55% → 18%</strong><span>fabricated, from GPT-3.5 to GPT-4</span></div>
+      <div role="listitem"><strong>43% → 24%</strong><span>of real citations with substantive errors</span></div>
+      <div role="listitem"><strong>10 of 10</strong><span>fact checkers found the more reliable website, against half of the historians</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Better, not solved</span>Verification is a core skill</h2>
+    <p>Newer models do better, and tools that search before answering reduce fabrication. But they do not eliminate it. So verification is a core skill.</p>
+  </div>
+
+  <section class="night" aria-labelledby="kT">
+    <div class="col">
+      <h2 class="sec" id="kT"><span class="n">Try it</span>Check the reading list</h2>
+      <p>A simulated assistant has given a reading list on retrieval practice. The list was written for this page: some entries are real, and some are not. For each, accept it or check it in a simulated library search. About 2 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="kScreen">
+          <p class="cite" id="kC" aria-live="polite">Press Start.</p>
+          <div class="jb" id="kB" hidden><button class="nbtn" type="button" data-v="a">Looks fine</button><button class="nbtn ghost" type="button" data-v="c">Check it</button></div>
+          <p class="gfb" id="kFb" aria-live="polite"></p>
+          <div class="mrow" style="justify-content:center"><button class="nbtn ghost" id="kNext" type="button" hidden>Next source</button></div>
+          <p class="prog" id="kProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="kPhase">Ready</p>
+          <p class="mtitle" id="kTitle">Six sources</p>
+          <p class="mtext" id="kText" aria-live="polite">Each one looks like a proper reference. You decide which to check.</p>
+          <div id="kRes"></div>
+          <div class="mrow"><button class="nbtn" id="kGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Lateral reading</span>How fact checkers check</h2>
+    <p>In a study of how people judge websites, Sam Wineburg and Sarah McGrew compared 10 professional fact checkers, 10 PhD historians and 25 Stanford students. Asked to find the more reliable of two websites, every fact checker succeeded, against half of the historians and a fifth of the students.</p>
+    <p>The fact checkers’ method was lateral reading: leaving the page after a quick look, and opening new tabs to see what other sources say about it. The historians and students read vertically, staying on the page and judging it by how it looked: its logo, its domain name, its About page.</p>
+  </div>
+
+  <section class="night" aria-labelledby="bT">
+    <div class="col">
+      <h2 class="sec" id="bT"><span class="n">Try it</span>Lateral or vertical?</h2>
+      <p>Eight ways to judge a source. For each, decide: is it lateral reading (leaving the page to see what others say) or vertical reading (judging the page from the inside)? You’ll get feedback after each one.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="bScreen">
+          <p class="bscen" id="bScen" aria-live="polite">Press Start.</p>
+          <div class="bopts" id="bOpts" hidden role="group" aria-label="Lateral or vertical?" style="--nb:2"><button type="button" data-k="L">Lateral<small>leave the page</small></button><button type="button" data-k="V">Vertical<small>stay on the page</small></button></div>
+          <p class="prog" id="bProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="bPhase">Ready</p>
+          <p class="mtitle" id="bTitle">Lateral or vertical?</p>
+          <p class="bfb" id="bFb" aria-live="polite">The question is always: did you leave the page?</p>
+          <div id="bRes"></div>
+          <div class="mrow"><button class="nbtn" id="bGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">A caution</span>Older models, a small study</h2>
+    <p>The citation study used models from 2023, and the lateral reading study was small. But the principle holds: fluent output is not evidence.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Make verification the assignment</h3>
+      <p>Require students to verify every AI-supplied source, and show how they did it. Teach lateral reading explicitly: leave the page, and check who is behind a claim. And set an assignment where AI output contains planted errors to find.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Fluency is free. Verification is the skill.</h2>
+    <ol class="tips">
+      <li><b>Verify every AI source</b><span>And show how.</span></li>
+      <li><b>Teach lateral reading</b><span>Leave the page; check who is behind a claim.</span></li>
+      <li><b>Plant errors to find</b><span>In AI output students must check.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1038/s41598-023-41032-5">Walters, W. H., &amp; Wilder, E. I. (2023). Fabrication and errors in the bibliographic citations generated by ChatGPT. <i>Scientific Reports, 13</i>, 14045.</a></li>
+        <li><a href="https://doi.org/10.1177/016146811912101102">Wineburg, S., &amp; McGrew, S. (2019). Lateral reading and the nature of expertise: Reading less and learning more when evaluating digital information. <i>Teachers College Record, 121</i>(11).</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = "1\n00:00:00,500 --> 00:00:04,229\nThe Learning Brain. Series 3: Generative AI\n\n2\n00:00:06,100 --> 00:00:07,416\nEpisode 11\n\n3\n00:00:07,496 --> 00:00:09,626\nTrust, but verify\n\n4\n00:00:12,426 --> 00:00:18,924\nResearchers asked two versions of ChatGPT to write eighty four short literature reviews,\n\n5\n00:00:19,288 --> 00:00:24,852\nthen checked all six hundred and thirty six citations against library databases.\n\n6\n00:00:25,022 --> 00:00:26,275\nWith the older model,\n\n7\n00:00:26,356 --> 00:00:29,592\nfifty five percent of the citations did not exist.\n\n8\n00:00:30,004 --> 00:00:32,626\nWith GPT four, eighteen percent.\n\n9\n00:00:33,175 --> 00:00:35,283\nThe fabricated ones looked real,\n\n10\n00:00:35,310 --> 00:00:38,718\nwith plausible titles, often in real journals.\n\n11\n00:00:38,888 --> 00:00:41,041\nEven among real citations,\n\n12\n00:00:41,282 --> 00:00:43,278\nmany had substantive errors,\n\n13\n00:00:43,448 --> 00:00:48,492\nlike wrong volumes or pages: forty three percent for the older model,\n\n14\n00:00:48,686 --> 00:00:51,008\nand twenty four percent for the newer one.\n\n15\n00:00:51,178 --> 00:00:52,806\nNewer models do better,\n\n16\n00:00:52,982 --> 00:00:56,604\nand tools that search before answering reduce fabrication.\n\n17\n00:00:57,017 --> 00:00:58,628\nBut they do not eliminate it.\n\n18\n00:00:58,798 --> 00:01:00,937\nSo verification is a core skill.\n\n19\n00:01:01,421 --> 00:01:03,770\nIn a study of online evaluation,\n\n20\n00:01:03,998 --> 00:01:09,283\nprofessional fact checkers beat both Stanford students and PhD historians.\n\n21\n00:01:09,682 --> 00:01:11,569\nTheir method was lateral reading: leaving the page,\n\n22\n00:01:11,899 --> 00:01:15,384\nto see what other sources say about it.\n\n23\n00:01:15,554 --> 00:01:18,511\nAsked to find the more reliable of two websites,\n\n24\n00:01:18,826 --> 00:01:20,637\nevery fact checker succeeded,\n\n25\n00:01:20,976 --> 00:01:24,328\nagainst half of the historians and a fifth of the students.\n\n26\n00:01:24,498 --> 00:01:25,304\nA caution.\n\n27\n00:01:25,710 --> 00:01:29,234\nThe citation study used models from twenty twenty three,\n\n28\n00:01:29,388 --> 00:01:31,703\nand the lateral reading study was small.\n\n29\n00:01:32,062 --> 00:01:35,995\nBut the principle holds: fluent output is not evidence.\n\n30\n00:01:36,165 --> 00:01:36,948\nFor teaching.\n\n31\n00:01:37,380 --> 00:01:40,536\nRequire students to verify every AI supplied source,\n\n32\n00:01:40,556 --> 00:01:42,293\nand show how they did it.\n\n33\n00:01:42,887 --> 00:01:45,104\nTeach lateral reading explicitly: leave the page,\n\n34\n00:01:45,385 --> 00:01:48,602\nand check who is behind a claim.\n\n35\n00:01:48,988 --> 00:01:53,544\nAnd set an assignment where AI output contains planted errors to find.\n\n36\n00:01:53,714 --> 00:01:55,061\nFluency is free.\n\n37\n00:01:55,250 --> 00:01:57,115\nVerification is the skill.\n\n"
+;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+// ===== Labelled "glass brain": lateral view facing left, local box 1000 x 680
+function crPath(pts,closed){const p=new Path2D();const n=pts.length;const P=i=>closed?pts[(i+n)%n]:pts[Math.max(0,Math.min(n-1,i))];
+ p.moveTo(pts[0][0],pts[0][1]);const last=closed?n:n-1;
+ for(let i=0;i<last;i++){const p0=P(i-1),p1=P(i),p2=P(i+1),p3=P(i+2);p.bezierCurveTo(p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6,p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6,p2[0],p2[1])}
+ if(closed)p.closePath();return p}
+function polyPath(pts){const p=new Path2D();p.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(q=>p.lineTo(q[0],q[1]));p.closePath();return p}
+const BR=(()=>{
+ const OUT=[[90,330],[98,245],[150,165],[250,102],[375,64],[500,50],[625,56],[735,88],[805,128],[872,188],[920,268],[936,350],[908,418],[852,452],[762,470],[640,484],[500,482],[385,472],[305,452],[272,416],[225,424],[165,428],[112,398]];
+ const CS=[[500,50],[482,128],[458,212],[440,300],[436,338]];
+ const SF=[[272,416],[360,372],[440,338],[520,312],[600,298],[662,306]];
+ const PO=[[805,128],[788,228],[772,330],[766,470]];
+ const TP=[[662,306],[715,316],[772,330]];
+ const fro=[[272,416],[225,424],[165,428],[112,398],[90,330],[98,245],[150,165],[250,102],[375,64],[500,50],...CS.slice(1),[360,372]];
+ const par=[[500,50],[625,56],[735,88],[805,128],...PO.slice(1,3),...TP.slice().reverse().slice(1),...SF.slice(2,5).reverse(),...CS.slice(1).reverse()];
+ const occ=[[805,128],[872,188],[920,268],[936,350],[908,418],[852,452],[766,470],[772,330],[788,228]];
+ const tem=[[272,416],...SF.slice(1),...TP.slice(1),[766,470],[640,484],[500,482],[385,472],[305,452]];
+ const pfc=[[272,416],[225,424],[165,428],[112,398],[90,330],[98,245],[150,165],[250,102],[330,76],[300,190],[290,300],[300,400]];
+ const cer=[[760,440],[830,420],[900,418],[946,450],[956,505],[922,556],[850,580],[786,570],[748,536],[744,480]];
+ const stem=[[650,430],[730,440],[744,520],[736,630],[700,632],[686,540]];
+ const hip=[[505,398],[545,384],[590,372],[640,364],[690,360],[718,352],[728,334],[716,322]];
+ const amy=[[452,392],[478,378],[502,386],[504,408],[482,420],[458,414]];
+ const ent=[[500,428],[560,414],[620,410],[640,428],[600,446],[530,450]];
+ const caud=[[330,250],[372,212],[430,196],[500,198],[560,214],[600,244],[612,282],[600,318],[580,340]];
+ const put=[[380,268],[430,252],[478,262],[490,300],[458,330],[404,326],[376,300]];
+ const tha=[[520,262],[566,250],[606,268],[608,300],[570,316],[526,304]];
+ const vta=[[664,404],[694,398],[706,418],[684,432],[662,424]];
+ const ffa=[[590,452],[650,446],[712,448],[722,462],[652,470],[592,468]];
+ const ips=[[560,128],[620,150],[690,184],[748,226]];
+ const v1=[[880,250],[922,282],[936,350],[912,410],[870,420],[858,340]];
+ const GYRI=[[[160,200],[220,170],[260,210],[300,170]],[[130,300],[190,280],[230,320],[280,300]],[[300,130],[340,160],[380,120],[420,150]],[[340,240],[380,270],[400,230]],
+  [[560,90],[600,120],[650,100],[700,130]],[[540,230],[590,250],[640,230],[690,270]],[[400,420],[460,400],[520,430],[580,410],[650,420],[720,400]],[[820,220],[860,260],[880,320]],[[820,380],[860,400],[890,380]]];
+ const P={OUT:crPath(OUT,true),fro:polyPath(fro),par:polyPath(par),occ:polyPath(occ),tem:polyPath(tem),pfc:polyPath(pfc),cer:crPath(cer,true),stem:crPath(stem,true),
+  hip:crPath(hip,false),amy:crPath(amy,true),ent:crPath(ent,true),caud:crPath(caud,false),put:crPath(put,true),tha:crPath(tha,true),vta:crPath(vta,true),ffa:crPath(ffa,true),ips:crPath(ips,false),v1:crPath(v1,true),
+  CS:crPath(CS,false),SF:crPath(SF,false),PO:crPath(PO,false),GY:GYRI.map(g=>crPath(g,false))};
+ // region specs: path keys, label anchor (local), label position (local), kind (fill|line|deep)
+ const R={
+  fro:{name:'frontal lobe',k:['fro'],pt:[250,170],lab:[150,-40],al:'right'},
+  pfc:{name:'prefrontal cortex',k:['pfc'],pt:[175,300],lab:[-30,260],al:'right'},
+  par:{name:'parietal lobe',k:['par'],pt:[650,140],lab:[720,-40],al:'left'},
+  tem:{name:'temporal lobe',k:['tem'],pt:[420,440],lab:[260,560],al:'right'},
+  occ:{name:'occipital lobe',k:['occ'],pt:[870,300],lab:[1040,250],al:'left'},
+  cer:{name:'cerebellum',k:['cer'],pt:[870,520],lab:[1040,560],al:'left'},
+  stem:{name:'brainstem',k:['stem'],pt:[716,590],lab:[640,680],al:'right'},
+  hip:{name:'hippocampus',k:['hip'],pt:[640,366],lab:[600,660],al:'left',deep:1,line:1},
+  amy:{name:'amygdala',k:['amy'],pt:[478,400],lab:[300,610],al:'right',deep:1},
+  ent:{name:'entorhinal cortex',k:['ent'],pt:[580,432],lab:[480,680],al:'right',deep:1},
+  str:{name:'striatum',k:['caud','put'],pt:[440,290],lab:[330,-40],al:'right',deep:1},
+  tha:{name:'thalamus',k:['tha'],pt:[566,284],lab:[560,-40],al:'left',deep:1},
+  vta:{name:'midbrain dopamine area',k:['vta'],pt:[684,414],lab:[1040,660],al:'left',deep:1},
+  ffa:{name:'fusiform face area',k:['ffa'],pt:[680,458],lab:[1040,470],al:'left',deep:1},
+  ips:{name:'intraparietal sulcus',k:['ips'],pt:[690,184],lab:[1040,120],al:'left',line:1},
+  v1:{name:'visual cortex',k:['v1'],pt:[905,330],lab:[1040,360],al:'left'}};
+ const GYR=[];{let sd=7;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};for(let i=0;i<46;i++){const x0=80+rnd()*860,y0=60+rnd()*420,ang=rnd()*Math.PI,len=50+rnd()*90;const pts=[];for(let k=0;k<6;k++){const u=k/5-0.5;pts.push([x0+Math.cos(ang)*len*u+Math.sin(ang)*Math.sin(k*2.1+i)*14,y0+Math.sin(ang)*len*u-Math.cos(ang)*Math.sin(k*2.1+i)*14])}GYR.push(crPath(pts,false))}}
+ return{P,R,GYR}})();
+// draw the brain. o: {cx,cy,s,t,active:[keys],labels:[keys],alpha,draw(0..1),glow(0..1),dim,labelAlpha}
+function brainDraw(o){const{cx=960,cy=560,s=0.9,sy=1.16,t=0,active=[],labels=[],alpha=1,draw=1,glow=1,deep=0.55,labelT={},la=1,labSize=32,lobeTint=1,gmap={}}=o;const GL=k=>glow*(gmap[k]??1);if(alpha<=0)return;
+ const{P,R}=BR;const L=([x,y])=>[cx+(x-500)*s,cy+(y-300)*s*sy];
+ ctx.save();ctx.translate(cx,cy);ctx.scale(s,s*sy);ctx.translate(-500,-300);
+ ctx.lineJoin='round';ctx.lineCap='round';
+ // cerebellum + stem first, so the cortex overlaps them
+ [['stem','#18304F'],['cer','#1A3459']].forEach(([k,c])=>{ga(alpha*sat(draw*1.5-0.3));ctx.fillStyle=c;ctx.fill(P[k])});
+ active.forEach(k=>{if(k==='cer'||k==='stem'){ga(alpha*0.9*GL(k));ctx.fillStyle='rgba(255,95,5,0.5)';ctx.fill(P[k])}});
+ ctx.save();ctx.clip(P.cer);ctx.strokeStyle='rgba(200,215,235,0.18)';ctx.lineWidth=2;ga(alpha*sat(draw*1.6-0.5));for(let k=0;k<7;k++){ctx.beginPath();ctx.ellipse(852,500,120-k*15,70-k*8,-0.12,Math.PI*0.02,Math.PI*0.98);ctx.stroke()}ctx.restore();
+ ctx.strokeStyle='#E9EEF6';ctx.lineWidth=4;ga(alpha);if(draw<1){ctx.setLineDash([900*draw,900])}ctx.stroke(P.cer);ctx.stroke(P.stem);ctx.setLineDash([]);
+ // cortex base fill (hides what lies under it)
+ ga(alpha*sat(draw*2));ctx.fillStyle='#16305A';ctx.fill(P.OUT);
+ // lobe tints
+ const tints={fro:'#1E3B66',par:'#1B3760',tem:'#1A3459',occ:'#1D3964'};
+ ctx.save();ctx.clip(P.OUT);for(const k in tints){ga(alpha*0.9*lobeTint*sat(draw*1.5-0.3));ctx.fillStyle=tints[k];ctx.fill(P[k])}
+ // gyri texture
+ ctx.strokeStyle='rgba(200,215,235,0.11)';ctx.lineWidth=2.4;ctx.lineCap='round';ga(alpha*sat(draw*1.6-0.5));BR.GYR.forEach(g=>ctx.stroke(g));
+ // active glows inside clip (cortical)
+ active.forEach((k,i)=>{const r=R[k];if(!r||r.deep||r.line||k==='cer'||k==='stem')return;const g=GL(k)*(0.85+0.15*Math.sin(t*2.4+i));const gr=ctx.createRadialGradient(r.pt[0],r.pt[1],0,r.pt[0],r.pt[1],260);gr.addColorStop(0,'rgba(255,110,30,0.85)');gr.addColorStop(1,'rgba(255,95,5,0.32)');ga(alpha*g);ctx.fillStyle=gr;r.k.forEach(q=>ctx.fill(P[q]));ctx.strokeStyle='rgba(255,140,70,0.9)';ctx.lineWidth=3;r.k.forEach(q=>ctx.stroke(P[q]))});
+ ctx.restore();
+ // sulci
+ ctx.strokeStyle='rgba(233,238,246,0.55)';ctx.lineWidth=3;ga(alpha*sat(draw*1.6-0.6));[P.CS,P.SF,P.PO].forEach(q=>ctx.stroke(q));
+ // outline (draw-on)
+ ctx.strokeStyle='#E9EEF6';ctx.lineWidth=4;ga(alpha);if(draw<1){ctx.setLineDash([2600*draw,2600])}ctx.stroke(P.OUT);ctx.setLineDash([]);
+ // deep structures (glass view)
+ const dk=['hip','amy','ent','str','tha','vta','ffa'];
+ dk.forEach(k=>{const r=R[k],on=active.includes(k);const a=alpha*(on?1:deep)*sat(draw*1.5-0.5);if(a<=0)return;
+  r.k.forEach(q=>{if(on){ctx.save();ga(a*GL(k));ctx.shadowColor=ORANGE;ctx.shadowBlur=24;ctx.fillStyle='rgba(255,95,5,0.75)';ctx.strokeStyle=ORANGE;ctx.lineWidth=(q==='caud'||q==='hip')?16:4;
+    if(q==='caud'||q==='hip'){ctx.stroke(P[q])}else{ctx.fill(P[q]);ctx.stroke(P[q])}ctx.restore()}
+   else{ga(a*0.8);ctx.setLineDash([7,7]);ctx.strokeStyle='rgba(201,211,227,0.7)';ctx.lineWidth=(q==='caud'||q==='hip')?5:2.5;ctx.stroke(P[q]);ctx.setLineDash([])}})});
+ // IPS line
+ {const on=active.includes('ips');ga(alpha*(on?Math.max(0.6,GL('ips')):0.6)*sat(draw*1.6-0.6));ctx.strokeStyle=on?ORANGE:'rgba(233,238,246,0.5)';ctx.lineWidth=on?7:3;if(on){ctx.shadowColor=ORANGE;ctx.shadowBlur=18}ctx.stroke(P.ips);ctx.shadowBlur=0}
+ // v1 glow
+ if(active.includes('v1')){ctx.save();ctx.clip(P.OUT);ga(alpha*GL('v1')*0.9);ctx.fillStyle='rgba(255,95,5,0.6)';ctx.fill(P.v1);ctx.restore()}
+ ctx.restore();
+ // labels
+ labels.forEach((k,i)=>{const r=R[k];if(!r)return;const t0=labelT[k]??0,p=sat((t-t0)/0.45);if(p<=0)return;const on=active.includes(k);
+  const a=L(r.pt),b=L(r.lab);const ex=r.al==='right'?b[0]+12:r.al==='left'?b[0]-12:b[0];
+  ctx.save();ga(alpha*la);ctx.strokeStyle=on?ORANGE:'rgba(201,211,227,0.85)';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(lerp(a[0],ex,ez(p)),lerp(a[1],b[1],ez(p)));ctx.stroke();
+  ctx.fillStyle=on?ORANGE:'#E9EEF6';ctx.beginPath();ctx.arc(a[0],a[1],on?7:5,0,7);ctx.fill();ctx.restore();
+  const q=sat((t-t0-0.25)/0.35);if(q>0){ctx.save();ga(alpha*la*q);ctx.font=`${on?700:600} ${labSize}px ${BODY}`;ctx.textAlign=r.al==='right'?'right':r.al==='left'?'left':'center';ctx.textBaseline='middle';ctx.fillStyle=on?ORANGE:'#E9EEF6';ctx.fillText(r.name,b[0],b[1]);ctx.restore()}})}
+
+</script>
+<script>
+/* renderColl() is defined by assets/nav.js */
+
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.occ.lab=[900,760];BR.R.occ.al='right';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['pfc','occ'],labels:['pfc','occ'],labelT:{pfc:0.8,occ:1.0},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- check the reading list ----------
+   6 entries: 3 correct, 2 fabricated (invented authors), 1 real paper with wrong details. Accept or check.
+   Checking shows a simulated library search result. Results at the end list everything. */
+const KC=[
+ ['Roediger, H. L., &amp; Karpicke, J. D. (2006). Test-enhanced learning: Taking memory tests improves long-term retention. <i>Psychological Science, 17</i>(3), 249–255.','ok','Found. The details match.','Roediger and Karpicke (2006)'],
+ ['Karpicke, J. D., &amp; Blunt, J. R. (2011). Retrieval practice produces more learning than elaborative studying with concept mapping. <i>Science, 331</i>(6018), 772–775.','ok','Found. The details match.','Karpicke and Blunt (2011)'],
+ ['Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J., &amp; Willingham, D. T. (2013). Improving students’ learning with effective learning techniques. <i>Psychological Science in the Public Interest, 14</i>(1), 4–58.','ok','Found. The details match.','Dunlosky and colleagues (2013)'],
+ ['Halvorsen, M., &amp; Price, T. (2019). Retrieval practice and long-term retention in undergraduate chemistry. <i>Journal of Educational Psychology, 111</i>(4), 612–627.','fab','No such article. The journal is real, but this paper and its authors do not exist.','Halvorsen and Price (2019)'],
+ ['Rowland, C. A. (2016). The effect of testing versus restudy on retention: A meta-analytic review of the testing effect. <i>Psychological Bulletin, 142</i>(6), 1432–1463.','err','Found, with errors. The paper is real, but it was published in 2014, in volume 140.','Rowland (listed as 2016)'],
+ ['Okafor, L., &amp; Brandt, S. (2021). Spaced retrieval quizzes in online courses: A randomized trial. <i>Computers &amp; Education</i>.','fab','No such article. The journal is real, but this paper and its authors do not exist.','Okafor and Brandt (2021)']];
+let kr=null;
+function kChoose(){return new Promise(res=>{kr.res=res;const b=$('kB');b.hidden=false;b.querySelector('button').focus()})}
+$('kB').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!kr||!kr.res)return;const r=kr.res;kr.res=null;$('kB').hidden=true;r(b.dataset.v)});
+function kNext(){return new Promise(res=>{const b=$('kNext');b.hidden=false;b.focus();b.onclick=()=>{b.onclick=null;b.hidden=true;res()}})}
+$('kGo').addEventListener('click',async()=>{if(kr)return;kr={};const g=$('kGo');g.disabled=true;g.textContent='In progress';$('kRes').innerHTML='';
+ const order=shuf([...KC]);const log=[];$('kPhase').textContent='Check the list';$('kTitle').textContent='Accept or check?';$('kText').textContent='Checking takes a moment. Accepting is instant.';
+ for(let i=0;i<6;i++){const [c,s,res,sh]=order[i];$('kProg').textContent=`Source ${i+1} of 6`;$('kC').innerHTML=`<b>Assistant’s source</b>${c}`;$('kFb').textContent='';
+  const v=await kChoose();if(!kr)return;log.push({c,s,res,sh,checked:v==='c'});
+  $('kFb').innerHTML=v==='a'?'Accepted.':`<b class="${s==='ok'?'ok':'no'}">Library search:</b> ${res}`;
+  if(i<5){await kNext();if(!kr)return}}
+ $('kC').textContent='Done.';$('kFb').textContent='';$('kProg').textContent='';$('kPhase').textContent='Your results';
+ const chk=log.filter(x=>x.checked).length,fabIn=log.filter(x=>x.s==='fab'&&!x.checked).length,errIn=log.filter(x=>x.s==='err'&&!x.checked).length,caught=log.filter(x=>x.s!=='ok'&&x.checked).length;
+ $('kRes').innerHTML=`<div class="res wl2"><p class="gh">Out of 6</p>${barRow('Checked',chk,6,chk+' of 6','#FCB316')}${barRow('Problems caught',caught,3,caught+' of 3','#7DD3A8')}</div><p class="gh">The whole list</p><ul class="rlist">${log.map(x=>`<li>${x.s==='ok'?'<b class="ok">Real</b>':x.s==='fab'?'<b class="no">Fabricated</b>':'<b class="no">Real, wrong details</b>'}${x.checked?' (checked)':' (accepted)'}: ${x.sh}.${x.s==='ok'?'':' '+x.res}</li>`).join('')}</ul>`;
+ let title,text;
+ if(fabIn+errIn===0&&chk===6){title='Every source checked';text='You checked all six and caught all three problems. Two sources didn’t exist and one had the wrong year and volume, yet all six looked equally real. Checking every AI-supplied source is the habit to teach.'}
+ else if(fabIn+errIn===0){title='Nothing got through, this time';text=`You checked ${chk} and caught all three problems. The ones you accepted happened to be real, but they looked no different from the fakes. With AI-supplied sources, check every one.`}
+ else if(fabIn>0){title=fabIn===2?'Two fabricated sources got through':'A fabricated source got through';text=`You accepted ${fabIn===2?'both fabricated sources':'a source that does not exist'}`+(errIn?', and one with the wrong year and volume':'')+(fabIn===2?'. They had plausible titles, plausible authors and real journals.':'. It had a plausible title, plausible authors and a real journal.')+` In the study, even GPT-4 invented 18% of its citations.`}
+ else{title='An error slipped through';text='You caught both fabricated sources, but accepted a real paper with the wrong year and volume. In the study, about a quarter of GPT-4’s real citations had errors like this. A citation can be real and still wrong.'}
+ $('kTitle').textContent=title;$('kText').textContent=text;g.textContent='Try again';g.disabled=false;g.focus();kr=null});
+
+/* ---------- classifier ---------- */
+const NM={L:'Lateral',V:'Vertical'};
+const CASES=[
+ ['Reading the website’s About page to see who runs it','V','Vertical: the About page is the site describing itself.'],
+ ['Searching the organization’s name to see what news outlets and others say about it','L','Lateral: leaving the page to see what others say.'],
+ ['Judging a site as trustworthy because it ends in .org','V','Vertical: anyone can register a .org domain.'],
+ ['Opening a new tab to look up the author of an article','L','Lateral: checking who is behind a claim, from outside.'],
+ ['Checking whether a citation exists in a library database','L','Lateral: confirming the source somewhere other than where you found it.'],
+ ['Deciding a page is reliable because it looks professional and has many references','V','Vertical: looks and references can be borrowed or faked.'],
+ ['Reading the Wikipedia entry on an unfamiliar organization before reading its site','L','Lateral: a quick outside view, as the fact checkers did.'],
+ ['Asking the same AI whether its own answer is correct','V','Vertical: it stays inside the same source. Check somewhere else.']];
+let br=null;
+function bAnswer(){return new Promise(res=>{br.res=res;const o=$('bOpts');o.hidden=false;o.querySelectorAll('button').forEach(b=>{b.disabled=false;b.classList.remove('ok','no')});o.querySelector('button').focus()})}
+$('bOpts').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!br||!br.res)return;const r=br.res;br.res=null;r(b.dataset.k)});
+function bWait(label){return new Promise(res=>{const g=$('bGo');g.textContent=label;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.disabled=true;g.textContent='In progress';res()}})}
+$('bGo').addEventListener('click',async()=>{if(br||$('bGo').onclick)return;br={};const g=$('bGo');g.disabled=true;g.textContent='In progress';$('bRes').innerHTML='';
+ const order=shuf([...CASES]);const n=order.length;let right=0;const tot={},got={},miss={};Object.keys(NM).forEach(k=>{tot[k]=0;got[k]=0;miss[k]=0});
+ $('bTitle').textContent='Lateral or vertical?';
+ for(let i=0;i<n;i++){const [txt,k,ex]=order[i];tot[k]++;$('bPhase').textContent=`Case ${i+1} of ${n}`;$('bScen').textContent=txt;$('bProg').textContent='';$('bFb').textContent='';
+  const a=await bAnswer();if(!br)return;const ok=a===k;if(ok){right++;got[k]++}else miss[k]++;
+  $('bOpts').querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.k===k)b.classList.add('ok');else if(b.dataset.k===a)b.classList.add('no')});
+  $('bFb').innerHTML=(ok?'<b class="ok">Right.</b> ':`<b class="no">Not quite.</b> You chose “${NM[a]}”. `)+ex;$('bProg').textContent=`${right} of ${i+1} right so far.`;
+  if(i<n-1){await bWait('Next case');if(!br)return}}
+ $('bOpts').hidden=true;$('bScen').textContent='Done.';$('bProg').textContent='';$('bPhase').textContent='Your results';
+ $('bRes').innerHTML=`<div class="res wl2">${Object.keys(NM).map(k=>barRow(NM[k],got[k],tot[k],got[k]+' of '+tot[k],'#FCB316')).join('')}</div>`;
+ const weak=Object.keys(miss).filter(k=>miss[k]>0).map(k=>'“'+NM[k]+'”');const wj=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];const missed=weak.length===Object.keys(NM).length?(weak.length===2?'cases in both groups':'cases in every group'):'some '+wj(weak)+' cases';let title,text;
+
+ if(right>=7){title='You read like a fact checker';text=`${right} of 8 right. The question is always: did you leave the page? Fact checkers read less, and learned more.`}
+ else if(right>=5){title='Mostly there';text=`${right} of 8 right. You missed ${missed}. Anything the source says about itself, including how it looks, is vertical. Lateral means checking from outside.`}
+ else{title='Worth another look';text=`${right} of 8 right. Lateral reading means leaving the page: searching the name, the author or the citation elsewhere. Everything judged from inside the page is vertical.`}
+ $('bTitle').textContent=title;$('bFb').textContent=text;g.onclick=null;g.textContent='Try again';g.disabled=false;g.focus();br=null});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'With GPT-3.5, what share of the citations in the AI-written reviews did not exist?',o:['55%','5%','95%'],a:0,f:'With GPT-4, 18%.'},
+ {q:'What did the fabricated citations look like?',o:['Real: plausible titles, often in real journals','Obviously fake','Blank'],a:0,f:'So they have to be checked, not eyeballed.'},
+ {q:'Lateral reading means…',o:['Leaving the page to see what other sources say about it','Reading the page more carefully','Checking the About page'],a:0,f:'Every fact checker found the more reliable site.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','a11');
+})();
+</script>
+</body>
+</html>

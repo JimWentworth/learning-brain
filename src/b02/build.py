@@ -1,0 +1,7 @@
+t=open('b02/template.html').read()
+nav=open('nav/nav.html').read().replace('__CURRENT__','b02')
+t=t.replace('__BASECSS__',open('b02/style_base.css').read().replace('__CSS__',open('hippo/shared.css').read()))
+t=t.replace('__POPCSS__',open('nav/pop.css').read()).replace('__POPJS__',open('nav/pop.js').read())
+t=t.replace('__COLLCSS__',open('nav/coll.css').read()).replace('__COLLJS__',open('nav/coll.js').read())
+t=t.replace('__SRT__',open('b02/srt.json').read()).replace('__BRAIN__',open('shared/brain.js').read()).replace('__NAV__',nav)
+open('b02/index.html','w').write(t)

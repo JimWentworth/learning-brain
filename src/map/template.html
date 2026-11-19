@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Map of the Learning Brain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout idea: a magazine spread. Light reading pages, dark "night" spreads for the brain and the video.
+     Contrast (WCAG AA): ink 13.4:1 and ink-2 8.0:1 on paper; accent-ink 5.1:1 on paper; on night, text 11.3:1, muted 8.6:1, orange 5.6:1. */
+  --paper:#F4F6F9; --ink:#13294B; --ink-2:#3D4C66; --rule:#C9D2DF;
+  --accent-ink:#B84300;   /* orange for text/marks on light backgrounds */
+  --orange:#FF5F05;       /* bright orange only on dark backgrounds */
+  --night:#0D1C35; --night-2:#0A172C; --night-ink:#E9EEF6; --night-muted:#AEB9CC; --night-line:#2A426B;
+  --ok:#1C7A55; --no:#B42A4A;
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --body:'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.6}
+a{color:var(--ink);text-decoration-color:var(--accent-ink);text-underline-offset:3px}
+.night a,.hero a{color:var(--night-ink);text-decoration-color:var(--orange)}
+:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px;border-radius:4px}
+.night :focus-visible{outline-color:var(--orange)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.label{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+.night .label,.hero .label,.watch .label{color:var(--orange)}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:var(--ink);padding:8px 14px;z-index:10}
+.skip:focus{left:8px}
+
+/* Hero */
+.hero{position:relative;background:var(--night);color:var(--night-ink);overflow:hidden}
+.hero-inner{position:relative;max-width:1180px;margin:0 auto;padding:56px 24px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:end}
+@media (max-width:900px){.hero-inner{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(44px,8.4vw,118px);overflow-wrap:break-word;line-height:.9;font-weight:900;letter-spacing:-.035em;margin:16px 0 22px}
+.hero h1 em{display:block;font-weight:300;font-style:italic;color:var(--orange)}
+.dek{font-family:var(--display);font-weight:300;font-size:clamp(21px,2.3vw,27px);line-height:1.35;max-width:28ch;margin:0;color:var(--night-ink)}
+.byline{margin-top:24px;font-size:16px;color:var(--night-muted);display:flex;gap:18px;flex-wrap:wrap}
+.byline b{color:var(--night-ink);font-weight:600}
+.hero-brain{position:relative;aspect-ratio:1.35/1}
+.hero-brain canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Watch */
+.watch{background:var(--night);color:var(--night-ink);padding:8px 0 64px}
+.frame{border-radius:6px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 1px var(--night-line);background:#000}
+.frame video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.watch .meta{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:16px;color:var(--night-muted)}
+.watch .meta b{color:var(--night-ink);font-family:var(--display);font-weight:600;font-size:21px}
+details.transcript{margin-top:14px;border-top:1px solid var(--night-line);padding-top:12px}
+details.transcript summary{cursor:pointer;font-weight:600;color:var(--night-ink)}
+details.transcript p{color:#C9D3E3;max-width:70ch}
+
+/* Article */
+.col{max-width:700px;margin:0 auto;padding:0 24px}
+.wide{max-width:1140px;margin:0 auto;padding:0 24px}
+article p{margin:0 0 1.15em}
+.lede{padding-top:64px}
+.lede p:first-child::first-letter{font-family:var(--display);font-weight:900;float:left;font-size:92px;line-height:.82;padding:8px 12px 0 0;color:var(--accent-ink)}
+h2.sec{font-size:clamp(34px,4.6vw,52px);font-weight:800;letter-spacing:-.02em;line-height:1.04;margin:84px 0 20px}
+h2.sec .n{display:block;font-family:var(--body);font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:12px}
+.night h2.sec{color:#fff}.night h2.sec .n{color:var(--orange)}
+.pull{font-family:var(--display);font-weight:800;font-size:clamp(38px,6vw,78px);line-height:1;letter-spacing:-.03em;margin:84px auto;max-width:1120px;padding:0 24px;color:var(--ink)}
+.pull em{font-style:italic;font-weight:300;color:var(--accent-ink)}
+.note{font-size:16px;color:var(--ink-2);border-left:3px solid var(--accent-ink);padding-left:12px;margin:0 0 1.2em}
+.night .note{color:var(--night-muted);border-color:var(--orange)}
+figure{margin:40px auto 56px}
+figcaption{font-size:16px;color:var(--ink-2);line-height:1.5;margin-top:12px;max-width:70ch}
+.night figcaption{color:var(--night-muted)}
+
+/* Night spread + explorer */
+.night{background:var(--night);color:var(--night-ink);padding:76px 0 68px;margin:84px 0}
+.night p{color:#C9D3E3}
+.explorer{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:28px;align-items:start;margin-top:28px}
+@media (max-width:900px){.explorer{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;aspect-ratio:1.45/1}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{appearance:none;font:600 16px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:40px}
+.chip:hover{border-color:#8FA3C2}
+.chip[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:#13294B}
+.panel{background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;padding:24px;min-height:300px}
+.panel h3{font-size:34px;font-weight:800;color:var(--orange);margin:6px 0 10px;line-height:1.1}
+.panel .where{font-size:16px;color:var(--night-muted);margin:0 0 14px}
+.panel p{color:#E9EEF6;margin:0 0 12px}
+.panel .ep{font-size:16px;color:var(--night-muted);border-top:1px solid var(--night-line);padding-top:12px;margin-top:14px}
+
+/* Big number + link lab */
+.num-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:32px;align-items:center}
+@media (max-width:820px){.num-row{grid-template-columns:minmax(0,1fr)}}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(110px,16vw,210px);line-height:.85;letter-spacing:-.05em;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.big-sub{font-family:var(--display);font-size:clamp(26px,3vw,36px);font-weight:600;margin-top:8px}
+.linklab{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:20px}
+.linklab canvas{width:100%;aspect-ratio:2/1;display:block}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.btn{appearance:none;font:600 16px var(--body);border-radius:999px;padding:10px 18px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;min-height:44px}
+.btn.sec{background:transparent;color:var(--ink)}
+.night .btn{background:var(--orange);border-color:var(--orange);color:#13294B}
+.night .btn.sec{background:transparent;color:var(--night-ink);border-color:#8FA3C2}
+.meter{font-size:16px;color:var(--ink-2)}
+.meter b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Memory composer */
+.composer{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:28px;align-items:center;margin-top:24px}
+@media (max-width:900px){.composer{grid-template-columns:minmax(0,1fr)}}
+.composer .stage{aspect-ratio:1.4/1}
+.parts{display:grid;gap:10px}
+.part{display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:left;font:600 18px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:8px;padding:12px 14px;cursor:pointer;min-height:48px}
+.part span{font-weight:400;color:var(--night-muted);font-size:16px}
+.part[aria-pressed="true"]{border-color:var(--orange);background:rgba(255,95,5,.12)}
+.status{min-height:3em;font-size:17px;color:#E9EEF6;margin:10px 0 0}
+
+/* Case box */
+.box{border-top:6px solid var(--ink);background:#fff;padding:26px 28px;margin:40px 0;border-radius:0 0 6px 6px;box-shadow:0 1px 0 var(--rule)}
+.box h3{font-size:28px;font-weight:800;margin-bottom:10px}
+.timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);margin:20px 0 6px}
+@media (max-width:640px){.timeline{grid-template-columns:minmax(0,1fr)}}
+.timeline div{padding:14px 14px 10px 0}
+.timeline strong{display:block;font-family:var(--display);font-size:40px;font-weight:900;color:var(--accent-ink);line-height:1}
+.timeline span{font-size:16px;color:var(--ink-2)}
+.dd{width:100%;border-collapse:collapse;margin:16px 0 8px;font-size:17px}
+.dd th,.dd td{border-bottom:1px solid var(--rule);padding:10px 8px;text-align:left;vertical-align:top}
+.dd thead th{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.dd tbody th{font-weight:600;color:var(--ink)}
+.yes{color:var(--ok);font-weight:700}.no{color:var(--no);font-weight:700}
+
+/* Why */
+.why{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center}
+@media (max-width:820px){.why{grid-template-columns:minmax(0,1fr)}}
+.ways{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.ways button{width:100%;text-align:left;font:300 italic clamp(30px,4vw,46px)/1.15 var(--display);color:var(--ink);background:none;border:none;border-bottom:1px solid var(--rule);padding:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ways button span{font:400 16px var(--body);color:var(--ink-2)}
+.ways button[aria-pressed="true"]{color:var(--accent-ink);font-weight:600}
+.why .mini{background:var(--night);border-radius:6px;aspect-ratio:1.35/1;position:relative}
+.why .mini canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Quiz */
+.quiz{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:26px}
+.q{border-top:1px solid var(--rule);padding:18px 0 6px}
+.q:first-child{border-top:0;padding-top:0}
+.q .qt{font-family:var(--display);font-size:22px;font-weight:600;line-height:1.25;margin:0 0 12px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;font:400 17px var(--body);color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:6px;padding:11px 14px;cursor:pointer;min-height:44px}
+.opt:hover{border-color:var(--ink-2)}
+.opt.right{border-color:var(--ok);background:#E7F4EE}
+.opt.wrong{border-color:var(--no);background:#FBEAEE}
+.fb{font-size:16.5px;color:var(--ink-2);min-height:1.4em;margin:10px 0 0}
+.score{font-family:var(--display);font-size:21px;margin-top:14px}
+
+/* Collection */
+.coll{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:20px}
+.card{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:14px 16px}
+.card b{display:block;font-family:var(--display);font-size:20px;line-height:1.2;margin-bottom:4px}
+.card span{font-size:15px;color:var(--ink-2)}
+.card.here{background:var(--ink);border-color:var(--ink)}
+.card.here b{color:#fff}.card.here span{color:#C9D3E3}
+
+footer.sources{margin:84px 0 0;padding:36px 0 60px;border-top:2px solid var(--ink)}
+footer.sources ol{padding-left:20px;font-size:16px;color:var(--ink-2)}
+footer.sources li{margin:6px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:560px){body{font-size:18px}.panel,.quiz,.box{padding:18px}}
+.card a{color:inherit;text-decoration:none}.card a::after{content:' →'}
+__POPCSS__
+__COLLCSS__
+@media (max-width:820px){.num-row[style]{grid-template-columns:minmax(0,1fr)!important}}
+.web{margin:48px auto}
+.webfig h3{font-family:var(--display);font-size:24px;font-weight:800;margin:0 0 8px}
+.webstage{position:relative;background:#0D1C35;border-radius:8px;aspect-ratio:1.6/1;overflow:hidden}
+.webstage canvas{position:absolute;inset:0;width:100%;height:100%}
+.webfig figcaption{font-size:16px;color:var(--ink-2);margin-top:8px}
+.webfacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:2px solid var(--ink);margin-top:28px}
+@media (max-width:980px){.webfacts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.webfacts{grid-template-columns:minmax(0,1fr)}}
+.webfacts>div{padding:16px 20px 16px 0}
+.wk{font:800 14px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 8px}
+.wbig{font-family:var(--display);font-weight:900;font-size:clamp(30px,3.4vw,40px);line-height:1.05;color:var(--ink);margin:0 0 8px;letter-spacing:-.01em}
+.wn{font-size:16px;line-height:1.5;color:var(--ink-2);margin:0}
+.wbar{display:flex;height:22px;border-radius:4px;overflow:hidden;margin:4px 0 10px;gap:2px}
+.wbar i:nth-child(1),.wkey .k1{background:#13294B}.wbar i:nth-child(2),.wkey .k2{background:#B84300}.wbar i:nth-child(3),.wkey .k3{background:#8C99AD}
+.wkey{list-style:none;padding:0;margin:0 0 10px;display:grid;gap:4px;font-size:16px}
+.wkey li{display:flex;gap:8px;align-items:center}.wkey b{width:14px;height:14px;border-radius:3px;flex:none}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Brain regions</div>
+      <h1 id="title">A Map of the <em>Learning Brain</em></h1>
+      <p class="dek">There is no single memory center. Every lesson you learn is spread across a team of brain regions, each doing its own part.</p>
+      <div class="byline"><span>About 9 minutes to read</span><span><a href="#watchT">Watch the 2-minute video</a></span><span><a href="#exploreT">Explore the brain</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the brain from the side. The frontal, parietal, temporal and occipital lobes light up one after another, then the hippocampus and amygdala deep inside."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>A map of the learning brain</b> · The Learning Brain</span><span>Captions are on; turn them off in the player.</span></div>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Ask where a memory is kept and most people picture a filing cabinet somewhere in the head: one drawer for names, another for skills, a third for the route home. It is a natural picture, and it is wrong in an interesting way.</p>
+    <p>There is no single memory center. A memory of your first day at a new school is not stored in one spot. Its sights sit in one part of the brain, its sounds in another, the feeling of nerves in a third, and what it all meant in yet another. When you remember the day, those pieces are pulled back together.</p>
+    <p>To see how learning works, it helps to know the team. This collection visits each member in turn. Start here, with the map.</p>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The outer layer</span>Four lobes, each with a job</h2>
+    <p>The wrinkled outer layer of the brain is the cortex. Each side of it divides into four lobes. The <b>frontal lobe</b>, behind your forehead, plans and holds ideas in mind while you work with them. The <b>parietal lobe</b>, across the top, tracks space, attention and number. The <b>temporal lobe</b>, by your ear, handles sound, language and the meaning of things. The <b>occipital lobe</b>, at the back, is where seeing begins.</p>
+    <p>Underneath sit older structures. The <b>hippocampus</b> helps form new memories of facts and events. Beside it, the <b>amygdala</b> marks what feels important. The <b>basal ganglia</b>, including the striatum, build habits. The <b>cerebellum</b>, tucked below the back of the brain, fine-tunes movement and timing.</p>
+  </div>
+
+
+  <section class="night" aria-labelledby="exploreT">
+    <div class="col">
+      <h2 class="sec" id="exploreT"><span class="n">Explore</span>Choose a region</h2>
+      <p>Select a region on the drawing or from the list to see what it does for learning. Deep structures show through the drawing as dashed outlines.</p>
+    </div>
+    <div class="wide">
+      <div class="explorer">
+        <div>
+          <div class="stage"><canvas id="explore" role="img" aria-label="Interactive drawing of the brain. The selected region glows orange and is labelled. Use the region buttons below the drawing to choose a region."></canvas></div>
+          <div class="chips" role="group" aria-label="Brain regions" id="chips"></div>
+        </div>
+        <div class="panel" aria-live="polite" id="panel"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="web wide" aria-labelledby="webT">
+    <div class="num-row" style="grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr)">
+      <div>
+        <div class="label">The wiring</div>
+        <div class="big">86</div>
+        <div class="big-sub">billion neurons</div>
+        <p style="margin-top:14px;max-width:34ch;color:var(--ink-2)">That is the average count in adult brains studied by Frederico Azevedo and colleagues in 2009, lower than the often-quoted 100 billion.</p>
+      </div>
+      <figure class="webfig" style="margin:0">
+        <h3 id="webT">An interconnected web</h3>
+        <div class="webstage"><canvas id="web" role="img" aria-label="Illustration of a web of neurons. One neuron is highlighted with its many links, and a signal spreads from it to its neighbours and on to theirs."></canvas></div>
+        <figcaption>Illustration only: a few hundred dots stand in for 86 billion neurons. A signal from one neuron (orange) reaches its neighbours, then theirs.</figcaption>
+      </figure>
+    </div>
+    <div class="webfacts">
+      <div>
+        <p class="wk">Where they are</p>
+        <div class="wbar" role="img" aria-label="Share of neurons: cerebellum about 80 percent, cerebral cortex about 19 percent, everything else about 1 percent."><i style="flex:80"></i><i style="flex:19"></i><i style="flex:1.2"></i></div>
+        <ul class="wkey"><li><b class="k1"></b>Cerebellum: about 69 billion (80%)</li><li><b class="k2"></b>Cerebral cortex: about 16 billion (19%)</li><li><b class="k3"></b>Everything else: about 1 billion</li></ul>
+        <p class="wn">The cortex makes up 82% of the brain’s weight but holds only 19% of its neurons. The small cerebellum, at the back, is packed far more densely.</p>
+      </div>
+      <div>
+        <p class="wk">How they connect</p>
+        <p class="wbig">100 trillion+</p>
+        <p class="wn">Each neuron forms thousands of connections, called synapses, adding up to an estimated 100 trillion or more. A single Purkinje cell in the cerebellum can have about 100,000. Learning changes the strength of these connections.</p>
+      </div>
+      <div>
+        <p class="wk">How far the wiring runs</p>
+        <p class="wbig">~150,000 km</p>
+        <p class="wn">The insulated fibres linking distant regions add up to about 149,000 km in young women and 176,000 km in young men: roughly four times around the Earth’s equator.</p>
+      </div>
+      <div>
+        <p class="wk">How long to count them</p>
+        <p class="wbig">2,700 years</p>
+        <p class="wn">Counting one neuron per second, day and night, it would take about 2,700 years to reach 86 billion.</p>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <section class="night" aria-labelledby="memT">
+    <div class="col">
+      <h2 class="sec" id="memT"><span class="n">One memory, many places</span>Build a memory</h2>
+      <p>Add the parts of a memory of your first day at a new school, then recall it. Each part lights the region that handles that kind of information. Recall runs through the hippocampus, which helps bind the pieces back together.</p>
+    </div>
+    <div class="wide">
+      <div class="composer">
+        <div class="stage"><canvas id="compose" role="img" aria-label="Drawing of the brain. Regions light up as parts of a memory are added, and lines join them through the hippocampus during recall."></canvas></div>
+        <div>
+          <div class="parts" role="group" aria-label="Parts of the memory">
+            <button class="part" data-k="occ" aria-pressed="false">Sights <span>occipital lobe</span></button>
+            <button class="part" data-k="tem" aria-pressed="false">Sounds <span>temporal lobe</span></button>
+            <button class="part" data-k="amy" aria-pressed="false">Feelings <span>amygdala</span></button>
+            <button class="part" data-k="fro" aria-pressed="false">Meaning <span>frontal and temporal lobes</span></button>
+          </div>
+          <div class="row"><button class="btn" id="recall">Recall the memory</button><button class="btn sec" id="clear">Start over</button></div>
+          <p class="status" id="mstatus" aria-live="polite">Add at least two parts, then recall.</p>
+          <p class="note" style="margin-top:12px">Simplified: each kind of information involves several regions, and meaning is spread widely across the cortex.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pop wide" aria-labelledby="popT">
+    <div style="max-width:700px;margin:0 auto">
+      <h2 class="sec" id="popT"><span class="n">In popular culture</span>A century of memory on screen</h2>
+      <p>Film has been drawn to memory since the silent era. A 2004 review found amnesia in 60 films made between 1915 and 2004, and most of them got it wrong. Over time the portrayals have moved from the bump on the head toward the real science. Here are five turning points, with links to where this collection covers the real science.</p>
+    </div>
+    <div class="poptabs" role="tablist" aria-label="Turning points in how film shows memory" id="popTabs"></div>
+    <div id="popPanels"></div>
+  </section>
+
+  <p class="pull">A memory is not kept in a place. <em>It is rebuilt from many.</em></p>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">What damage reveals</span>Different kinds of learning</h2>
+    <p>Some of the clearest evidence for this map comes from people whose brains were damaged in one place. What they lost, and what they kept, shows which regions each kind of learning depends on.</p>
+    <aside class="box" aria-labelledby="hmT">
+      <h3 id="hmT">The patient known as H.M.</h3>
+      <p>In 1953 a surgeon removed tissue from deep inside both temporal lobes of a 27-year-old man, Henry Molaison, to stop severe epileptic seizures. The seizures eased. But from then on he could not form new memories of facts or events, and he lived with that loss for 55 years.</p>
+      <div class="timeline">
+        <div><strong>1953</strong><span>surgery, including much of the hippocampus</span></div>
+        <div><strong>3 days</strong><span>of practice: his mirror-drawing errors fell</span></div>
+        <div><strong>55 years</strong><span>unable to form new memories of events</span></div>
+      </div>
+      <p>Yet when the psychologist Brenda Milner asked him to trace a star while watching his hand only in a mirror, he improved within and across three days of practice, even though each session felt new to him. Skill learning did not need the hippocampus.</p>
+    </aside>
+    <p>A 1996 study by Barbara Knowlton, Jennifer Mangels and Larry Squire made the split sharper. People with amnesia and people with Parkinson's disease, which damages the basal ganglia, learned a card-based task that rewards slow, habit-like learning.</p>
+    <table class="dd">
+      <caption class="sr">Results of Knowlton, Mangels and Squire, 1996</caption>
+      <thead><tr><th scope="col">Group</th><th scope="col">Learned the habit task</th><th scope="col">Remembered the training</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Amnesia</th><td class="yes">Yes</td><td class="no">No</td></tr>
+        <tr><th scope="row">Parkinson's disease</th><td class="no">No</td><td class="yes">Yes</td></tr>
+      </tbody>
+    </table>
+    <p>Habits and facts run on different systems, and either can work while the other fails.</p>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Engage many regions at once</h2>
+    <div class="why">
+      <ul class="ways" aria-label="Ways of learning">
+        <li><button aria-pressed="false" data-k="occ">seeing <span>occipital lobe</span></button></li>
+        <li><button aria-pressed="false" data-k="tem">hearing <span>temporal lobe</span></button></li>
+        <li><button aria-pressed="false" data-k="cer">doing <span>cerebellum</span></button></li>
+        <li><button aria-pressed="false" data-k="amy">feeling <span>amygdala</span></button></li>
+        <li><button aria-pressed="false" data-k="fro">explaining <span>frontal lobe</span></button></li>
+      </ul>
+      <div class="mini"><canvas id="why" role="img" aria-label="Small drawing of the brain. The region for the selected way of learning glows orange."></canvas></div>
+    </div>
+    <div class="col" style="margin-top:28px;padding:0">
+      <p>The strongest learning recruits many regions: seeing a diagram, hearing an explanation, doing the steps, caring about the outcome and explaining it in your own words. Each adds another route back to the memory. Every lesson is whole-brain work.</p>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back. Pulling an answer out is one of the best ways to keep it.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/19226510/">Azevedo, F. A. C., et al. (2009). Equal numbers of neuronal and nonneuronal cells make the human brain an isometrically scaled-up primate brain. <i>Journal of Comparative Neurology</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/12757276/">Marner, L., et al. (2003). Marked loss of myelinated nerve fibers in the human brain with age. <i>Journal of Comparative Neurology</i>.</a></li>
+        <li><a href="https://bri.ucla.edu/brain-fact/billions-of-neurons-trillions-of-synapses/">UCLA Brain Research Institute. Billions of neurons, trillions of synapses.</a></li>
+        <li><a href="https://dana.org/?p=3960">Dana Foundation. How many synapses are in the human brain?</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6007845">Review of H.M.'s case: surgery in 1953 at age 27; 55 years of amnesia; mirror tracing (Milner, 1962).</a></li>
+        <li><a href="https://mechanism.ucsd.edu/bill/teaching/f10/phil149/corkin.whatnewwithHM.2002.pdf">Corkin, S. (2002). What's new with the amnesic patient H.M.? <i>Nature Reviews Neuroscience</i>.</a></li>
+        <li><a href="https://bibbase.org/network/publication/knowlton-mangels-squire-aneostriatalhabitlearningsysteminhumans-1996">Knowlton, B. J., Mangels, J. A., &amp; Squire, L. R. (1996). A neostriatal habit learning system in humans. <i>Science</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawings are simplified illustrations: positions are approximate, and deep structures are shown through the surface.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* globals the shared brain drawing expects */
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+(()=>{
+/* ---------- canvas helper: crisp, resizes, draws in CSS pixels ---------- */
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};
+ size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,margin=1.25)=>Math.min(W/(1000*margin),H/(700*margin*1.16));
+const NAMES=BR.R;
+
+/* ---------- hero: lobes light up in turn, then deep structures ---------- */
+const SEQ=['fro','par','tem','occ','hip','amy'];
+stage('heroBrain',({W,H,t})=>{const s=fitS(W,H,1.32);const cyc=RM?999:t;const n=Math.floor(cyc/1.3)%(SEQ.length+2);
+ const act=RM?['fro','par','tem','occ']:SEQ.slice(0,Math.min(n,SEQ.length));const lt={};act.forEach((k,i)=>lt[k]=0);
+ brainDraw({cx:W*0.5,cy:H*0.47,s,t,active:act,labels:act,labelT:lt,draw:RM?1:ez(t/1.6),glow:1,labSize:Math.max(16,Math.round(15*W/560)),deep:0.45})});
+
+/* ---------- video captions + transcript ---------- */
+(function(){const v=document.getElementById('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ document.getElementById('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(2).join(' ')})();
+
+/* ---------- explorer ---------- */
+const INFO={
+ fro:['Frontal lobe','Behind the forehead','Plans, makes decisions and holds ideas in mind while you work with them. Its front part, the prefrontal cortex, is among the last regions to mature.','The prefrontal cortex: the mind’s workbench'],
+ par:['Parietal lobe','Across the top of the head','Tracks where things are, steers attention and handles number and quantity.','The parietal lobe: space, attention and number'],
+ tem:['Temporal lobe','By the ear','Handles sound and language and links what you perceive to its meaning. Its inner side holds the hippocampus and amygdala.','Learning to see: faces and words'],
+ occ:['Occipital lobe','At the back of the head','Where seeing begins: it processes the signals from your eyes before other regions recognize what they show.','Learning to see: faces and words'],
+ cer:['Cerebellum','Below the back of the brain','Fine-tunes movement and timing, and learns from small errors as a skill is practised.','The cerebellum: timing and practice'],
+ stem:['Brainstem','Where the brain meets the spinal cord','Keeps you breathing and alert, and carries signals between the brain and body.',null],
+ hip:['Hippocampus','Deep inside each temporal lobe','Helps form new memories of facts and events, and helps you find your way around.','The hippocampus: making new memories'],
+ amy:['Amygdala','Just in front of the hippocampus','Marks what feels important or emotional, so it is more likely to be remembered.','The amygdala: why emotion sticks'],
+ ent:['Entorhinal cortex','Beside the hippocampus','The main gateway of information into the hippocampus, home to the “grid cells” that map space.','The entorhinal cortex: the brain’s grid'],
+ str:['Striatum','Part of the basal ganglia, deep in the brain','Builds habits and skills through repetition and reward.','The basal ganglia: habits and skills'],
+ tha:['Thalamus','At the center of the brain','A relay station that routes information from the senses to the cortex.',null]};
+const LIVE={'The hippocampus: making new memories':'@@LB:hippocampus@@','The entorhinal cortex: the brain’s grid':'@@LB:ent@@','The prefrontal cortex: the mind’s workbench':'@@LB:pfc@@','The amygdala: why emotion sticks':'@@LB:amy@@','The basal ganglia: habits and skills':'@@LB:bg@@','The cerebellum: timing and practice':'@@LB:cer@@','Learning to see: faces and words':'@@LB:see@@','The parietal lobe: space, attention and number':'@@LB:par@@','The reward system: learning from surprise':'@@LB:rew@@','Teamwork: how a memory moves through the brain':'@@LB:team@@'};
+const ORDER=['fro','par','tem','occ','cer','stem','hip','amy','ent','str','tha'];
+let sel='hip';const chips=document.getElementById('chips'),panel=document.getElementById('panel');
+ORDER.forEach(k=>{const b=document.createElement('button');b.className='chip';b.textContent=INFO[k][0];b.dataset.k=k;b.setAttribute('aria-pressed',k===sel);b.onclick=()=>choose(k);chips.appendChild(b)});
+function showPanel(){const [n,w,d,ep]=INFO[sel];panel.innerHTML=`<div class="label">Selected region</div><h3>${n}</h3><p class="where">${w}</p><p>${d}</p>${ep?(LIVE[ep]?`<p class="ep">In this collection: <a href="${LIVE[ep]}"><b>${ep}</b></a></p>`:`<p class="ep">In this collection: <b>${ep}</b> (coming soon)</p>`):''}`}
+const ex=stage('explore',({W,H,t})=>{const s=fitS(W,H,1.28);exGeom={cx:W*0.48,cy:H*0.47,s};brainDraw({cx:exGeom.cx,cy:exGeom.cy,s,t,active:[sel],labels:[sel],labelT:{[sel]:selT},glow:1,labSize:Math.max(16,Math.round(15*W/560)),deep:0.6})});
+let exGeom={cx:0,cy:0,s:1},selT=0;const T0=performance.now();
+function choose(k){sel=k;selT=(performance.now()-T0)/1000;chips.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));showPanel();ex.kick()}
+showPanel();
+// pointer hit-testing in the drawing's own coordinates
+const probe=document.createElement('canvas').getContext('2d');
+ex.c.addEventListener('click',e=>{const r=ex.c.getBoundingClientRect(),{cx,cy,s}=exGeom;const lx=(e.clientX-r.left-cx)/s+500,ly=(e.clientY-r.top-cy)/(s*1.16)+300;const P=BR.P;
+ probe.lineWidth=26;const deep=[['hip','stroke'],['amy','fill'],['ent','fill'],['tha','fill'],['put','fill','str'],['caud','stroke','str']];
+ for(const [q,m,k] of deep){if(m==='fill'?probe.isPointInPath(P[q],lx,ly):probe.isPointInStroke(P[q],lx,ly)){choose(k||q);return}}
+ for(const k of ['cer','stem','occ','par','tem','fro']){if(probe.isPointInPath(P[k],lx,ly)){choose(k);return}}});
+
+/* ---------- the interconnected web (illustration, not interactive) ----------
+   A few hundred dots, each linked to its nearest neighbours plus a few long-range links.
+   Every 4.5 s a signal starts at the highlighted neuron and spreads one link per step (breadth-first). */
+const WEB=(()=>{let sd=11;const r=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};const n=[];for(let i=0;i<440;i++)n.push([0.03+r()*0.94,0.05+r()*0.9]);n[0]=[0.5,0.5];
+ const e=new Set(),adj=n.map(()=>[]);const add=(i,j)=>{const k=i<j?i+'-'+j:j+'-'+i;if(i!==j&&!e.has(k)){e.add(k);adj[i].push(j);adj[j].push(i)}};
+ n.forEach((a,i)=>{const d=n.map((b,j)=>[Math.hypot(a[0]-b[0],(a[1]-b[1])*0.62),j]).sort((x,y)=>x[0]-y[0]);d.slice(1,5).forEach(([,j])=>add(i,j));if(r()<0.025){const k=d[6+Math.floor(r()*30)][1];add(i,k)}});
+ const d0=n.map((b,j)=>[Math.hypot(0.5-b[0],(0.5-b[1])*0.62),j]).sort((x,y)=>x[0]-y[0]);d0.slice(1,25).forEach(([,j])=>add(0,j));
+ const hop=n.map(()=>-1);hop[0]=0;const q=[0];while(q.length){const i=q.shift();adj[i].forEach(j=>{if(hop[j]<0){hop[j]=hop[i]+1;q.push(j)}})}
+ return{n,e:[...e].map(k=>k.split('-').map(Number)),hop}})();
+stage('web',({W,H,t,x})=>{const P=i=>[WEB.n[i][0]*W,WEB.n[i][1]*H],cyc=4.5,ph=RM?2.2:(t%cyc)/cyc*cyc,front=ph/0.32;
+ WEB.e.forEach(([i,j])=>{const a=P(i),b=P(j),hi=i===0||j===0,h=Math.min(WEB.hop[i],WEB.hop[j]),on=WEB.hop[i]>=0&&Math.abs(WEB.hop[i]-WEB.hop[j])===1&&front>=Math.max(WEB.hop[i],WEB.hop[j]);
+  const fade=on?Math.max(0,1-(front-Math.max(WEB.hop[i],WEB.hop[j]))/2.5):0;
+  x.strokeStyle=hi?'rgba(255,95,5,0.75)':`rgba(${on?'252,179,22':'143,163,194'},${on?0.25+0.6*fade:0.22})`;x.lineWidth=hi?1.6:on?1.2+fade:0.8;x.beginPath();x.moveTo(...a);x.lineTo(...b);x.stroke()});
+ WEB.n.forEach((p,i)=>{const q=P(i),h=WEB.hop[i],lit=h>=0&&front>=h?Math.max(0,1-(front-h)/2.5):0;
+  x.fillStyle=i===0?'#FF5F05':lit?`rgba(252,179,22,${0.4+0.6*lit})`:'#7F93B5';x.beginPath();x.arc(q[0],q[1],i===0?Math.max(6,W/90):Math.max(1.6,W/360)+lit*2,0,7);x.fill()});
+ const c=P(0);x.strokeStyle='rgba(255,95,5,0.5)';x.lineWidth=2;x.beginPath();x.arc(c[0],c[1],Math.max(6,W/90)+4+(RM?0:3*Math.sin(t*4)),0,7);x.stroke()},{animate:true});
+
+/* ---------- memory composer ---------- */
+const parts=new Set();let recallT=-1;const mst=document.getElementById('mstatus');const C0=performance.now();
+function fitBrain(W,H,keys,size,LAB){const ws={};ctx.font=`700 ${size}px ${BODY}`;keys.forEach(k=>ws[k]=ctx.measureText(BR.R[k].name).width+10);
+ for(let s=Math.min(W/1150,H/(860*1.16+60));s>0.05;s*=0.97){let lo=-500*s,hi=500*s,top=-340*1.16*s,bot=380*1.16*s;
+  keys.forEach(k=>{const[[lx,ly],al]=LAB[k],x=(lx-500)*s,y=(ly-300)*1.16*s;if(al==='right')lo=Math.min(lo,x-ws[k]);else hi=Math.max(hi,x+ws[k]);top=Math.min(top,y-size);bot=Math.max(bot,y+size)});
+  if(hi-lo<=W-16&&bot-top<=H-16)return{s,cx:(W-(hi+lo))/2,cy:(H-(bot+top))/2}}return{s:0.05,cx:W/2,cy:H/2}}
+const CLAB={fro:[[120,-80],'left'],occ:[[1000,-60],'right'],tem:[[160,620],'right'],amy:[[400,740],'right'],hip:[[700,740],'left']};
+const CLABN={fro:[[100,-90],'left'],occ:[[1010,150],'left'],tem:[[150,600],'right'],amy:[[420,810],'right'],hip:[[700,810],'left']};
+const cm=stage('compose',({W,H,t})=>{const narrow=W<560,act=[...parts];const rec=recallT>=0?sat((t-recallT)/0.8):0;if(rec>0)act.push('hip');
+ const NM=narrow?{fro:'frontal',tem:'temporal',occ:'occipital'}:{},keep={};const LL=narrow?CLABN:CLAB;for(const k in LL){keep[k]=[BR.R[k].lab,BR.R[k].al,BR.R[k].name];BR.R[k].lab=LL[k][0];BR.R[k].al=LL[k][1];if(NM[k])BR.R[k].name=NM[k]}
+ const size=Math.max(16,Math.round(14*W/560)),{s,cx,cy}=fitBrain(W,H,Object.keys(LL),size,LL);
+ brainDraw({cx,cy,s,t,active:act,labels:act,labelT:Object.fromEntries(act.map(k=>[k,0])),labSize:size,glow:1,deep:0.35});for(const k in keep){[BR.R[k].lab,BR.R[k].al,BR.R[k].name]=keep[k]}
+ if(rec>0){const L=([x,y])=>[cx+(x-500)*s,cy+(y-300)*s*1.16];const H0=L([640,366]);const pts={occ:[870,300],tem:[430,430],amy:[478,400],fro:[250,180]};ctx.save();ctx.strokeStyle='#FCB316';ctx.lineWidth=3;ctx.shadowColor='#FCB316';ctx.shadowBlur=12;
+  [...parts].forEach((k,i)=>{const P=L(pts[k]);const u=sat(rec*1.3-i*0.12);ctx.globalAlpha=0.95;ctx.beginPath();ctx.moveTo(...H0);ctx.lineTo(lerp(H0[0],P[0],u),lerp(H0[1],P[1],u));ctx.stroke()});ctx.restore()}});
+document.querySelectorAll('.part').forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(parts.has(k))parts.delete(k);else parts.add(k);b.setAttribute('aria-pressed',parts.has(k));recallT=-1;mst.textContent=parts.size?`${parts.size} part${parts.size>1?'s':''} stored in different regions.`:'Add at least two parts, then recall.';cm.kick()});
+document.getElementById('recall').onclick=()=>{if(parts.size<2){mst.textContent='Add at least two parts first.';return}recallT=(performance.now()-C0)/1000;mst.textContent='Recalled: the hippocampus helps pull the stored parts back together into one memory.';cm.kick()};
+document.getElementById('clear').onclick=()=>{parts.clear();recallT=-1;document.querySelectorAll('.part').forEach(b=>b.setAttribute('aria-pressed','false'));mst.textContent='Add at least two parts, then recall.';cm.kick()};
+
+/* ---------- why: ways of learning ---------- */
+let way='fro';const wy=stage('why',({W,H,t})=>{const s=fitS(W,H,1.6);brainDraw({cx:W*0.44,cy:H*0.48,s,t,active:[way],labels:[way],labelT:{[way]:0},glow:1,labSize:Math.max(16,Math.round(14*W/480)),deep:0.3})});
+document.querySelectorAll('.ways button').forEach(b=>{b.onclick=()=>{way=b.dataset.k;document.querySelectorAll('.ways button').forEach(o=>o.setAttribute('aria-pressed',o===b));wy.kick()};if(b.dataset.k==='fro')b.setAttribute('aria-pressed','true')});
+
+/* ---------- retrieval quiz ---------- */
+const Q=[
+ {q:'Where in the brain is a memory of an event kept?',o:['In a single memory center','Spread across several regions, brought together when you recall it','Only in the hippocampus'],a:1,f:'Its sights, sounds, feelings and meaning are held in different regions, and recall brings them back together.'},
+ {q:'After his surgery, what could H.M. still learn?',o:['New facts about current events','The names of people he met','A new motor skill, like mirror drawing'],a:2,f:'His mirror-drawing errors fell over three days, even though each session felt new to him.'},
+ {q:'Which region is most linked to building habits?',o:['The basal ganglia, including the striatum','The occipital lobe','The amygdala'],a:0,f:'People with Parkinson’s disease, which damages the basal ganglia, did not learn the habit task in the 1996 study.'}];
+const box=document.getElementById('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');b.setAttribute('aria-describedby',`q${i}`);
+  if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+
+/* ---------- collection ---------- */
+__COLLJS__
+renderColl('coll','map');
+})();
+</script>
+<script>
+__POPJS__
+(()=>{const HIPPO='@@LB:hippocampus@@';
+const POP=[
+ {id:'bump',title:'The bump on the head',sub:'1915 onward',kind:'Silent films to the 1980s',films:[['Overboard (1987)','https://www.imdb.com/title/tt0093693/']],verdict:['bad','Mostly myth'],
+  desc:'Amnesia has been a plot device since the silent era. In 1915, <i>The Right of Way</i> was one of the first films to show memory lost after an assault, letting a character start life afresh. The pattern held for decades: in <i>Overboard</i> (1987), a wealthy woman falls off her yacht, loses her memory and becomes a kinder person.',
+  right:['Head injury is a real cause of amnesia, along with brain surgery, brain infection and stroke.'],
+  wrong:['Characters lose their identity and personality. People with amnesia usually know who they are, and their personality is largely unchanged.','A second blow to the head brings the memories back. The review called this one of the most “neurologically bizarre” movie ideas.','Hypnosis or a familiar object restores memory. This rarely works.','Characters slip easily into new jobs and friendships. Real amnesia makes it hard to take in new information, so everyday tasks are difficult.'],
+  more:[['The hippocampus: making new memories',HIPPO]],src:'Baxendale (2004), <i>BMJ</i>.'},
+ {id:'right',title:'Amnesia done right',sub:'2000–2003',kind:'Thriller and animation',films:[['Memento (2000)','https://www.imdb.com/title/tt0209144/'],['Finding Nemo (2003)','https://www.imdb.com/title/tt0266543/']],verdict:['good','Closer to the science'],
+  desc:'Around 2000, a few films began to show the kind of amnesia doctors actually see: people who keep their past and identity but can’t form new memories. The 2004 review singled out <i>Memento</i>’s Leonard and <i>Finding Nemo</i>’s Dory as accurate.',
+  right:['Leonard and Dory know who they are and keep much of their past.','They struggle with new names, places and plans, which is the core problem in real amnesia.'],
+  wrong:['Both call it “short-term memory loss.” Short-term memory usually works; what fails is turning new experiences into lasting memories.'],
+  more:[['Compare three films with the real case of H.M.',HIPPO]],src:'Baxendale (2004), <i>BMJ</i>.'},
+ {id:'erase',title:'Erasing a memory',sub:'2004',kind:'Science-fiction romance',films:[['Eternal Sunshine of the Spotless Mind (2004)','https://www.imdb.com/title/tt0338013/']],verdict:['mixed','Partly real'],
+  desc:'After a painful breakup, Joel pays a company to erase his memories of the relationship, and relives them one by one as they disappear.',
+  right:['Memories can change after they are recalled. While a memory is being recalled, it becomes changeable for a while before it is stored again. Researchers call this reconsolidation.','Scientists are testing ways to weaken the emotional sting of painful memories, so far mostly in animals and in limited studies in people.'],
+  wrong:['The film treats a memory as stored in one spot that can be deleted. The different parts of a memory are stored in different places.','No treatment can pick out one person and delete them from your memory.'],
+  more:[['Reconsolidation: remembering opens a memory','@@LB:m08@@'],['The amygdala: why emotion sticks','@@LB:amy@@']],src:'<i>Nature</i> news (2013); <i>Smithsonian</i> (2013); Oxford Martin School.'},
+ {id:'inside',title:'Inside the head',sub:'2015',kind:'Animated drama',films:[['Inside Out (2015)','https://www.imdb.com/title/tt2096673/']],verdict:['good','Built with scientists'],
+  desc:'Five emotions inside the head of 11-year-old Riley run her mind as her family moves to a new city. Her experiences become glowing orbs that are sent to long-term memory each night.',
+  right:['The filmmakers consulted psychologists, including emotion researchers Paul Ekman and Dacher Keltner.','Emotions colour how Riley sees the world and what she remembers.','Memories are sorted for long-term storage overnight. Sleep really does help strengthen new memories.'],
+  wrong:['Memories are shown as fixed recordings that replay exactly. Real memories are rebuilt each time we recall them, and they can change.'],
+  more:[['What sleep does: filing the day','@@LB:m07@@'],['Retrieval rewrites memory','@@LB:m11@@'],['The life of a memory: encode, consolidate, retrieve','@@LB:m01@@']],src:'NPR (2015); UC Berkeley News (2015).'},
+ {id:'myth',title:'The 10% myth',sub:'2014',kind:'Science-fiction action',films:[['Lucy (2014)','https://www.imdb.com/title/tt2872732/']],verdict:['bad','Myth'],
+  desc:'A drug lets Lucy use more than the 10 percent of the brain the film claims most people use, and she gains superhuman powers.',
+  right:['Very little. Even the director has said the premise isn’t true.'],
+  wrong:['We use all of our brain. A healthy brain has no regions that do nothing, though different areas are busier at different times.','The brain is a few percent of body weight but uses about 20 percent of the body’s energy, which would make no sense for an organ that sits mostly idle.'],
+  more:[['Choose a region on this page','#exploreT'],['The 10% myth: you use your whole brain','@@LB:n03@@']],src:'NBC News (2014); <i>Pittsburgh Post-Gazette</i> (2014).'}];
+renderPop(POP,'popTabs','popPanels');
+})();
+</script>
+</body>
+</html>

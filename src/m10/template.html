@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cues and Context: How Memories Come Back</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}
+.sent{font:600 clamp(20px,2.6vw,26px)/1.4 var(--body);color:#fff;text-align:center;max-width:26ch;margin:0}
+.cue{font:700 24px/1.3 var(--body);color:#FCB316;text-align:center;margin:0}
+.cue small{display:block;font:800 14px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;margin-bottom:6px}
+.kin{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.kin[hidden]{display:none}
+.kin input{width:200px;min-height:50px;font:700 22px var(--body);text-align:center;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff}
+.kin input:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Memory · Topic 10</div>
+      <h1 id="title">Cues and context <em>A memory comes back through its cues</em></h1>
+      <p class="dek">A cue helps only if it was part of what got stored. Place matters a little; the cues inside the material matter more.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#kT">The right cue</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the hippocampus, deep inside, and the prefrontal cortex, at the front, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Cues and context</b> · The Learning Brain, Memory, episode 10</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Divers learned lists of words either on a beach or under water, then recalled them in the same place or the other. In Duncan Godden and Alan Baddeley’s 1975 study, recall was best when the two settings matched: words learned under water came back better under water.</p>
+    <p>The principle is called encoding specificity. A cue helps only if it was part of what got stored.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>93</strong><span>effects in a 2001 review of how much place matters</span></div>
+      <div role="listitem"><strong>0.28</strong><span>of a standard deviation: small but reliable</span></div>
+      <div role="listitem"><strong>No effect</strong><span>of setting when the divers recognized words instead of recalling them</span></div>
+      <div role="listitem"><strong>Two rooms</strong><span>of study beat one, when tested in a new room</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Encoding specificity</span>The cue that was stored with it</h2>
+    <p>When people learned a word alongside one cue, that cue brought it back better than another word that seemed more obviously related, as Endel Tulving and Donald Thomson showed in 1973. Meaning works the same way: read “The man lifted the piano” and <i>something heavy</i> is a good cue for <i>piano</i>; read “The man tuned the piano” and it isn’t. John Barclay and colleagues showed this in 1974.</p>
+  </div>
+
+  <section class="night" aria-labelledby="kT">
+    <div class="col">
+      <h2 class="sec" id="kT"><span class="n">Try it</span>The right cue</h2>
+      <p>Read 12 short sentences. After a 30-second break, you’ll get a hint for each one, like “something heavy”, and type the object it describes. Some hints match the sentence you read; some don’t. About 2½ minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="kScreen">
+          <p class="sent" id="kS" aria-live="polite"></p>
+          <p class="cue" id="kC" aria-live="polite"></p>
+          <form class="kin" id="kGen" hidden><label class="sr-only" for="kGi">The object</label><input id="kGi" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="nbtn" type="submit">OK</button></form>
+          <div class="fw" id="kW" aria-live="polite"></div>
+          <form class="fin" id="kForm" hidden><label class="sr-only" for="kIn">Type the words you remember</label><textarea id="kIn" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea><button class="nbtn" type="submit">Done</button></form>
+          <button class="brk" id="kBrk" hidden aria-label="Tap when the circle is orange"></button>
+          <div class="tbar" aria-hidden="true"><i id="kTb" style="width:0"></i></div>
+          <p class="prog" id="kProg" aria-live="polite">Press Start.</p>
+        </div>
+        <div>
+          <p class="phase" id="kPhase">Ready</p>
+          <p class="mtitle" id="kTitle">Does the hint have to match?</p>
+          <p class="mtext" id="kText" aria-live="polite">Each sentence stays up for 4 seconds. Read it and picture it.</p>
+          <div id="kRes"></div>
+          <div class="mrow"><button class="nbtn" id="kGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Place</span>Small but reliable</h2>
+    <p>How big is the effect of place? Steven Smith and Edward Vela’s 2001 review of 93 effects found it small but reliable, about 0.28 of a standard deviation. It shrinks when other good cues are present, and when people picture the original setting before recalling.</p>
+    <p>Context matters most for recall. When Godden and Baddeley had divers recognize the words instead, in 1980, the setting made no difference. And varying the setting can help: in 1978, Smith, Arthur Glenberg and Robert Bjork found that people who studied a list in two different rooms recalled more in a new room than people who studied twice in the same room.</p>
+    <h2 class="sec"><span class="n">A caution</span>A weak lever</h2>
+    <p>Changing the room is a weak lever, and some studies find no effect at all. What matters more is whether the right cues are present at test, inside the material itself.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each study in the video, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Build cues that travel</h3>
+      <p>Practise retrieval in more than one setting and format, so knowledge doesn’t depend on one room or one slide. When students are stuck, have them picture where they learned it. And build meaningful cues into the material, like questions and categories, that will still be there at the exam.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Memory comes back through the cues it was stored with</h2>
+    <ol class="tips">
+      <li><b>Vary setting and format</b><span>So knowledge doesn’t depend on one room or one slide.</span></li>
+      <li><b>Picture where you learned it</b><span>When stuck.</span></li>
+      <li><b>Build cues into the material</b><span>Questions and categories that will be there at the exam.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://scispace.com/pdf/context-dependent-memory-in-two-natural-environments-on-land-16ihazeqen.pdf">Godden, D. R., &amp; Baddeley, A. D. (1975). Context-dependent memory in two natural environments: On land and underwater. <i>British Journal of Psychology</i>.</a></li>
+        <li><a href="https://doi.org/10.1037/h0020071">Tulving, E., &amp; Thomson, D. M. (1973). Encoding specificity and retrieval processes in episodic memory. <i>Psychological Review</i>.</a></li>
+        <li><a href="https://doi.org/10.1016/s0022-5371(74)80024-1">Barclay, J. R., Bransford, J. D., Franks, J. J., McCarrell, N. S., &amp; Nitsch, K. (1974). Comprehension and semantic flexibility. <i>Journal of Verbal Learning and Verbal Behavior</i>.</a></li>
+        <li><a href="https://doi.org/10.3758/bf03196157">Smith, S. M., &amp; Vela, E. (2001). Environmental context-dependent memory: A review and meta-analysis. <i>Psychonomic Bulletin &amp; Review</i>.</a></li>
+        <li><a href="https://link.springer.com/content/pdf/10.3758/bf03197465.pdf">Smith, S. M., Glenberg, A., &amp; Bjork, R. A. (1978). Environmental context and human memory. <i>Memory &amp; Cognition</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.hip.lab=[640,770];BR.R.hip.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['hip','pfc'],labels:['hip','pfc'],labelT:{hip:0.8,pfc:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+function kTimer(sec,me){const t0=performance.now();const tick=()=>{if(!kr||kr.tok!==me)return;const f=Math.min(1,(performance.now()-t0)/(sec*1000));$('kTb').style.width=(100-f*100)+'%';if(f<1)requestAnimationFrame(tick)};tick()}
+async function kHold(sec){const me=Symbol();kr.tok=me;kTimer(sec,me);await sw(sec*1000);if(!kr)return false;kr.tok=null;$('kTb').style.width='0';return true}
+function kRecall(ph){return new Promise(res=>{kr.rres=res;$('kForm').hidden=false;$('kIn').value='';$('kIn').placeholder=ph||'Type the words, in any order';$('kIn').focus()})}
+$('kForm').addEventListener('submit',e=>{e.preventDefault();if(!kr||!kr.rres)return;const r=kr.rres;kr.rres=null;$('kForm').hidden=true;r($('kIn').value)});
+async function kBreak(sec,msg){sec=sec||30;$('kW').textContent=msg?'':'Easy break';$('kBrk').hidden=false;$('kBrk').focus();let on=false;const me=Symbol();kr.tok=me;
+ $('kProg').textContent=msg||`For ${sec} seconds, tap the circle (or press Space) whenever it turns orange.`;
+ const brk=$('kBrk');brk.onclick=()=>{if(on){on=false;brk.classList.remove('on')}};const t0=performance.now();kTimer(sec,me);
+ while(performance.now()-t0<sec*1000){await sw(1000+Math.random()*1800);if(!kr)return;on=true;brk.classList.add('on');await sw(900);on=false;brk.classList.remove('on')}
+ brk.hidden=true;kr.tok=null;$('kTb').style.width='0';$('kProg').textContent='';$('kW').textContent=''}
+$('kBrk').addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();$('kBrk').click()}});
+
+/* ---------- the right cue ----------
+   12 objects, each with two sentences that highlight different properties, and a hint for each property.
+   Study one sentence per object (random), 4 s each. 30 s break. Cued recall: 6 hints match the sentence read, 6 don't. */
+const OB=[['piano','The man lifted the piano.','something heavy','The man tuned the piano.','something that makes music'],
+ ['egg','She dropped the egg on the kitchen floor.','something that breaks easily','She boiled an egg for breakfast.','something you can eat'],
+ ['rope','The climber’s life depended on the rope.','something strong','The children skipped with a rope in the playground.','something to play with'],
+ ['knife','He sliced the bread with the knife.','something sharp','He polished the silver knife until it gleamed.','something shiny'],
+ ['newspaper','She swatted the fly with a rolled-up newspaper.','something you can hit with','She read the newspaper on the train.','something you read'],
+ ['ice','He slipped on the ice outside the door.','something slippery','He cooled his drink with ice.','something cold'],
+ ['balloon','The balloon floated up over the trees.','something that rises','The balloon burst with a bang.','something that pops'],
+ ['candle','The candle lit up the dark room.','something that gives light','The candle filled the room with the smell of vanilla.','something with a scent'],
+ ['brick','The builder laid one brick on top of another.','a building material','The thief threw a brick through the window.','something you can throw'],
+ ['coat','She wrapped herself in her coat against the wind.','something that keeps you warm','She paid a fortune for the designer coat.','something expensive'],
+ ['tomato','The ripe tomato was bright red.','something red','She sliced a tomato into the salad.','something that goes in a salad'],
+ ['drum','The drum boomed across the field.','something loud','The drum was round, with a flat top.','something round']];
+let kr=null;
+function kAsk(){return new Promise(res=>{kr.gres=res;$('kGen').hidden=false;$('kGi').value='';$('kGi').focus()})}
+$('kGen').addEventListener('submit',e=>{e.preventDefault();if(!kr||!kr.gres)return;const r=kr.gres;kr.gres=null;$('kGen').hidden=true;r($('kGi').value.trim().toLowerCase())});
+$('kGo').addEventListener('click',async()=>{if(kr)return;kr={};const g=$('kGo');g.disabled=true;g.textContent='In progress';$('kRes').innerHTML='';
+ const m=shuf([...Array(6).fill(1),...Array(6).fill(0)]);const items=shuf(OB.map((o,i)=>{const v=Math.random()<0.5?0:1;return{w:o[0],sent:o[1+v*2],cue:m[i]?o[2+v*2]:o[4-v*2],match:!!m[i],got:false}}));
+ $('kPhase').textContent='Step 1 of 3 · Read';$('kTitle').textContent='Read and picture it';
+ for(let i=0;i<items.length;i++){$('kS').textContent=items[i].sent;$('kProg').textContent=`Sentence ${i+1} of 12`;if(!await kHold(4))return}
+ $('kS').textContent='';$('kPhase').textContent='Step 2 of 3 · Break';$('kTitle').textContent='Step away';$('kText').textContent='An easy, 30-second task.';await kBreak();if(!kr)return;
+ $('kPhase').textContent='Step 3 of 3 · Recall';$('kTitle').textContent='Which object?';$('kText').textContent='Each hint describes one object from the sentences. Type it, or leave it blank.';
+ const test=shuf([...items]);
+ for(let i=0;i<test.length;i++){const it=test[i];$('kProg').textContent=`Hint ${i+1} of 12`;$('kC').innerHTML=`<small>A hint</small>${it.cue}`;const v=await kAsk();if(!kr)return;it.got=!!v&&match(v,it.w)}
+ $('kC').textContent='';$('kW').textContent='Done';$('kProg').textContent='';$('kPhase').textContent='Your results';
+ const M=items.filter(x=>x.match&&x.got).length,X=items.filter(x=>!x.match&&x.got).length,tot=M+X,d=M-X;
+ $('kRes').innerHTML=`<div class="res wl2"><p class="gh">Objects recalled, out of 6</p>${barRow('Hint matched',M,6,M+' of 6','#FCB316')}${barRow('Hint didn’t',X,6,X+' of 6','#C9D3E3')}</div>`;
+ let title,text;
+ if(tot<3){title='Too few to compare';text=`You recalled ${tot} of 12, too few to compare the hints. Try again, and picture each sentence as you read it.`}
+ else if(d>=2){title='The matching hint worked better';text=`With a hint that matched the sentence, you recalled ${M} of 6; with one that didn’t, ${X} of 6. The same object, stored through a different property, needed a different way back in.`}
+ else if(d>=-1){title=tot>=11?'Every hint worked':'About the same this time';text=tot>=11?`You recalled ${M} with matching hints and ${X} with mismatched ones. With only 12 everyday objects, you may have remembered the whole list, so any hint was enough; in the original study, the mismatch cost was clear.`:`You recalled ${M} with matching hints and ${X} with mismatched ones. With 6 of each, chance plays a big part, and some hints fit more than one object. In the original study, matching hints worked clearly better.`}
+ else{title='The mismatched hints did better';text=`You recalled ${X} with mismatched hints and ${M} with matching ones, the reverse of the usual result. With 6 of each, chance plays a big part, and you may have pictured more than the sentence said. Try again; the sentences change.`}
+ $('kTitle').textContent=title;$('kText').textContent=text;g.textContent='Try again';g.disabled=false;g.focus();kr=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Divers who learned words under water, recalling them under water rather than on land',['Recalled more','Recalled less','Recalled the same'],0,'Godden and Baddeley, 1975.'],
+ ['The same divers recognizing words instead of recalling them',['The setting made no difference','The setting mattered even more','They recognized nothing'],0,'Context matters most for recall.'],
+ ['Across 93 effects, how much does the place of learning matter?',['A small but reliable amount','A large amount','Not at all'],0,'About 0.28 of a standard deviation.'],
+ ['Picturing the original setting before recalling',['Shrinks the effect of changing rooms','Makes it bigger','Has no effect'],0,'Mental reinstatement brings the cues back.'],
+ ['Studying a list in two different rooms, tested in a new room, compared with studying twice in one room',['Recalled more','Recalled less','Recalled the same'],0,'Varied settings meant more cues.'],
+ ['After reading “The man lifted the piano,” which hint works better for piano?',['Something heavy','Something that makes music','Both equally'],0,'The cue that was stored with it.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: a memory comes back through the cues it was stored with, so build cues that will be there when it’s needed.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Divers learned words on land or under water. When was recall best?',o:['When learning and recall happened in the same place','Always on land','Always under water'],a:0,f:'Encoding specificity: the setting was part of what got stored.'},
+ {q:'How big is the effect of place, across 93 effects?',o:['Small but reliable','Large','None'],a:0,f:'About 0.28 of a standard deviation.'},
+ {q:'What usually matters more than the room?',o:['Whether the right cues are in the material at test','The time of day','The colour of the walls'],a:0,f:'Build meaningful cues into the material.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','m10');
+})();
+</script>
+</body>
+</html>

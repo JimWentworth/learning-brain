@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adult Plasticity and Belief: Earned, Specific, Kept by Use</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+
+:root{
+  /* Layout idea: a magazine spread. Light reading pages, dark "night" spreads for the brain and the video.
+     Contrast (WCAG AA): ink 13.4:1 and ink-2 8.0:1 on paper; accent-ink 5.1:1 on paper; on night, text 11.3:1, muted 8.6:1, orange 5.6:1. */
+  --paper:#F4F6F9; --ink:#13294B; --ink-2:#3D4C66; --rule:#C9D2DF;
+  --accent-ink:#B84300;   /* orange for text/marks on light backgrounds */
+  --orange:#FF5F05;       /* bright orange only on dark backgrounds */
+  --night:#0D1C35; --night-2:#0A172C; --night-ink:#E9EEF6; --night-muted:#AEB9CC; --night-line:#2A426B;
+  --ok:#1C7A55; --no:#B42A4A;
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --body:'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.6}
+a{color:var(--ink);text-decoration-color:var(--accent-ink);text-underline-offset:3px}
+.night a,.hero a{color:var(--night-ink);text-decoration-color:var(--orange)}
+:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px;border-radius:4px}
+.night :focus-visible{outline-color:var(--orange)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.label{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+.night .label,.hero .label,.watch .label{color:var(--orange)}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:var(--ink);padding:8px 14px;z-index:10}
+.skip:focus{left:8px}
+
+/* Hero */
+.hero{position:relative;background:var(--night);color:var(--night-ink);overflow:hidden}
+.hero-inner{position:relative;max-width:1180px;margin:0 auto;padding:56px 24px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:end}
+@media (max-width:900px){.hero-inner{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(44px,8.4vw,118px);overflow-wrap:break-word;line-height:.9;font-weight:900;letter-spacing:-.035em;margin:16px 0 22px}
+.hero h1 em{display:block;font-weight:300;font-style:italic;color:var(--orange)}
+.dek{font-family:var(--display);font-weight:300;font-size:clamp(21px,2.3vw,27px);line-height:1.35;max-width:28ch;margin:0;color:var(--night-ink)}
+.byline{margin-top:24px;font-size:16px;color:var(--night-muted);display:flex;gap:18px;flex-wrap:wrap}
+.byline b{color:var(--night-ink);font-weight:600}
+.hero-brain{position:relative;aspect-ratio:1.35/1}
+.hero-brain canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Watch */
+.watch{background:var(--night);color:var(--night-ink);padding:8px 0 64px}
+.frame{border-radius:6px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 1px var(--night-line);background:#000}
+.frame video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.watch .meta{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:16px;color:var(--night-muted)}
+.watch .meta b{color:var(--night-ink);font-family:var(--display);font-weight:600;font-size:21px}
+details.transcript{margin-top:14px;border-top:1px solid var(--night-line);padding-top:12px}
+details.transcript summary{cursor:pointer;font-weight:600;color:var(--night-ink)}
+details.transcript p{color:#C9D3E3;max-width:70ch}
+
+/* Article */
+.col{max-width:700px;margin:0 auto;padding:0 24px}
+.wide{max-width:1140px;margin:0 auto;padding:0 24px}
+article p{margin:0 0 1.15em}
+.lede{padding-top:64px}
+.lede p:first-child::first-letter{font-family:var(--display);font-weight:900;float:left;font-size:92px;line-height:.82;padding:8px 12px 0 0;color:var(--accent-ink)}
+h2.sec{font-size:clamp(34px,4.6vw,52px);font-weight:800;letter-spacing:-.02em;line-height:1.04;margin:84px 0 20px}
+h2.sec .n{display:block;font-family:var(--body);font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:12px}
+.night h2.sec{color:#fff}.night h2.sec .n{color:var(--orange)}
+.pull{font-family:var(--display);font-weight:800;font-size:clamp(38px,6vw,78px);line-height:1;letter-spacing:-.03em;margin:84px auto;max-width:1120px;padding:0 24px;color:var(--ink)}
+.pull em{font-style:italic;font-weight:300;color:var(--accent-ink)}
+.note{font-size:16px;color:var(--ink-2);border-left:3px solid var(--accent-ink);padding-left:12px;margin:0 0 1.2em}
+.night .note{color:var(--night-muted);border-color:var(--orange)}
+figure{margin:40px auto 56px}
+figcaption{font-size:16px;color:var(--ink-2);line-height:1.5;margin-top:12px;max-width:70ch}
+.night figcaption{color:var(--night-muted)}
+
+/* Night spread + explorer */
+.night{background:var(--night);color:var(--night-ink);padding:76px 0 68px;margin:84px 0}
+.night p{color:#C9D3E3}
+.explorer{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:28px;align-items:start;margin-top:28px}
+@media (max-width:900px){.explorer{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;aspect-ratio:1.45/1}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{appearance:none;font:600 16px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:40px}
+.chip:hover{border-color:#8FA3C2}
+.chip[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:#13294B}
+.panel{background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;padding:24px;min-height:300px}
+.panel h3{font-size:34px;font-weight:800;color:var(--orange);margin:6px 0 10px;line-height:1.1}
+.panel .where{font-size:16px;color:var(--night-muted);margin:0 0 14px}
+.panel p{color:#E9EEF6;margin:0 0 12px}
+.panel .ep{font-size:16px;color:var(--night-muted);border-top:1px solid var(--night-line);padding-top:12px;margin-top:14px}
+
+/* Big number + link lab */
+.num-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:32px;align-items:center}
+@media (max-width:820px){.num-row{grid-template-columns:minmax(0,1fr)}}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(110px,16vw,210px);line-height:.85;letter-spacing:-.05em;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.big-sub{font-family:var(--display);font-size:clamp(26px,3vw,36px);font-weight:600;margin-top:8px}
+.linklab{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:20px}
+.linklab canvas{width:100%;aspect-ratio:2/1;display:block}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.btn{appearance:none;font:600 16px var(--body);border-radius:999px;padding:10px 18px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;min-height:44px}
+.btn.sec{background:transparent;color:var(--ink)}
+.night .btn{background:var(--orange);border-color:var(--orange);color:#13294B}
+.night .btn.sec{background:transparent;color:var(--night-ink);border-color:#8FA3C2}
+.meter{font-size:16px;color:var(--ink-2)}
+.meter b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Memory composer */
+.composer{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:28px;align-items:center;margin-top:24px}
+@media (max-width:900px){.composer{grid-template-columns:minmax(0,1fr)}}
+.composer .stage{aspect-ratio:1.4/1}
+.parts{display:grid;gap:10px}
+.part{display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:left;font:600 18px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:8px;padding:12px 14px;cursor:pointer;min-height:48px}
+.part span{font-weight:400;color:var(--night-muted);font-size:16px}
+.part[aria-pressed="true"]{border-color:var(--orange);background:rgba(255,95,5,.12)}
+.status{min-height:3em;font-size:17px;color:#E9EEF6;margin:10px 0 0}
+
+/* Case box */
+.box{border-top:6px solid var(--ink);background:#fff;padding:26px 28px;margin:40px 0;border-radius:0 0 6px 6px;box-shadow:0 1px 0 var(--rule)}
+.box h3{font-size:28px;font-weight:800;margin-bottom:10px}
+.timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);margin:20px 0 6px}
+@media (max-width:640px){.timeline{grid-template-columns:minmax(0,1fr)}}
+.timeline div{padding:14px 14px 10px 0}
+.timeline strong{display:block;font-family:var(--display);font-size:40px;font-weight:900;color:var(--accent-ink);line-height:1}
+.timeline span{font-size:16px;color:var(--ink-2)}
+.dd{width:100%;border-collapse:collapse;margin:16px 0 8px;font-size:17px}
+.dd th,.dd td{border-bottom:1px solid var(--rule);padding:10px 8px;text-align:left;vertical-align:top}
+.dd thead th{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.dd tbody th{font-weight:600;color:var(--ink)}
+.yes{color:var(--ok);font-weight:700}.no{color:var(--no);font-weight:700}
+
+/* Why */
+.why{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center}
+@media (max-width:820px){.why{grid-template-columns:minmax(0,1fr)}}
+.ways{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.ways button{width:100%;text-align:left;font:300 italic clamp(30px,4vw,46px)/1.15 var(--display);color:var(--ink);background:none;border:none;border-bottom:1px solid var(--rule);padding:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ways button span{font:400 16px var(--body);color:var(--ink-2)}
+.ways button[aria-pressed="true"]{color:var(--accent-ink);font-weight:600}
+.why .mini{background:var(--night);border-radius:6px;aspect-ratio:1.35/1;position:relative}
+.why .mini canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Quiz */
+.quiz{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:26px}
+.q{border-top:1px solid var(--rule);padding:18px 0 6px}
+.q:first-child{border-top:0;padding-top:0}
+.q .qt{font-family:var(--display);font-size:22px;font-weight:600;line-height:1.25;margin:0 0 12px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;font:400 17px var(--body);color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:6px;padding:11px 14px;cursor:pointer;min-height:44px}
+.opt:hover{border-color:var(--ink-2)}
+.opt.right{border-color:var(--ok);background:#E7F4EE}
+.opt.wrong{border-color:var(--no);background:#FBEAEE}
+.fb{font-size:16.5px;color:var(--ink-2);min-height:1.4em;margin:10px 0 0}
+.score{font-family:var(--display);font-size:21px;margin-top:14px}
+
+/* Collection */
+.coll{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:20px}
+.card{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:14px 16px}
+.card b{display:block;font-family:var(--display);font-size:20px;line-height:1.2;margin-bottom:4px}
+.card span{font-size:15px;color:var(--ink-2)}
+.card.here{background:var(--ink);border-color:var(--ink)}
+.card.here b{color:#fff}.card.here span{color:#C9D3E3}
+
+footer.sources{margin:84px 0 0;padding:36px 0 60px;border-top:2px solid var(--ink)}
+footer.sources ol{padding-left:20px;font-size:16px;color:var(--ink-2)}
+footer.sources li{margin:6px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:560px){body{font-size:18px}.panel,.quiz,.box{padding:18px}}
+
+.hero h1{font-size:clamp(44px,6vw,84px)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);margin:24px 0}
+@media (max-width:760px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.facts div{padding:16px 16px 14px 0}
+.facts strong{display:block;font-family:var(--display);font-weight:900;font-size:clamp(34px,4.4vw,54px);line-height:1;color:var(--accent-ink);letter-spacing:-.02em}
+.facts span{font-size:16px;color:var(--ink-2)}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);padding:0;margin:0}
+@media (max-width:760px){.tips{grid-template-columns:minmax(0,1fr)}}
+.tips li{list-style:none;padding:20px 20px 20px 0;border-right:1px solid var(--rule)}
+.tips li:last-child{border-right:0}
+.tips b{display:block;font-family:var(--display);font-size:26px;line-height:1.15;margin-bottom:6px}
+.tips span{font-size:17px;color:var(--ink-2)}
+/* read the map */
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.mapgrid{grid-template-columns:minmax(0,1fr)}}
+.arena{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;aspect-ratio:1.25/1;touch-action:manipulation}
+.arena canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:8px}
+.arena canvas:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.cells{list-style:none;padding:0;margin:0 0 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cells li{display:flex;align-items:center;gap:10px;font-size:17px;color:var(--night-muted);padding:6px 10px;border:1.5px solid var(--night-line);border-radius:8px}
+.cells li i{width:18px;height:18px;border-radius:50%;border:3px solid currentColor;flex:none}
+.cells li.on{color:#fff;border-color:#C9D3E3;font-weight:700}
+.cells li.on i{background:currentColor}
+.mapgrid .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.mapgrid .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.mapgrid .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.mapgrid .mtext b.ok{color:#3CC9B8}.mapgrid .mtext b.no{color:#F08CBE}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.gbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:transparent;color:#fff;border:2px solid #8FA3C2}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscore{font-size:16px;color:var(--night-muted);margin-top:12px}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.kkey{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px;width:100%;max-width:520px;border:2px solid #8FA3C2;border-radius:10px;padding:6px;background:#0F2240}
+.kkey[hidden]{display:none}
+.kkey div{display:flex;flex-direction:column;align-items:center;gap:2px;color:#fff;font:800 18px var(--body)}
+.kkey svg,.ksym svg{display:block}
+.ksym{min-height:96px;display:flex;align-items:center;justify-content:center}
+.kpad{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px;width:100%;max-width:520px}
+.kpad[hidden]{display:none}
+.kpad button{min-height:48px;border-radius:10px;border:2px solid #8FA3C2;background:#1B2E50;color:#fff;font:800 20px var(--body);cursor:pointer;padding:0}
+.kpad button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+@media (max-width:520px){.kpad{grid-template-columns:repeat(5,minmax(0,1fr))}.kkey div{font-size:16px}}
+.kfb{min-height:1.4em;font-size:18px;color:#E9EEF6;text-align:center;margin:0}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.res.wl2 .row{grid-template-columns:150px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 70px}}
+.coll{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.card{display:flex;flex-direction:column}
+.card a{color:inherit;text-decoration:none;display:flex;flex-direction:column;height:100%}
+.card a::after{content:none}
+.card p{font-size:16px;line-height:1.4;color:var(--ink-2);margin:2px 0 8px}
+.card i{font-style:normal;font-size:15px;color:var(--ink-2);margin-bottom:8px}
+.card .st{margin-top:auto;font-size:15px;font-weight:700;color:var(--ink-2)}
+.card.live{border-color:var(--ink)}
+.card.live .st{color:var(--accent-ink)}.card.live .st::after{content:' →'}
+.card.live:hover{box-shadow:0 4px 14px rgba(19,41,75,.15)}
+.card.here p,.card.here i,.card.here .st{color:#C9D3E3}
+
+.collsub{grid-column:1/-1;font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin:14px 0 0}
+.collsub:first-child{margin-top:0}
+
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+<script src="../assets/nav.js" data-page="lb15"></script>
+
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Topic 15</div>
+      <h1 id="title">Adult plasticity and belief <em>Earned, specific, kept by use</em></h1>
+      <p class="dek">Adult brains do change with practice, but the change is earned, specific and kept by use. Believing ability can grow is true and worth saying. Brief mindset lessons alone, though, do little for grades.</p>
+      <div class="byline"><span>About 8 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#kT">Watch a skill grow</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with two areas glowing orange and labelled: an area in the temporal lobe that tracks visual motion, and the intraparietal sulcus. Both gained grey matter in adults who learned to juggle."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Adult plasticity and belief</b> · The Learning Brain, episode 15</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Adults with no juggling experience spent three months learning a three-ball cascade. Brain scans showed more grey matter in an area that tracks visual motion. Three months after they stopped practising, much of that increase had faded.</p>
+    <p>So adult brains do change, as <a href="../lb01/">the neuroplasticity page</a> shows. But notice three things. The change was specific: a motion area, for a motion skill. It took months of effortful practice. And without use, it receded.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>3 months</strong><span>of juggling practice before the grey-matter change showed</span></div>
+      <div role="listitem"><strong>12,490</strong><span>ninth graders in the largest trial of a brief growth-mindset programme</span></div>
+      <div role="listitem"><strong>0.10</strong><span>grade points gained, on average, by the lower-achieving students in that trial</span></div>
+      <div role="listitem"><strong>d = 0.02</strong><span>the effect in the highest-quality studies of one 2023 review: about zero</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Plasticity</span>Earned, specific, kept by use</h2>
+    <p>Some windows also narrow with age, such as learning a new language without an accent. Adult plasticity is real, but it is earned through practice, specific to what is practised, and kept by continued use.</p>
+  </div>
+
+  <section class="night" aria-labelledby="kT">
+    <div class="col">
+      <h2 class="sec" id="kT"><span class="n">Try it</span>Watch a skill grow</h2>
+      <p>A key pairs nine symbols with the numbers 1 to 9. Each symbol that appears, press its number, as fast as you can while staying accurate. Four 30-second rounds with the key, then one round without it. About 3 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="kScreen">
+          <div class="kkey" id="kKey" hidden aria-label="Key"></div>
+          <div class="ksym" id="kSym" aria-live="polite"></div>
+          <p class="kfb" id="kFb" aria-live="polite"></p>
+          <div class="kpad" id="kPad" hidden role="group" aria-label="Number keys 1 to 9"></div>
+          <div class="tbar" aria-hidden="true"><i id="kTb" style="width:0"></i></div>
+          <p class="prog" id="kProg" aria-live="polite">Press Start.</p>
+        </div>
+        <div>
+          <p class="phase" id="kPhase">Ready</p>
+          <p class="mtitle" id="kTitle">How fast does practice pay?</p>
+          <p class="mtext" id="kText" aria-live="polite">Use the number keys on your keyboard, or tap the buttons. The pairing of symbols and numbers is new each time.</p>
+          <div id="kRes"></div>
+          <div class="mrow"><button class="nbtn" id="kGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Belief</span>Mindset: true, but not magic</h2>
+    <p>Growth mindset is the idea that ability can be developed, and in one sense it is simply true: skills grow with practice, as the task above shows for most people. But do brief mindset lessons raise grades? In the largest trial, published in 2019 by David Yeager and colleagues, 12,490 ninth graders across the United States took two 25-minute online sessions. Lower-achieving students earned about a tenth of a grade point more in core subjects; higher-achieving students’ grades didn’t change.</p>
+    <p>Reviews find small average effects. In 2018, Victoria Sisk, Brooke Macnamara and colleagues found the overall effect of mindset interventions on achievement was weak. In a 2023 review, Macnamara and Alexander Burgoyne found that when only the highest-quality studies were kept, the effect was close to zero. Another 2023 review found effects that ranged from negative to positive, depending on the setting.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each comparison from the research, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Some caution</span>Careful in both directions</h2>
+    <p>Don’t promise that belief alone produces learning. And don’t tell students their abilities are fixed. Both claims are wrong.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Tell the honest version</h3>
+      <p>Skills grow with the right kind of practice, over time. Praise strategy and progress, not effort alone: effort that isn’t working needs a new strategy, not more of the same. Show students their own growth, early work beside later work. And design courses where improvement is possible, with chances to revise and try again.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Belief opens the door; practice, strategy and time do the work</h2>
+    <ol class="tips">
+      <li><b>The honest version</b><span>Skills grow with the right practice, over time.</span></li>
+      <li><b>Praise strategy and progress</b><span>Not effort alone.</span></li>
+      <li><b>Show the growth</b><span>Early work beside later work, with chances to revise.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1038/427311a">Draganski, B., et al. (2004). Neuroplasticity: Changes in grey matter induced by training. <i>Nature</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6786290/">Yeager, D. S., et al. (2019). A national experiment reveals where a growth mindset improves achievement. <i>Nature</i>.</a></li>
+        <li><a href="https://englelab.gatech.edu/articles/2018/Sisk,%20Burgoyne%20et%20al.%20(2018)%20-%20Mindset%20and%20Academic%20Achievement.pdf">Sisk, V. F., Burgoyne, A. P., Sun, J., Butler, J. L., &amp; Macnamara, B. N. (2018). To what extent and under which circumstances are growth mind-sets important to academic achievement? <i>Psychological Science</i>.</a></li>
+        <li><a href="https://news.gatech.edu/news/2022/11/07/researchers-find-education-intervention-doesnt-live-promise">Georgia Tech on Macnamara, B. N., &amp; Burgoyne, A. P. (2023). Do growth mindset interventions impact students’ academic achievement? <i>Psychological Bulletin</i>.</a></li>
+        <li><a href="https://hhs.purdue.edu/skill-learning-and-performance-lab/wp-content/uploads/sites/43/2024/08/2023-90931-004.pdf">Macnamara, B. N., &amp; Burgoyne, A. P. (2023). A spotlight on bias in the growth mindset intervention literature (reply discussing Burnette et al., 2023). <i>Psychological Bulletin</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = "1\n00:00:00,500 --> 00:00:01,928\nThe Learning Brain\n\n2\n00:00:06,100 --> 00:00:07,505\nEpisode 15\n\n3\n00:00:07,585 --> 00:00:10,229\nAdult plasticity and belief\n\n4\n00:00:13,029 --> 00:00:18,113\nAdults with no juggling experience spent three months learning a three-ball cascade.\n\n5\n00:00:18,737 --> 00:00:23,469\nBrain scans showed more grey matter in an area that tracks visual motion.\n\n6\n00:00:23,980 --> 00:00:26,226\nThree months after they stopped practicing,\n\n7\n00:00:26,482 --> 00:00:28,241\nmuch of that increase had faded.\n\n8\n00:00:28,411 --> 00:00:30,418\nSo adult brains do change.\n\n9\n00:00:30,615 --> 00:00:32,099\nBut notice three things.\n\n10\n00:00:32,440 --> 00:00:33,813\nThe change was specific: a motion area,\n\n11\n00:00:33,955 --> 00:00:36,097\nfor a motion skill.\n\n12\n00:00:36,399 --> 00:00:38,480\nIt took months of effortful practice.\n\n13\n00:00:38,706 --> 00:00:40,365\nAnd without use, it receded.\n\n14\n00:00:40,824 --> 00:00:43,294\nSome windows also narrow with age,\n\n15\n00:00:43,305 --> 00:00:45,593\nlike learning a new language without an accent.\n\n16\n00:00:46,141 --> 00:00:47,993\nAdult plasticity is real,\n\n17\n00:00:48,013 --> 00:00:49,310\nbut it is earned,\n\n18\n00:00:49,330 --> 00:00:51,053\nspecific, and kept by use.\n\n19\n00:00:51,223 --> 00:00:52,778\nThis is where belief comes in.\n\n20\n00:00:53,272 --> 00:00:56,369\nGrowth mindset is the idea that ability can be developed,\n\n21\n00:00:56,763 --> 00:00:58,627\nand in one sense it is simply true.\n\n22\n00:00:59,077 --> 00:01:01,472\nBut do brief mindset lessons raise grades?\n\n23\n00:01:01,493 --> 00:01:01,719\nIn the largest trial,\n\n24\n00:01:02,015 --> 00:01:05,593\nwith more than twelve thousand ninth graders,\n\n25\n00:01:05,836 --> 00:01:11,545\ntwo short online sessions raised lower achieving students' grades by about a tenth of a grade point.\n\n26\n00:01:12,142 --> 00:01:15,213\nMeta-analyses find small average effects.\n\n27\n00:01:15,597 --> 00:01:20,126\nOne that kept only the highest quality studies found an effect near zero.\n\n28\n00:01:20,296 --> 00:01:22,386\nSo be careful in both directions.\n\n29\n00:01:22,744 --> 00:01:26,041\nDo not promise that belief alone produces learning.\n\n30\n00:01:26,401 --> 00:01:29,305\nAnd do not tell students their abilities are fixed.\n\n31\n00:01:29,576 --> 00:01:31,041\nBoth claims are wrong.\n\n32\n00:01:31,211 --> 00:01:31,991\nFor teaching.\n\n33\n00:01:32,407 --> 00:01:36,743\nTell students the honest version: skills grow with the right kind of practice,\n\n34\n00:01:36,763 --> 00:01:37,487\nover time.\n\n35\n00:01:37,893 --> 00:01:39,611\nPraise strategy and progress,\n\n36\n00:01:39,631 --> 00:01:40,817\nnot effort alone.\n\n37\n00:01:41,249 --> 00:01:43,723\nEffort that is not working needs a new strategy,\n\n38\n00:01:43,743 --> 00:01:45,009\nnot more of the same.\n\n39\n00:01:45,480 --> 00:01:47,420\nShow students their own growth,\n\n40\n00:01:47,440 --> 00:01:49,326\nearly work beside later work.\n\n41\n00:01:49,653 --> 00:01:52,602\nAnd design courses where improvement is possible,\n\n42\n00:01:52,776 --> 00:01:55,373\nwith chances to revise and try again.\n\n43\n00:01:55,543 --> 00:01:57,017\nThe brain can change.\n\n44\n00:01:57,256 --> 00:01:58,717\nBelief opens the door.\n\n45\n00:01:58,924 --> 00:02:01,722\nPractice, strategy, and time do the work.\n\n"
+;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+// ===== Labelled "glass brain": lateral view facing left, local box 1000 x 680
+function crPath(pts,closed){const p=new Path2D();const n=pts.length;const P=i=>closed?pts[(i+n)%n]:pts[Math.max(0,Math.min(n-1,i))];
+ p.moveTo(pts[0][0],pts[0][1]);const last=closed?n:n-1;
+ for(let i=0;i<last;i++){const p0=P(i-1),p1=P(i),p2=P(i+1),p3=P(i+2);p.bezierCurveTo(p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6,p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6,p2[0],p2[1])}
+ if(closed)p.closePath();return p}
+function polyPath(pts){const p=new Path2D();p.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(q=>p.lineTo(q[0],q[1]));p.closePath();return p}
+const BR=(()=>{
+ const OUT=[[90,330],[98,245],[150,165],[250,102],[375,64],[500,50],[625,56],[735,88],[805,128],[872,188],[920,268],[936,350],[908,418],[852,452],[762,470],[640,484],[500,482],[385,472],[305,452],[272,416],[225,424],[165,428],[112,398]];
+ const CS=[[500,50],[482,128],[458,212],[440,300],[436,338]];
+ const SF=[[272,416],[360,372],[440,338],[520,312],[600,298],[662,306]];
+ const PO=[[805,128],[788,228],[772,330],[766,470]];
+ const TP=[[662,306],[715,316],[772,330]];
+ const fro=[[272,416],[225,424],[165,428],[112,398],[90,330],[98,245],[150,165],[250,102],[375,64],[500,50],...CS.slice(1),[360,372]];
+ const par=[[500,50],[625,56],[735,88],[805,128],...PO.slice(1,3),...TP.slice().reverse().slice(1),...SF.slice(2,5).reverse(),...CS.slice(1).reverse()];
+ const occ=[[805,128],[872,188],[920,268],[936,350],[908,418],[852,452],[766,470],[772,330],[788,228]];
+ const tem=[[272,416],...SF.slice(1),...TP.slice(1),[766,470],[640,484],[500,482],[385,472],[305,452]];
+ const pfc=[[272,416],[225,424],[165,428],[112,398],[90,330],[98,245],[150,165],[250,102],[330,76],[300,190],[290,300],[300,400]];
+ const cer=[[760,440],[830,420],[900,418],[946,450],[956,505],[922,556],[850,580],[786,570],[748,536],[744,480]];
+ const stem=[[650,430],[730,440],[744,520],[736,630],[700,632],[686,540]];
+ const hip=[[505,398],[545,384],[590,372],[640,364],[690,360],[718,352],[728,334],[716,322]];
+ const amy=[[452,392],[478,378],[502,386],[504,408],[482,420],[458,414]];
+ const ent=[[500,428],[560,414],[620,410],[640,428],[600,446],[530,450]];
+ const caud=[[330,250],[372,212],[430,196],[500,198],[560,214],[600,244],[612,282],[600,318],[580,340]];
+ const put=[[380,268],[430,252],[478,262],[490,300],[458,330],[404,326],[376,300]];
+ const tha=[[520,262],[566,250],[606,268],[608,300],[570,316],[526,304]];
+ const vta=[[664,404],[694,398],[706,418],[684,432],[662,424]];
+ const ffa=[[590,452],[650,446],[712,448],[722,462],[652,470],[592,468]];
+ const ips=[[560,128],[620,150],[690,184],[748,226]];
+ const v1=[[880,250],[922,282],[936,350],[912,410],[870,420],[858,340]];
+ const GYRI=[[[160,200],[220,170],[260,210],[300,170]],[[130,300],[190,280],[230,320],[280,300]],[[300,130],[340,160],[380,120],[420,150]],[[340,240],[380,270],[400,230]],
+  [[560,90],[600,120],[650,100],[700,130]],[[540,230],[590,250],[640,230],[690,270]],[[400,420],[460,400],[520,430],[580,410],[650,420],[720,400]],[[820,220],[860,260],[880,320]],[[820,380],[860,400],[890,380]]];
+ const P={OUT:crPath(OUT,true),fro:polyPath(fro),par:polyPath(par),occ:polyPath(occ),tem:polyPath(tem),pfc:polyPath(pfc),cer:crPath(cer,true),stem:crPath(stem,true),
+  hip:crPath(hip,false),amy:crPath(amy,true),ent:crPath(ent,true),caud:crPath(caud,false),put:crPath(put,true),tha:crPath(tha,true),vta:crPath(vta,true),ffa:crPath(ffa,true),ips:crPath(ips,false),v1:crPath(v1,true),
+  CS:crPath(CS,false),SF:crPath(SF,false),PO:crPath(PO,false),GY:GYRI.map(g=>crPath(g,false))};
+ // region specs: path keys, label anchor (local), label position (local), kind (fill|line|deep)
+ const R={
+  fro:{name:'frontal lobe',k:['fro'],pt:[250,170],lab:[150,-40],al:'right'},
+  pfc:{name:'prefrontal cortex',k:['pfc'],pt:[175,300],lab:[-30,260],al:'right'},
+  par:{name:'parietal lobe',k:['par'],pt:[650,140],lab:[720,-40],al:'left'},
+  tem:{name:'temporal lobe',k:['tem'],pt:[420,440],lab:[260,560],al:'right'},
+  occ:{name:'occipital lobe',k:['occ'],pt:[870,300],lab:[1040,250],al:'left'},
+  cer:{name:'cerebellum',k:['cer'],pt:[870,520],lab:[1040,560],al:'left'},
+  stem:{name:'brainstem',k:['stem'],pt:[716,590],lab:[640,680],al:'right'},
+  hip:{name:'hippocampus',k:['hip'],pt:[640,366],lab:[600,660],al:'left',deep:1,line:1},
+  amy:{name:'amygdala',k:['amy'],pt:[478,400],lab:[300,610],al:'right',deep:1},
+  ent:{name:'entorhinal cortex',k:['ent'],pt:[580,432],lab:[480,680],al:'right',deep:1},
+  str:{name:'striatum',k:['caud','put'],pt:[440,290],lab:[330,-40],al:'right',deep:1},
+  tha:{name:'thalamus',k:['tha'],pt:[566,284],lab:[560,-40],al:'left',deep:1},
+  vta:{name:'midbrain dopamine area',k:['vta'],pt:[684,414],lab:[1040,660],al:'left',deep:1},
+  ffa:{name:'fusiform face area',k:['ffa'],pt:[680,458],lab:[1040,470],al:'left',deep:1},
+  ips:{name:'intraparietal sulcus',k:['ips'],pt:[690,184],lab:[1040,120],al:'left',line:1},
+  v1:{name:'visual cortex',k:['v1'],pt:[905,330],lab:[1040,360],al:'left'}};
+ const GYR=[];{let sd=7;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};for(let i=0;i<46;i++){const x0=80+rnd()*860,y0=60+rnd()*420,ang=rnd()*Math.PI,len=50+rnd()*90;const pts=[];for(let k=0;k<6;k++){const u=k/5-0.5;pts.push([x0+Math.cos(ang)*len*u+Math.sin(ang)*Math.sin(k*2.1+i)*14,y0+Math.sin(ang)*len*u-Math.cos(ang)*Math.sin(k*2.1+i)*14])}GYR.push(crPath(pts,false))}}
+ return{P,R,GYR}})();
+// draw the brain. o: {cx,cy,s,t,active:[keys],labels:[keys],alpha,draw(0..1),glow(0..1),dim,labelAlpha}
+function brainDraw(o){const{cx=960,cy=560,s=0.9,sy=1.16,t=0,active=[],labels=[],alpha=1,draw=1,glow=1,deep=0.55,labelT={},la=1,labSize=32,lobeTint=1,gmap={}}=o;const GL=k=>glow*(gmap[k]??1);if(alpha<=0)return;
+ const{P,R}=BR;const L=([x,y])=>[cx+(x-500)*s,cy+(y-300)*s*sy];
+ ctx.save();ctx.translate(cx,cy);ctx.scale(s,s*sy);ctx.translate(-500,-300);
+ ctx.lineJoin='round';ctx.lineCap='round';
+ // cerebellum + stem first, so the cortex overlaps them
+ [['stem','#18304F'],['cer','#1A3459']].forEach(([k,c])=>{ga(alpha*sat(draw*1.5-0.3));ctx.fillStyle=c;ctx.fill(P[k])});
+ active.forEach(k=>{if(k==='cer'||k==='stem'){ga(alpha*0.9*GL(k));ctx.fillStyle='rgba(255,95,5,0.5)';ctx.fill(P[k])}});
+ ctx.save();ctx.clip(P.cer);ctx.strokeStyle='rgba(200,215,235,0.18)';ctx.lineWidth=2;ga(alpha*sat(draw*1.6-0.5));for(let k=0;k<7;k++){ctx.beginPath();ctx.ellipse(852,500,120-k*15,70-k*8,-0.12,Math.PI*0.02,Math.PI*0.98);ctx.stroke()}ctx.restore();
+ ctx.strokeStyle='#E9EEF6';ctx.lineWidth=4;ga(alpha);if(draw<1){ctx.setLineDash([900*draw,900])}ctx.stroke(P.cer);ctx.stroke(P.stem);ctx.setLineDash([]);
+ // cortex base fill (hides what lies under it)
+ ga(alpha*sat(draw*2));ctx.fillStyle='#16305A';ctx.fill(P.OUT);
+ // lobe tints
+ const tints={fro:'#1E3B66',par:'#1B3760',tem:'#1A3459',occ:'#1D3964'};
+ ctx.save();ctx.clip(P.OUT);for(const k in tints){ga(alpha*0.9*lobeTint*sat(draw*1.5-0.3));ctx.fillStyle=tints[k];ctx.fill(P[k])}
+ // gyri texture
+ ctx.strokeStyle='rgba(200,215,235,0.11)';ctx.lineWidth=2.4;ctx.lineCap='round';ga(alpha*sat(draw*1.6-0.5));BR.GYR.forEach(g=>ctx.stroke(g));
+ // active glows inside clip (cortical)
+ active.forEach((k,i)=>{const r=R[k];if(!r||r.deep||r.line||k==='cer'||k==='stem')return;const g=GL(k)*(0.85+0.15*Math.sin(t*2.4+i));const gr=ctx.createRadialGradient(r.pt[0],r.pt[1],0,r.pt[0],r.pt[1],260);gr.addColorStop(0,'rgba(255,110,30,0.85)');gr.addColorStop(1,'rgba(255,95,5,0.32)');ga(alpha*g);ctx.fillStyle=gr;r.k.forEach(q=>ctx.fill(P[q]));ctx.strokeStyle='rgba(255,140,70,0.9)';ctx.lineWidth=3;r.k.forEach(q=>ctx.stroke(P[q]))});
+ ctx.restore();
+ // sulci
+ ctx.strokeStyle='rgba(233,238,246,0.55)';ctx.lineWidth=3;ga(alpha*sat(draw*1.6-0.6));[P.CS,P.SF,P.PO].forEach(q=>ctx.stroke(q));
+ // outline (draw-on)
+ ctx.strokeStyle='#E9EEF6';ctx.lineWidth=4;ga(alpha);if(draw<1){ctx.setLineDash([2600*draw,2600])}ctx.stroke(P.OUT);ctx.setLineDash([]);
+ // deep structures (glass view)
+ const dk=['hip','amy','ent','str','tha','vta','ffa'];
+ dk.forEach(k=>{const r=R[k],on=active.includes(k);const a=alpha*(on?1:deep)*sat(draw*1.5-0.5);if(a<=0)return;
+  r.k.forEach(q=>{if(on){ctx.save();ga(a*GL(k));ctx.shadowColor=ORANGE;ctx.shadowBlur=24;ctx.fillStyle='rgba(255,95,5,0.75)';ctx.strokeStyle=ORANGE;ctx.lineWidth=(q==='caud'||q==='hip')?16:4;
+    if(q==='caud'||q==='hip'){ctx.stroke(P[q])}else{ctx.fill(P[q]);ctx.stroke(P[q])}ctx.restore()}
+   else{ga(a*0.8);ctx.setLineDash([7,7]);ctx.strokeStyle='rgba(201,211,227,0.7)';ctx.lineWidth=(q==='caud'||q==='hip')?5:2.5;ctx.stroke(P[q]);ctx.setLineDash([])}})});
+ // IPS line
+ {const on=active.includes('ips');ga(alpha*(on?Math.max(0.6,GL('ips')):0.6)*sat(draw*1.6-0.6));ctx.strokeStyle=on?ORANGE:'rgba(233,238,246,0.5)';ctx.lineWidth=on?7:3;if(on){ctx.shadowColor=ORANGE;ctx.shadowBlur=18}ctx.stroke(P.ips);ctx.shadowBlur=0}
+ // v1 glow
+ if(active.includes('v1')){ctx.save();ctx.clip(P.OUT);ga(alpha*GL('v1')*0.9);ctx.fillStyle='rgba(255,95,5,0.6)';ctx.fill(P.v1);ctx.restore()}
+ ctx.restore();
+ // labels
+ labels.forEach((k,i)=>{const r=R[k];if(!r)return;const t0=labelT[k]??0,p=sat((t-t0)/0.45);if(p<=0)return;const on=active.includes(k);
+  const a=L(r.pt),b=L(r.lab);const ex=r.al==='right'?b[0]+12:r.al==='left'?b[0]-12:b[0];
+  ctx.save();ga(alpha*la);ctx.strokeStyle=on?ORANGE:'rgba(201,211,227,0.85)';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(lerp(a[0],ex,ez(p)),lerp(a[1],b[1],ez(p)));ctx.stroke();
+  ctx.fillStyle=on?ORANGE:'#E9EEF6';ctx.beginPath();ctx.arc(a[0],a[1],on?7:5,0,7);ctx.fill();ctx.restore();
+  const q=sat((t-t0-0.25)/0.35);if(q>0){ctx.save();ga(alpha*la*q);ctx.font=`${on?700:600} ${labSize}px ${BODY}`;ctx.textAlign=r.al==='right'?'right':r.al==='left'?'left':'center';ctx.textBaseline='middle';ctx.fillStyle=on?ORANGE:'#E9EEF6';ctx.fillText(r.name,b[0],b[1]);ctx.restore()}})}
+
+</script>
+<script>
+/* renderColl() is defined by assets/nav.js */
+
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.tem.lab=[300,770];BR.R.tem.al='right';BR.R.ips.lab=[1000,-60];BR.R.ips.al='right';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['tem','ips'],labels:['tem','ips'],labelT:{tem:0.8,ips:1.0},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+/* ---------- watch a skill grow ----------
+   9 symbols mapped to 1-9 at random. Rounds 1-4: 30 s each with the key shown; round 5: 30 s without it.
+   A symbol is shown; a correct press moves on; a wrong press flags an error and keeps the symbol. Count correct per round. */
+const SH={circle:'<circle cx="20" cy="20" r="13"/>',triangle:'<path d="M20 6 L34 33 L6 33 Z"/>',square:'<rect x="8" y="8" width="24" height="24"/>',diamond:'<path d="M20 5 L35 20 L20 35 L5 20 Z"/>',
+ cross:'<path d="M9 9 L31 31 M31 9 L9 31"/>',plus:'<path d="M20 6 V34 M6 20 H34"/>',bar:'<path d="M8 20 H32 M8 12 H32 M8 28 H32"/>',arc:'<path d="M7 28 Q20 2 33 28"/>',zigzag:'<path d="M5 26 L13 12 L20 26 L27 12 L35 26"/>'};
+const NAMES=Object.keys(SH);
+const svg=(n,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 40 40" aria-hidden="true" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">${SH[n]}</svg>`;
+$('kPad').innerHTML=[1,2,3,4,5,6,7,8,9].map(d=>`<button type="button" data-d="${d}">${d}</button>`).join('');
+let kr=null;
+function kTimer(sec,me){const t0=performance.now();const tick=()=>{if(!kr||kr.tok!==me)return;const f=Math.min(1,(performance.now()-t0)/(sec*1000));$('kTb').style.width=(100-f*100)+'%';if(f<1)requestAnimationFrame(tick)};tick()}
+function press(d){if(!kr||!kr.live)return;if(d===kr.map[kr.cur]){kr.n++;kr.fb='';nextSym()}else{kr.err++;$('kFb').textContent='Not that one.'}}
+function nextSym(){let s;do{s=NAMES[Math.floor(Math.random()*9)]}while(s===kr.cur);kr.cur=s;$('kSym').innerHTML=svg(s,84);$('kSym').setAttribute('aria-label',s);$('kFb').textContent=''}
+$('kPad').addEventListener('click',e=>{const b=e.target.closest('button');if(b)press(+b.dataset.d)});
+addEventListener('keydown',e=>{if(!kr||!kr.live)return;if(/^[1-9]$/.test(e.key)){e.preventDefault();press(+e.key)}});
+function kWait(label){return new Promise(res=>{const b=$('kGo');b.textContent=label;b.disabled=false;b.focus();b.onclick=()=>{b.onclick=null;b.disabled=true;b.textContent='In progress';res()}})}
+async function round(sec){kr.n=0;kr.err=0;kr.live=true;$('kPad').hidden=false;nextSym();if(kr.kb===false)$('kPad').querySelector('button').focus();const me=Symbol();kr.tok=me;kTimer(sec,me);await sw(sec*1000);if(!kr)return null;kr.live=false;kr.tok=null;$('kTb').style.width='0';$('kPad').hidden=true;$('kSym').innerHTML='';$('kSym').removeAttribute('aria-label');$('kFb').textContent='';return{n:kr.n,err:kr.err}}
+$('kGo').addEventListener('click',async()=>{if(kr||$('kGo').onclick)return;kr={};const g=$('kGo');g.disabled=true;g.textContent='In progress';$('kRes').innerHTML='';
+ const digits=shuf([1,2,3,4,5,6,7,8,9]);kr.map={};NAMES.forEach((n,i)=>kr.map[n]=digits[i]);
+ $('kKey').innerHTML=[...NAMES].sort((a,b)=>kr.map[a]-kr.map[b]).map(n=>`<div aria-label="${n} is ${kr.map[n]}">${svg(n,30)}<span aria-hidden="true">${kr.map[n]}</span></div>`).join('');
+ const R=[];
+ for(let r=0;r<5;r++){const keyOn=r<4;$('kKey').hidden=!keyOn;
+  $('kPhase').textContent=`Round ${r+1} of 5`;$('kTitle').textContent=keyOn?'With the key':'Without the key';$('kText').textContent=keyOn?'Press the number for each symbol, as fast as you can while staying accurate.':'The key is gone. Press the number for each symbol from memory.';
+  $('kProg').textContent=r===0?'Get ready…':'Next round…';
+  if(r>0){await kWait(keyOn?'Start the next round':'Start the last round');if(!kr)return}else{await sw(1200);if(!kr)return}
+  $('kProg').textContent=`Round ${r+1}: 30 seconds`;const res=await round(30);if(!kr)return;R.push(res);
+  $('kProg').textContent=`Round ${r+1}: ${res.n} correct${res.err?`, ${res.err} wrong press${res.err>1?'es':''}`:''}.`}
+ $('kKey').hidden=true;$('kSym').textContent='';$('kPhase').textContent='Your results';
+ const mx=Math.max(...R.map(x=>x.n),1);
+ const row=(l,x,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${x.n/mx*100}%;background:${c}"></i></div><b>${x.n}</b></div>`;
+ $('kRes').innerHTML=`<div class="res wl2">${R.slice(0,4).map((x,i)=>row(`Round ${i+1}`,x,['#C9D3E3','#9FB9DA','#7DB8FF','#FCB316'][i])).join('')}${row('No key',R[4],'#FF8A3D')}</div>`;
+ const a=R[0].n,b=R[3].n,nk=R[4].n,gain=a?Math.round((b-a)/a*100):(b>0?100:0);
+ const nkTxt=b>0?(nk>=0.7*b?` Without the key you still managed ${nk}: much of the key had moved into memory.`:nk>0?` Without the key you managed ${nk}: some of the key had moved into memory, but you still leaned on it.`:' Without the key, you couldn’t get any: you were still reading the key each time.'):'';
+ let title,text;
+ if(a+b<4){title='Too few answers to compare';text=`You got ${a} in the first round and ${b} in the fourth. Try again, pressing the number for each symbol as quickly as you can.`}
+ else if(gain>=20){title='Your skill grew';text=`${a} correct in the first round, ${b} in the fourth: ${gain}% more in two minutes of practice.${nkTxt} Show students this kind of curve with their own work: early attempts beside later ones.`}
+ else if(gain>-10){title='Steady this time';text=`${a} correct in the first round, ${b} in the fourth.${nkTxt} Some people start fast and level off quickly. Real skills take far longer than two minutes; the juggling change took three months.`}
+ else{title='Slower by the end';text=`${a} correct in the first round, ${b} in the fourth.${nkTxt} Tiredness or lost focus can hide learning in the short run. That’s why progress is best judged over days and weeks, not minutes.`}
+ $('kTitle').textContent=title;$('kText').textContent=text;g.onclick=null;g.textContent='Try again';g.disabled=false;g.focus();kr=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Adults after three months of learning to juggle',['More grey matter in a visual-motion area','No measurable change','Less grey matter'],0,'The change was specific to a motion area, for a motion skill.'],
+ ['The same adults three months after they stopped juggling',['Much of the increase had faded','The increase kept growing','It stayed exactly the same'],0,'Plasticity is kept by use.'],
+ ['Lower-achieving ninth graders after two 25-minute growth-mindset sessions',['About 0.1 grade points higher','About a full grade higher','No change'],0,'A small but real average gain in the largest trial.'],
+ ['Higher-achieving ninth graders in the same trial',['No change in grades','A large gain in grades','Lower grades'],0,'Their grades didn’t change.'],
+ ['Growth-mindset interventions across 43 studies, in a 2018 review',['Weak overall effects on achievement','Large effects','Harmful effects'],0,'The overall effect was weak.'],
+ ['Only the highest-quality studies, in a 2023 review',['An effect close to zero','A large positive effect','A large negative effect'],0,'d = 0.02 across six high-quality studies.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: the brain changes with sustained, specific practice; a brief belief lesson alone does little.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'What happened to the juggling-related brain change after people stopped practising?',o:['Much of it faded','It kept growing','It stayed exactly the same'],a:0,f:'Adult plasticity is kept by use.'},
+ {q:'In the largest growth-mindset trial, who gained in grades?',o:['Lower-achieving students, by about 0.1 grade points','All students, by a full grade','No one'],a:0,f:'Higher-achieving students’ grades didn’t change.'},
+ {q:'What should you praise?',o:['Strategy and progress','Effort alone','Natural talent'],a:0,f:'Effort that isn’t working needs a new strategy, not more of the same.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','lb15');
+})();
+</script>
+</body>
+</html>

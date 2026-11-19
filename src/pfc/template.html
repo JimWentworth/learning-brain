@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Prefrontal Cortex: The Mind’s Workbench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+/* shared pieces of the two try-it panels */
+.lab{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.gbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:transparent;color:#fff;border:2px solid #8FA3C2}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+/* span task */
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px}
+.letter{font-family:var(--display);font-weight:900;font-size:clamp(96px,14vw,150px);line-height:1;color:#fff;min-height:1em;letter-spacing:.02em}
+.dots{display:flex;gap:8px}.dots i{width:12px;height:12px;border-radius:50%;border:2px solid #8FA3C2}.dots i.on{background:#FCB316;border-color:#FCB316}
+.answer{display:flex;flex-wrap:wrap;gap:10px;align-items:center;width:100%;max-width:440px}
+.answer[hidden]{display:none}
+.answer label{font-size:17px;color:#E9EEF6;width:100%}
+.answer input{flex:1;min-width:0;min-height:52px;font:700 28px var(--body);letter-spacing:.2em;text-transform:uppercase;padding:0 14px;border-radius:8px;border:2px solid #8FA3C2;background:#0D1C35;color:#fff}
+.answer input:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.res{display:grid;gap:10px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:96px minmax(0,1fr) 64px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px}
+.res b{font-variant-numeric:tabular-nums;text-align:right}
+.cmpline{font-size:16px;color:var(--night-muted);margin:0}
+.cmpline code{font:700 17px var(--body);letter-spacing:.12em;color:#fff}
+/* which side */
+.sides{position:relative;background:#fff;border:1px solid var(--rule);border-radius:10px;padding:18px;margin-top:22px}
+.sidegrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(250px,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.sidegrid{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;background:#F4F6F9;border:2px solid var(--rule);border-radius:8px;aspect-ratio:2/1;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+.stage:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px}
+.stage .half{display:flex;align-items:center;justify-content:center;border-right:1px dashed #A9B6C9}
+.stage .half:last-child{border-right:0}
+.stage .w{font-family:var(--display);font-weight:900;font-size:clamp(34px,6vw,64px);color:var(--ink);letter-spacing:.04em}
+.stage .fix{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:700 40px var(--body);color:var(--ink-2)}
+.stage .fb{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font:700 18px var(--body)}
+.stage .fb.ok{color:#0B5D52}.stage .fb.no{color:#8A1C4A}
+.keys{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.keys button{appearance:none;min-height:56px;border-radius:10px;font:700 19px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.keys button:disabled{background:#C9D2DF;color:var(--ink-2);cursor:default}
+.sides .step{font:800 14px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 6px}
+.sides h3{font-family:var(--display);font-size:clamp(22px,2.4vw,28px);line-height:1.2;margin:0 0 10px}
+.sides p{font-size:17px;line-height:1.5;margin:0 0 12px}
+.sides .pbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.sides .pbtn:disabled{background:#C9D2DF;color:var(--ink-2);cursor:default}
+.sres{display:grid;gap:10px;margin:6px 0 12px}
+.sres .row{display:grid;grid-template-columns:110px minmax(0,1fr) 84px;gap:10px;align-items:center;font-size:16px}
+.sres .bar{height:16px;background:#E6EBF2;border-radius:8px;overflow:hidden}.sres .bar i{display:block;height:100%;border-radius:8px}
+.sres b{font-variant-numeric:tabular-nums;text-align:right}
+.prog{font-size:16px;color:var(--ink-2);margin:8px 0 0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+__POPCSS__
+__COLLCSS__
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Brain regions</div>
+      <h1 id="title">The Prefrontal Cortex <em>The mind’s workbench</em></h1>
+      <p class="dek">Behind your forehead, the prefrontal cortex holds what you are thinking about and keeps you on task. Its workbench is small, and knowing that changes how to learn.</p>
+      <div class="byline"><span>About 9 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#spanT">Test your workbench</a></span><span><a href="#sideT">Which side?</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the brain from the side, with the prefrontal cortex, at the front behind the forehead, glowing orange."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2¼ minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>The prefrontal cortex: the mind’s workbench</b> · The Learning Brain</span><span>Captions are on; turn them off in the player.</span></div>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>The prefrontal cortex is the front part of the brain’s frontal lobe, just behind the forehead. In 1989, Shintaro Funahashi, Charles Bruce and Patricia Goldman-Rakic at Yale recorded single cells there while monkeys did a simple memory task. A spot of light flashed somewhere on a screen and went out. After a wait of a few seconds, the monkey had to look at where the spot had been.</p>
+    <p>Some cells fired while the light was on. Others did something new: they kept firing through the wait, after the light was gone. Many of them fired only for spots in one direction. The cells were holding the location in mind until it was needed.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>1989</strong><span>cells shown holding a location through a wait</span></div>
+      <div role="listitem"><strong>About 4</strong><span>chunks most adults can hold in mind at once</span></div>
+      <div role="listitem"><strong>1935</strong><span>Stroop publishes his ink-color test</span></div>
+      <div role="listitem"><strong>Last</strong><span>among the last brain regions to mature</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Working memory</span>A small workbench</h2>
+    <p>Psychologists call this working memory: holding information in mind while you use it. Following directions, comparing two prices or working out a sum in your head all depend on it. Long-term memories are stored elsewhere, with help from the hippocampus. The prefrontal cortex is less a filing cabinet than a workbench, where a few things stay active while you work with them.</p>
+    <p>The workbench is small. In 1956 George Miller famously suggested people can hold about seven items. When researchers stop people from grouping items, the number is lower. In a 2001 review, Nelson Cowan put the limit at about three to five chunks, with four as a typical figure.</p>
+    <p>A chunk is a group you already know as one unit. In 1973, William Chase and Herbert Simon showed chess players a board for five seconds and asked them to rebuild it. A master rebuilt positions from real games far better than a beginner. With the pieces placed at random, most of the master’s advantage disappeared. The master did not have a bigger workbench. He saw familiar groups of pieces, so each chunk carried several pieces at once.</p>
+  </div>
+
+  <section class="night" aria-labelledby="spanT">
+    <div class="col">
+      <h2 class="sec" id="spanT"><span class="n">Try it</span>How much fits on your workbench?</h2>
+      <p>Nine letters appear one at a time. When they finish, type as many as you can, in order. Then try a second set of nine.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="spScreen">
+          <div class="letter" id="spLetter" aria-hidden="true"></div>
+          <div class="dots" id="spDots" aria-hidden="true"></div>
+          <p class="sr-only" id="spSay" aria-live="assertive"></p>
+          <form class="answer" id="spForm" hidden>
+            <label for="spIn">Type the letters in order</label>
+            <input id="spIn" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="14" inputmode="text">
+            <button class="nbtn" type="submit">Check</button>
+          </form>
+        </div>
+        <div>
+          <p class="phase" id="spPhase">Round 1 of 2</p>
+          <p class="mtitle" id="spTitle">Nine letters, one at a time</p>
+          <p class="mtext" id="spText" aria-live="polite">Each letter shows for about one second. Don’t write them down.</p>
+          <div id="spRes"></div>
+          <div class="mrow"><button class="nbtn" id="spGo">Start round 1</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Self-control</span>Doing what you mean to do</h2>
+    <p>The prefrontal cortex also keeps you on task, by holding your goal in mind and holding back habits that get in the way. In 1935, John Ridley Stroop asked people to name the ink color of printed words. When the word named a different color, such as RED printed in blue ink, people were slower and made more mistakes. Reading is so practised that it happens automatically. Naming the ink means overriding it.</p>
+    <p>The next activity uses the same idea with position instead of color, so it works without color vision.</p>
+  </div>
+
+  <section aria-labelledby="sideT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="sideT"><span class="n">Try it</span>Which side?</h2>
+      <p>The word LEFT or RIGHT appears on one side of the box. Answer with the side the word is on and ignore what it says. Sometimes the two agree, sometimes they clash. The activity times each answer.</p>
+    </div>
+    <div class="wide">
+      <div class="sides">
+        <div class="sidegrid">
+          <div>
+            <div class="stage" id="stStage" tabindex="0" role="group" aria-label="Which side box. Use the Left arrow or Right arrow key, or the buttons below, to answer with the side the word is on." aria-describedby="stProg">
+              <div class="half" id="stL"></div><div class="half" id="stR"></div>
+              <div class="fix" id="stFix" aria-hidden="true">+</div>
+              <div class="fb" id="stFb" aria-hidden="true"></div>
+            </div>
+            <div class="keys"><button id="stBL" disabled>← Left side</button><button id="stBR" disabled>Right side →</button></div>
+            <p class="prog" id="stProg" aria-live="polite">20 quick rounds, about 40 seconds.</p>
+          </div>
+          <div>
+            <p class="step" id="stStep">Ready</p>
+            <h3 id="stTitle">Answer with the side, not the word</h3>
+            <p id="stText" aria-live="polite">Use the arrow keys or the two buttons. Go as fast as you can while staying accurate.</p>
+            <div id="stRes"></div>
+            <div class="prow mrow"><button class="pbtn" id="stGo">Start</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Last to mature</span>A region that keeps developing</h2>
+    <p>The prefrontal cortex is one of the last brain regions to mature. In a study published in 2004, Nitin Gogtay, Paul Thompson and colleagues scanned the same 13 children every two years for eight to ten years, between the ages of 4 and 21. Areas for basic senses and movement matured first. Regions that combine information, including the prefrontal cortex, matured last, into young adulthood.</p>
+    <aside class="box" aria-labelledby="strT">
+      <h3 id="strT">The region most sensitive to stress</h3>
+      <p>Amy Arnsten’s research at Yale shows that the prefrontal cortex is especially sensitive to stress. Even mild stress, when it feels out of your control, can quickly weaken working memory. Longer stress can change the shape of prefrontal cells. The same brain chemicals that weaken the prefrontal cortex strengthen the amygdala, which drives emotional reactions.</p>
+      <p>For learning, this is one more reason to keep practice low-stakes. A calmer learner has more workbench to work with.</p>
+    </aside>
+  </div>
+
+  <section class="pop wide" aria-labelledby="popT">
+    <div style="max-width:700px;margin:0 auto">
+      <h2 class="sec" id="popT"><span class="n">In popular culture</span>Holding it together</h2>
+      <p>A chess prodigy, a famous accident and a monster who wants a cookie: three stories about holding things in mind and holding back.</p>
+    </div>
+    <div class="poptabs" role="tablist" aria-label="The prefrontal cortex in popular culture" id="popTabs"></div>
+    <div id="popPanels"></div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Don’t overload the workbench</h2>
+    <ol class="tips">
+      <li><b>Write it down</b><span>Notes, lists and sketches hold what your workbench doesn’t need to. Save your working memory for the thinking.</span></li>
+      <li><b>One new step at a time</b><span>Break new material into small steps, and study a worked example before solving problems alone.</span></li>
+      <li><b>Practise until it’s automatic</b><span>Once the basics become chunks, they take up less space, leaving room for the new and harder parts.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://www.cns.nyu.edu/wanglab/publications/pdf/wang.jnp2005.pdf">Funahashi, S., Bruce, C. J., &amp; Goldman-Rakic, P. S. (1989). Mnemonic coding of visual space in the monkey’s dorsolateral prefrontal cortex. <i>Journal of Neurophysiology</i> (discussed by Wang, 2005).</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/11515286/">Cowan, N. (2001). The magical number 4 in short-term memory. <i>Behavioral and Brain Sciences</i>.</a></li>
+        <li><a href="https://notes.andymatuschak.org/Chase_and_Simon_-_Perception_in_chess">Chase, W. G., &amp; Simon, H. A. (1973). Perception in chess. <i>Cognitive Psychology</i> (summary).</a></li>
+        <li><a href="https://us.psytoolkit.org/lessons/stroop.html">Stroop, J. R. (1935). Studies of interference in serial verbal reactions. <i>Journal of Experimental Psychology</i> (PsyToolkit lesson).</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/419576/">Gogtay, N., et al. (2004). Dynamic mapping of human cortical development during childhood through early adulthood. <i>PNAS</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/19455173/">Arnsten, A. F. T. (2009). Stress signalling pathways that impair prefrontal cortex structure and function. <i>Nature Reviews Neuroscience</i>.</a></li>
+        <li><a href="https://bps.org.uk/research-digest/what-textbooks-dont-tell-you-about-phineas-gage">British Psychological Society Research Digest. What the textbooks don’t tell you about Phineas Gage.</a></li>
+        <li><a href="https://brightbytes.com/phineasgage/more.html">Macmillan, M. More about Phineas Gage, especially after the accident.</a></li>
+        <li><a href="https://now.uiowa.edu/2014/11/cookie-monster-teaches-self-control">University of Iowa (2014). Cookie Monster teaches self-control.</a></li>
+        <li><a href="https://escholarship.org/content/qt9k92888p/qt9k92888p_noSplash_fa6012fedf212847650744b6f45e7eb0.pdf">Watts, T. W., Duncan, G. J., &amp; Quan, H. (2018). Revisiting the marshmallow test. <i>Psychological Science</i>.</a></li>
+        <li><a href="https://benthamscience.com/article/9592">Buffett-Jerrott, S. E., &amp; Stewart, S. H. (2002). Cognitive and sedative effects of benzodiazepine use. <i>Current Pharmaceutical Design</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawings and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__POPJS__
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+
+/* hero: put the prefrontal label above the brain so it never runs off the left edge */
+BR.R.pfc.lab=[110,-40];BR.R.pfc.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.52,s:fitS(W,H,1.3),t,active:['pfc'],labels:['pfc'],labelT:{pfc:0.8},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560)),deep:0.45})});
+
+/* video captions + transcript */
+(function(){const v=document.getElementById('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ document.getElementById('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(1).join(' ')})();
+
+/* ---------- span task ----------
+   Round 1: nine unrelated consonants. Round 2: nine letters that spell three short words (three chunks).
+   Score = letters recalled in the right order = longest common subsequence of answer and target,
+   so one missed letter early on does not wipe out everything after it. */
+const SETS=[['JRQTXMKPW','SUNCATBOX'],['HZLKVQDNF','PENDOGHAT'],['GWPXBRJTM','CUPRUNBED']];
+let spSet=0,spRound=0,spScores=[null,null],spBusy=false,spDone=false;
+const $=id=>document.getElementById(id);
+function lcs(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},()=>new Array(n+1).fill(0));for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]+1:Math.max(d[i-1][j],d[i][j-1]);return d[m][n]}
+function spDots(k){$('spDots').innerHTML=Array.from({length:9},(_,i)=>`<i class="${i<k?'on':''}"></i>`).join('')}
+function spShow(){if(spBusy)return;spBusy=true;const seq=SETS[spSet][spRound];$('spGo').disabled=true;$('spForm').hidden=true;$('spRes').innerHTML='';
+ $('spText').textContent=spRound===0?'Watch the letters.':'Watch the letters. Look for groups you already know.';
+ let i=0;spDots(0);$('spLetter').textContent='';
+ const step=()=>{if(i<seq.length){$('spLetter').textContent=seq[i];$('spSay').textContent=seq[i];spDots(i+1);i++;setTimeout(()=>{$('spLetter').textContent='';setTimeout(step,200)},900)}
+  else{$('spLetter').textContent='?';$('spSay').textContent='';$('spForm').hidden=false;$('spIn').value='';$('spIn').focus();$('spText').textContent='Type the letters in the order they appeared, then press Check.';spBusy=false}};
+ setTimeout(step,500)}
+function bar(label,v,col){return `<div class="row"><span>${label}</span><div class="bar"><i style="width:${v/9*100}%;background:${col}"></i></div><b>${v} of 9</b></div>`}
+$('spForm').addEventListener('submit',e=>{e.preventDefault();const seq=SETS[spSet][spRound];const ans=$('spIn').value.toUpperCase().replace(/[^A-Z]/g,'');
+ if(!ans){$('spText').textContent='Type at least one letter, or guess, then press Check.';return}
+ const sc=lcs(ans,seq);spScores[spRound]=sc;$('spForm').hidden=true;$('spLetter').textContent=sc+'/9';
+ const cmp=`<p class="cmpline">Shown: <code>${seq}</code><br>You typed: <code>${ans}</code></p>`;
+ if(spRound===0){$('spPhase').textContent='Round 1 result';$('spTitle').textContent=`You recalled ${sc} of 9 in order`;
+  $('spText').textContent=sc>=8?'Very good. Nine unrelated letters is more than most people can hold. You may have been rehearsing or grouping them as they came.':'Most people lose some here. Nine unrelated letters is more than the three to five chunks most adults can hold.';
+  $('spRes').innerHTML=`<div class="res">${bar('Round 1',sc,'#58C4E8')}</div>${cmp}`;spRound=1;$('spGo').textContent='Start round 2';$('spGo').disabled=false;$('spGo').focus()}
+ else{const a=spScores[0],b=sc;$('spPhase').textContent='Both rounds';
+  let title,msg;
+  if(b>a){title=`Round 2: ${b - a} more letter${b-a===1?'':'s'}`;msg=`Both rounds had nine letters. In round 2 they spelled three words, ${SETS[spSet][1].match(/.../g).join(', ')}, so you only had to hold three chunks. Your workbench didn’t get bigger; the pieces got bigger.`}
+  else if(a===9&&b===9){title='Perfect both times';msg=`Nine letters fit either way for you this time. In round 2 they spelled three words, ${SETS[spSet][1].match(/.../g).join(', ')}, which is three chunks instead of nine. Most people find that round much easier.`}
+  else{title='No gain this time';msg=`In round 2 the letters spelled ${SETS[spSet][1].match(/.../g).join(', ')}. Chunking only helps once you spot the groups. If you heard nine separate letters, round 2 was just as hard. That is the point for learners: chunks come from knowing what to look for.`}
+  $('spTitle').textContent=title;$('spText').textContent=msg;
+  $('spRes').innerHTML=`<div class="res">${bar('Round 1',a,'#58C4E8')}${bar('Round 2',b,'#FCB316')}</div>${cmp}`;
+  spSet=(spSet+1)%SETS.length;spRound=0;spScores=[null,null];spDone=true;$('spGo').textContent='Try new letters';$('spGo').disabled=false;$('spGo').focus()}});
+$('spGo').addEventListener('click',()=>{if(spBusy)return;if(spDone){spDone=false;$('spRes').innerHTML='';$('spLetter').textContent=''}
+ $('spPhase').textContent=`Round ${spRound+1} of 2`;$('spTitle').textContent=spRound===0?'Nine letters, one at a time':'Nine more letters';spShow()});
+spDots(0);
+
+/* ---------- which side? ----------
+   20 trials: 10 where word and side agree, 10 where they clash, shuffled.
+   Times are measured from when the word appears. Answers before the word appears are ignored.
+   Result: median time on correct answers for each kind, and the number of mistakes. */
+const N=20;let st=null;
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function median(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2}
+function stClear(){$('stL').textContent='';$('stR').textContent=''}
+function stNext(){if(st.i>=N)return stEnd();const tr=st.trials[st.i];stClear();$('stFix').hidden=false;st.on=false;
+ st.timer=setTimeout(()=>{$('stFix').hidden=true;const el=tr.side==='L'?$('stL'):$('stR');el.innerHTML=`<span class="w">${tr.word}</span>`;st.t0=performance.now();st.on=true},600+Math.random()*400)}
+function stAnswer(side){if(!st||!st.on)return;const tr=st.trials[st.i];st.on=false;const rt=performance.now()-st.t0;const ok=side===tr.side;
+ tr.rt=rt;tr.ok=ok;const fb=$('stFb');fb.textContent=ok?'✓':'✗ That was the '+(tr.side==='L'?'left':'right')+' side';fb.className='fb '+(ok?'ok':'no');
+ st.i++;$('stProg').textContent=`${st.i} of ${N}`;setTimeout(()=>{fb.textContent='';stNext()},ok?250:900)}
+function stEnd(){stClear();$('stFix').hidden=false;$('stBL').disabled=$('stBR').disabled=true;
+ const agree=st.trials.filter(t=>t.match),clash=st.trials.filter(t=>!t.match);
+ const rtA=median(agree.filter(t=>t.ok&&t.rt>=150).map(t=>t.rt)),rtC=median(clash.filter(t=>t.ok&&t.rt>=150).map(t=>t.rt));
+ const eA=agree.filter(t=>!t.ok).length,eC=clash.filter(t=>!t.ok).length;
+ $('stStep').textContent='Your results';
+ if(rtA===null||rtC===null){if(eC>eA){$('stTitle').textContent='Reading took over';$('stText').textContent=`On the clashing rounds you answered with what the word said (${eC} of ${clash.length} wrong). That is the reading habit winning, the habit the prefrontal cortex has to hold back. Try again, a little slower.`}else{$('stTitle').textContent='Not enough correct answers to compare';$('stText').textContent='Try again, answering with the side the word is on, not what it says.'}}
+ else{const d=Math.round(rtC-rtA),mx=Math.max(rtA,rtC);
+  $('stRes').innerHTML=`<div class="sres"><div class="row"><span>Agree</span><div class="bar"><i style="width:${rtA/mx*100}%;background:#1E9E8D"></i></div><b>${Math.round(rtA)} ms</b></div><div class="row"><span>Clash</span><div class="bar"><i style="width:${rtC/mx*100}%;background:#C7457F"></i></div><b>${Math.round(rtC)} ms</b></div></div><p class="prog">Typical (median) time for correct answers. Mistakes: ${eA} when they agreed, ${eC} when they clashed.</p>`;
+  if(d>=15){$('stTitle').textContent=`${d} ms slower when they clashed`;$('stText').textContent=`Reading the word is automatic, so when it pointed the wrong way your brain had to hold it back before answering.${eC>eA?' You also made more mistakes on those rounds.':''} That holding back is the prefrontal cortex at work.`}
+  else{$('stTitle').textContent='Little difference this time';$('stText').textContent=`The two kinds of rounds took about the same time for you${eC>eA?', although you made more mistakes when they clashed':''}. The slowdown is usually small, around tens of milliseconds, and varies from run to run. Try again and compare.`}}
+ $('stGo').textContent='Try again';$('stGo').disabled=false;$('stGo').focus();st=null}
+$('stGo').addEventListener('click',()=>{const base=[];for(let k=0;k<N/2;k++){const side=k%2?'L':'R';base.push({side,word:side==='L'?'LEFT':'RIGHT',match:true});base.push({side,word:side==='L'?'RIGHT':'LEFT',match:false})}
+ st={trials:shuffle(base),i:0,on:false};$('stRes').innerHTML='';$('stStep').textContent='Running';$('stTitle').textContent='Answer with the side, not the word';$('stText').textContent='Keep going until all 20 rounds are done.';
+ $('stGo').disabled=true;$('stBL').disabled=$('stBR').disabled=false;$('stProg').textContent=`0 of ${N}`;$('stStage').focus();stNext()});
+$('stBL').addEventListener('click',()=>stAnswer('L'));$('stBR').addEventListener('click',()=>stAnswer('R'));
+$('stStage').addEventListener('keydown',e=>{if(!st)return;if(e.key==='ArrowLeft'){e.preventDefault();stAnswer('L')}else if(e.key==='ArrowRight'){e.preventDefault();stAnswer('R')}});
+
+/* ---------- in popular culture ---------- */
+renderPop([
+ {id:'gambit',title:'The Queen’s Gambit',sub:'TV miniseries, 2020',kind:'Drama',films:[['The Queen’s Gambit (2020)','https://www.imdb.com/title/tt10048342/']],verdict:['mixed','Real skill, wrong secret'],
+  desc:'Beth Harmon, an orphan in 1950s Kentucky, learns chess from the orphanage janitor and becomes a champion. At night she plays out whole games on the ceiling above her bed.',
+  right:['Strong players really can play through positions in their heads. Chess research shows why: experts see the board as familiar groups of pieces, so each chunk holds several pieces at once.','Her skill grows from years of games and study, not just talent.'],
+  wrong:['The show suggests tranquilizers help her see the board. The pills in the show are fictional, but real tranquilizers such as benzodiazepines cause drowsiness and weaker attention and memory. They don’t sharpen thinking.'],
+  src:'Netflix (2020); Chase & Simon (1973); Buffett-Jerrott & Stewart (2002).'},
+ {id:'gage',title:'Phineas Gage',sub:'True story, 1848',kind:'Real case and textbook legend',films:[],verdict:['mixed','Real, but often retold wrong'],
+  desc:'In 1848 Phineas Gage, a railway construction foreman in Vermont, was packing explosive powder into a hole in the rock when it went off. The iron tamping rod shot through his skull and the front of his brain. He survived.',
+  right:['His doctor, John Harlow, reported changes in Gage’s behavior after the injury. The case is still taught as early evidence that damage to the front of the brain can change behavior.'],
+  wrong:['Many textbooks describe a man ruined for life. Historian Malcolm Macmillan found that Gage later worked as a stagecoach driver in Chile for about seven years, handling six horses and passengers. That suggests a large recovery.','One survey found that only 4 of 21 textbooks covering Gage mention his years in Chile.'],
+  more:[['Macmillan: Gage after the accident','https://brightbytes.com/phineasgage/more.html'],['What the textbooks don’t tell you','https://bps.org.uk/research-digest/what-textbooks-dont-tell-you-about-phineas-gage']],
+  src:'Macmillan; British Psychological Society Research Digest.'},
+ {id:'cookie',title:'Sesame Street',sub:'TV series, 2013 season',kind:'Children’s television',films:[['Sesame Street (1969– )','https://www.imdb.com/title/tt0063951/']],verdict:['good','Good lesson, modest claims'],
+  desc:'In 2013, Sesame Street’s 44th season built a curriculum on self-control around Cookie Monster, who practises ways to wait before eating a cookie, including in the song parody “Me Want It.”',
+  right:['Self-control is taught as strategies you can practise, not as something you either have or don’t.','In a University of Iowa study, preschoolers who watched the Cookie Monster videos were able to wait four minutes longer than children who watched a different Sesame Street video.'],
+  wrong:['The study looked at short-term effects, after three weeks of watching at home. And the famous “marshmallow test” claim, that a child who waits will succeed in life, shrank in a 2018 study of 918 children once family background was taken into account.'],
+  src:'University of Iowa (2014); Watts, Duncan & Quan (2018), Psychological Science.'}],'popTabs','popPanels');
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'In the 1989 monkey study, what did some prefrontal cells do while the monkey waited?',o:['They stopped firing until the answer','They kept firing, holding the location in mind','They fired only when the light flashed'],a:1,f:'Some cells kept firing through the wait, after the light was gone.'},
+ {q:'About how many chunks can most adults hold in mind at once?',o:['One or two','About four','About twenty'],a:1,f:'Cowan’s review put the limit at about three to five chunks.'},
+ {q:'Why did the chess master recall real game positions better than random ones?',o:['He had a bigger working memory','He saw familiar groups of pieces as chunks','Random boards were shown for less time'],a:1,f:'With random positions most of the advantage disappeared, so it came from chunks, not a bigger workbench.'}];
+const box=document.getElementById('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','pfc');
+})();
+</script>
+</body>
+</html>

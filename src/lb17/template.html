@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metacognition: Feeling You Know Is Not Knowing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1}
+.fw.big{font-size:48px}.fw.small{font-size:18px}
+.fbtns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%;max-width:520px}
+.fbtns[hidden]{display:none}
+.fbtns button{min-height:52px;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;font:700 16px/1.2 var(--body);cursor:pointer;padding:4px}
+.fbtns button small{display:block;font-size:13px;color:#C9D3E3;font-weight:600}
+.fbtns button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+@media (max-width:520px){.fbtns{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fpred{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;color:#fff;font-size:18px}
+.fpred[hidden]{display:none}
+.fpred input{width:90px;min-height:48px;font:700 22px var(--body);text-align:center;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff}
+.fpred input:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.res.wl2 .row{grid-template-columns:150px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 70px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Topic 17</div>
+      <h1 id="title">Metacognition <em>Feeling you know is not knowing</em></h1>
+      <p class="dek">The feeling of learning and actual learning can come apart. Fluency, how easy something seems right now, drives the feeling. The fix is simple: wait, try to recall, and only then judge what you know.</p>
+      <div class="byline"><span>About 8 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#fT">Big words, small words</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the prefrontal cortex glowing orange and labelled. People who judge their own accuracy better tend to have more grey matter at its very front."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2½ minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Metacognition</b> · The Learning Brain, episode 17</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Show people words in big 48-point type or small 18-point type, and ask how likely they are to remember each one. They rate the big words as more memorable. Then test them: recall doesn’t differ. Matthew Rhodes and Alan Castel reported this in 2008.</p>
+    <p>The feeling of learning and actual learning came apart. Thinking about your own thinking, and judging it well, is called metacognition.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>48 pt vs 18 pt</strong><span>rated more memorable, recalled the same</span></div>
+      <div role="listitem"><strong>78%</strong><span>of learners rated blocked practice as better, even after their own test showed mixing worked better</span></div>
+      <div role="listitem"><strong>Delayed</strong><span>judgments of learning, made after a wait, are far more accurate</span></div>
+      <div role="listitem"><strong>32</strong><span>people in the brain-structure study: a correlation, not a cause</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Fluency</span>Easy is not the same as learned</h2>
+    <p>The feeling comes from fluency: how easy something seems right now. Big print is easy to read; a page you’ve just reread is easy to follow. As <a href="@@LB:lb10@@">the retrieval practice page</a> shows, most students study by rereading, which feels fluent.</p>
+  </div>
+
+  <section class="night" aria-labelledby="fT">
+    <div class="col">
+      <h2 class="sec" id="fT"><span class="n">Try it</span>Big words, small words</h2>
+      <p>24 words, some big and some small. For each, rate how likely you are to remember it. Then predict your score, take a 30-second break, and type all the words you remember. About 3 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="fScreen">
+          <div class="fw" id="fW" aria-live="polite"></div>
+          <div class="fbtns" id="fRate" hidden role="group" aria-label="How likely are you to remember it? Keys 1 to 4"><button type="button" data-v="1">1<small>Unlikely</small></button><button type="button" data-v="2">2<small>Maybe</small></button><button type="button" data-v="3">3<small>Likely</small></button><button type="button" data-v="4">4<small>Certain</small></button></div>
+          <form class="fpred" id="fPred" hidden><label for="fPin">How many of the 24 will you recall?</label><input id="fPin" type="number" min="0" max="24" inputmode="numeric"><button class="nbtn" type="submit">Next</button></form>
+          <form class="fin" id="fForm" hidden><label class="sr-only" for="fIn">Type the words you remember</label><textarea id="fIn" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type the words, in any order"></textarea><button class="nbtn" type="submit">Done</button></form>
+          <button class="brk" id="fBrk" hidden aria-label="Tap when the circle is orange"></button>
+          <div class="tbar" aria-hidden="true"><i id="fTb" style="width:0"></i></div>
+          <p class="prog" id="fProg" aria-live="polite">Press Start.</p>
+        </div>
+        <div>
+          <p class="phase" id="fPhase">Ready</p>
+          <p class="mtitle" id="fTitle">Does size change the feeling, or the memory?</p>
+          <p class="mtext" id="fText" aria-live="polite">Each word appears for 2 seconds; then rate it from 1 (unlikely to remember) to 4 (certain), with the buttons or keys 1 to 4.</p>
+          <div id="fRes"></div>
+          <div class="mrow"><button class="nbtn" id="fGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Stubborn</span>The illusion survives the evidence</h2>
+    <p>In 2008, Nate Kornell and Robert Bjork had people learn the painting styles of 12 artists. Some artists’ paintings were shown in blocks, one artist at a time; others were mixed together. Mixing worked better for most people. Yet 78% rated blocking as better, even after their own test had shown the opposite.</p>
+    <h2 class="sec"><span class="n">The repair</span>Wait, then judge</h2>
+    <p>Judge your learning right after studying, and you are reading short-term memory. Wait, try to recall, and only then judge, and predictions become far more accurate. This delayed judgment-of-learning effect, first reported by Thomas Nelson and John Dunlosky in 1991, is one of the most reliable findings in the field.</p>
+    <p>In the brain, Stephen Fleming and colleagues found in 2010 that people who were better at judging their own accuracy tended to have more grey matter in the anterior prefrontal cortex, at the very front. But this was a correlation in 32 people. It doesn’t show that the region causes the skill, or that the skill is fixed.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each comparison from the research, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Teach students to check</h3>
+      <p>Warn students that fluent is not the same as learned. Have them predict their score, then compare it with the result. Use delayed self-tests, not rereading, as the check. After exams, ask what they did and what they will change. And model it yourself: say when you are unsure, and how you would check.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Feeling that you know is not knowing</h2>
+    <ol class="tips">
+      <li><b>Predict, then compare</b><span>Students guess their score, then see the real one.</span></li>
+      <li><b>Delayed self-tests</b><span>Wait, recall, then judge.</span></li>
+      <li><b>Reflect after exams</b><span>What did you do? What will you change?</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8883023/">Summary of Rhodes, M. G., &amp; Castel, A. D. (2008). Memory predictions are influenced by perceptual information. <i>Journal of Experimental Psychology: General</i>.</a></li>
+        <li><a href="https://link.springer.com/doi/10.1007/s11409-021-09287-3">Chang, M., &amp; Brainerd, C. J. (2021). A meta-analysis of the font size effect. <i>Metacognition and Learning</i>.</a></li>
+        <li><a href="https://bjorklab.psych.ucla.edu/wp-content/uploads/sites/13/2016/07/Kornell_Bjork_2008_PsychScience.pdf">Kornell, N., &amp; Bjork, R. A. (2008). Learning concepts and categories: Is spacing the “enemy of induction”? <i>Psychological Science</i>.</a></li>
+        <li><a href="https://doi.org/10.1111/j.1467-9280.1991.tb00151.x">Nelson, T. O., &amp; Dunlosky, J. (1991). When people’s judgments of learning are extremely accurate at predicting subsequent recall. <i>Psychological Science</i>.</a></li>
+        <li><a href="https://www.eurekalert.org/news-releases/836327">Fleming, S. M., Weil, R. S., Nagy, Z., Dolan, R. J., &amp; Rees, G. (2010). Relating introspective accuracy to individual differences in brain structure. <i>Science</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.48,s:fitS(W,H,1.32),t,active:['pfc'],labels:['pfc'],labelT:{pfc:0.8},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+/* ---------- big words, small words ----------
+   24 words, 12 shown at 48 px, 12 at 18 px, random. Each 2 s, then a 1-4 rating (how likely to remember).
+   Then a prediction of total recall, 30 s easy task, free recall. Compare mean rating and recall by size;
+   compare prediction with actual. */
+const POOL=['garden','pencil','river','window','basket','ladder','candle','helmet','mirror','orange','tunnel','rabbit','violin','saddle','button','wallet','castle','feather','jacket','kettle','magnet','pillow','rocket','statue','anchor','bucket','carpet','monkey'];
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||(w.length>=5&&ed1(t,w));
+let fr=null;
+function fTimer(sec,me){const t0=performance.now();const tick=()=>{if(!fr||fr.tok!==me)return;const f=Math.min(1,(performance.now()-t0)/(sec*1000));$('fTb').style.width=(100-f*100)+'%';if(f<1)requestAnimationFrame(tick)};tick()}
+async function hold(sec){const me=Symbol();fr.tok=me;fTimer(sec,me);await sw(sec*1000);if(!fr)return false;fr.tok=null;$('fTb').style.width='0';return true}
+function rate(){return new Promise(res=>{fr.res=res;$('fRate').hidden=false;$('fRate').querySelector('button').focus()})}
+const pick=v=>{if(!fr||!fr.res||$('fRate').hidden)return;const r=fr.res;fr.res=null;$('fRate').hidden=true;r(v)};
+$('fRate').addEventListener('click',e=>{const b=e.target.closest('button');if(b)pick(+b.dataset.v)});
+addEventListener('keydown',e=>{if(!fr||!fr.res||$('fRate').hidden)return;if(/^[1-4]$/.test(e.key)){e.preventDefault();pick(+e.key)}});
+function predict(){return new Promise(res=>{fr.pres=res;$('fPred').hidden=false;$('fPin').value='';$('fPin').focus()})}
+$('fPred').addEventListener('submit',e=>{e.preventDefault();if(!fr||!fr.pres)return;let v=parseInt($('fPin').value,10);if(isNaN(v)){$('fProg').textContent='Type a number from 0 to 24.';return}v=Math.max(0,Math.min(24,v));const r=fr.pres;fr.pres=null;$('fPred').hidden=true;r(v)});
+function recall(){return new Promise(res=>{fr.rres=res;$('fForm').hidden=false;$('fIn').value='';$('fIn').focus()})}
+$('fForm').addEventListener('submit',e=>{e.preventDefault();if(!fr||!fr.rres)return;const r=fr.rres;fr.rres=null;$('fForm').hidden=true;r($('fIn').value)});
+async function fBreak(){$('fW').className='fw small';$('fW').textContent='Easy break';$('fBrk').hidden=false;$('fBrk').focus();let on=false;const me=Symbol();fr.tok=me;
+ $('fProg').textContent='For 30 seconds, tap the circle (or press Space) whenever it turns orange.';
+ const brk=$('fBrk');brk.onclick=()=>{if(on){on=false;brk.classList.remove('on')}};const t0=performance.now();fTimer(30,me);
+ while(performance.now()-t0<30000){await sw(1000+Math.random()*1800);if(!fr)return;on=true;brk.classList.add('on');await sw(900);on=false;brk.classList.remove('on')}
+ brk.hidden=true;fr.tok=null;$('fTb').style.width='0'}
+$('fBrk').addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();$('fBrk').click()}});
+$('fGo').addEventListener('click',async()=>{if(fr)return;fr={};const g=$('fGo');g.disabled=true;g.textContent='In progress';$('fRes').innerHTML='';
+ const w=shuf([...POOL]).slice(0,24);const sizes=shuf([...Array(12).fill('big'),...Array(12).fill('small')]);const items=w.map((x,i)=>({w:x,s:sizes[i],r:0,got:false}));
+ $('fPhase').textContent='Step 1 of 4 · Study and rate';$('fTitle').textContent='How likely will you remember it?';
+ for(let i=0;i<24;i++){const it=items[i];$('fW').className='fw '+it.s;$('fW').textContent=it.w;$('fProg').textContent=`Word ${i+1} of 24`;if(!await hold(2))return;
+  $('fW').textContent='';it.r=await rate();if(!fr)return}
+ $('fW').textContent='';$('fPhase').textContent='Step 2 of 4 · Predict';$('fTitle').textContent='Your prediction';$('fText').textContent='Before the test, guess your total.';$('fProg').textContent='';
+ const pred=await predict();if(!fr)return;
+ $('fPhase').textContent='Step 3 of 4 · Break';$('fTitle').textContent='Step away';$('fText').textContent='An easy, 30-second task.';await fBreak();if(!fr)return;
+ $('fPhase').textContent='Step 4 of 4 · Recall';$('fTitle').textContent='Recall';$('fText').textContent='Type every word you remember, in any order.';$('fW').textContent='Which words?';$('fProg').textContent='';
+ const v=await recall();if(!fr)return;const toks=[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];items.forEach(it=>{it.got=toks.some(t=>match(t,it.w))});
+ $('fW').textContent='Done';$('fProg').textContent='Done.';$('fPhase').textContent='Your results';
+ const B=items.filter(x=>x.s==='big'),S=items.filter(x=>x.s==='small');const mr=a=>a.reduce((x,y)=>x+y.r,0)/a.length,gn=a=>a.filter(x=>x.got).length;
+ const rB=mr(B),rS=mr(S),gB=gn(B),gS=gn(S),tot=gB+gS,f1=x=>x.toFixed(1);
+ const row=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${val/mx*100}%;background:${c}"></i></div><b>${lab}</b></div>`;
+ $('fRes').innerHTML=`<div class="res wl2"><p class="gh">Average rating (1–4)</p>${row('Small words',rS,4,f1(rS),'#C9D3E3')}${row('Big words',rB,4,f1(rB),'#FCB316')}<p class="gh">Recalled</p>${row('Small words',gS,12,gS+' of 12','#C9D3E3')}${row('Big words',gB,12,gB+' of 12','#FCB316')}</div>`;
+ const dR=rB-rS,dG=gB-gS,off=pred-tot;
+ const pTxt=off>=3?` You predicted ${pred} and recalled ${tot}: overconfident by ${off}.`:off<=-3?` You predicted ${pred} and recalled ${tot}: you did better than you expected, by ${-off}.`:` You predicted ${pred} and recalled ${tot}: close.`;
+ let title,text;
+ if(tot<3){title='Too few words to compare';text=`You recalled ${tot} words in all, too few to compare big and small.${pTxt} Try again, and rate each word honestly.`}
+ else if(dR>=0.3&&Math.abs(dG)<=1){title='The feeling and the memory came apart';text=`You rated big words as more memorable (${f1(rB)} against ${f1(rS)}), but recalled about the same: ${gB} big and ${gS} small.${pTxt} Big print felt easier, and easy felt like learning.`}
+ else if(dR>=0.3&&dG>=2){title='Big words felt and did better';text=`You rated big words higher (${f1(rB)} against ${f1(rS)}) and recalled more of them: ${gB} big, ${gS} small.${pTxt} A 2021 meta-analysis found that font size has a small real effect on memory, but a bigger one on how memorable words feel.`}
+ else if(Math.abs(dR)<0.3){title='You weren’t swayed by size';text=`Your ratings for big and small words were about the same (${f1(rB)} and ${f1(rS)}). You recalled ${gB} big and ${gS} small.${pTxt} In studies, most people rate big words higher, even when warned that size doesn’t matter.`}
+ else{title='Small words felt more memorable';text=`You rated small words higher (${f1(rS)} against ${f1(rB)}). You recalled ${gB} big and ${gS} small.${pTxt} Perhaps the small print made you work harder, and the effort felt like learning. Either way, the feeling is a guess; the test is the check.`}
+ $('fTitle').textContent=title;$('fText').textContent=text;g.textContent='Try again';g.disabled=false;g.focus();fr=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Words in big print compared with small print: how memorable people rated them',['Big rated more memorable','Small rated more memorable','Rated the same'],0,'Big print felt easier, and easy felt like learning.'],
+ ['The same words: how many people actually recalled',['About the same','Far more big words','Far more small words'],0,'Recall didn’t differ in the 2008 study.'],
+ ['Learning painting styles, blocked by artist or mixed: which worked better for most people?',['Mixed','Blocked','No difference'],0,'Mixing helped people spot what distinguished each artist.'],
+ ['After their own test, how many rated blocking as better?',['78%','About half','Almost none'],0,'The illusion survived the evidence.'],
+ ['Judging what you’ve learned after a delay, rather than right after studying',['Far more accurate','Less accurate','No different'],0,'The delayed judgment-of-learning effect.'],
+ ['People better at judging their own accuracy, in a study of 32 people',['More grey matter in the front of the prefrontal cortex','Less grey matter there','No brain differences'],0,'A correlation, not proof of cause.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: ease feels like learning, but isn’t; a delayed attempt to recall is the honest check.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'What did big print change in the 2008 study?',o:['How memorable words felt, not how many were recalled','How many words were recalled','Nothing at all'],a:0,f:'The feeling of learning and actual learning came apart.'},
+ {q:'When are judgments of learning most accurate?',o:['After a delay, following an attempt to recall','Right after studying','While rereading'],a:0,f:'Right after studying, you are reading short-term memory.'},
+ {q:'What does the brain-structure finding show?',o:['A correlation between front-of-brain grey matter and judging accuracy','That the region causes the skill','That metacognitive skill is fixed'],a:0,f:'It was a correlation in 32 people.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','lb17');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+import sys;sys.path.insert(0,'gen')
+from common import page
+o=dict(id='lb12',n='12',title='Errors and Feedback: Learning from the Gap',h1='Errors and feedback',em='Learning from the gap',read='8',mins='2 minutes',vtitle='Errors and feedback',
+dek='A wrong guess, followed by the right answer, is a learning event. Confident errors are often the easiest to fix. But errors help only when feedback follows, and only feedback aimed at the work.',
+jumps='<span><a href="#gT">Guess first, or just study</a></span><span><a href="#brT">Predict the findings</a></span>',
+hero_aria='Drawing of the side of the brain with two areas glowing orange and labelled: the prefrontal cortex, which notices when an outcome differs from what was expected, and the hippocampus, which stores the corrected answer.',
+hero_js="BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.hip.lab=[700,740];BR.R.hip.al='left';\nstage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['pfc','hip'],labels:['pfc','hip'],labelT:{pfc:0.8,hip:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});",
+css='''.rpair{font:800 clamp(28px,4.6vw,44px)/1.25 var(--body);color:#fff;text-align:center;min-height:1.25em}
+.rpair .en{color:#FCB316}
+.rcap{font-size:18px;color:#E9EEF6;text-align:center;margin:0;min-height:1.4em;max-width:36ch}
+.rin{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.rin[hidden]{display:none}
+.rin input{min-height:52px;width:min(280px,100%);padding:0 12px;font:700 22px var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff}
+.rin input:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.res.wl2 .row{grid-template-columns:150px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 70px}}''',
+body='''  <div class="col lede">
+    <p>Guess before you know. In a 2009 study, Nate Kornell, Matthew Hays and Robert Bjork showed people a cue word, such as <i>whale</i>, and asked them to guess a loosely related word before showing them the answer, <i>mammal</i>. The guesses were almost always wrong. Yet people remembered those pairs better than pairs they had simply studied for the same total time.</p>
+    <p>A wrong guess, followed by the right answer, is a learning event.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>~5%</strong><span>chance of guessing the right word in that study: almost every guess was an error</span></div>
+      <div role="listitem"><strong>53</strong><span>studies in a 2021 review comparing problem-solving first with instruction first</span></div>
+      <div role="listitem"><strong>607</strong><span>effects of feedback pooled in a 1996 review</span></div>
+      <div role="listitem"><strong>1 in 3+</strong><span>of those feedback interventions made performance worse</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The gap</span>An error is the gap made visible</h2>
+    <p>The brain learns from the gap between what it expected and what happened, as in <a href="@@LB:lb04@@">the page on prediction</a>. An error is that gap made visible. And confident errors are not the hardest to fix. In 2001, Brady Butterfield and Janet Metcalfe found that people were more likely to correct an answer they had been sure about, once they saw the right one. They called it the hypercorrection effect. A big surprise seems to grab attention for the correction.</p>
+  </div>
+
+  <section class="night" aria-labelledby="gT">
+    <div class="col">
+      <h2 class="sec" id="gT"><span class="n">Try it</span>Guess first, or just study</h2>
+      <p>16 pairs of loosely related words. For half, you’ll see the first word and guess the second before the answer appears. For the other half, you’ll just see the pair. Every pair gets the same total time. After a 30-second break, you’ll be tested on all 16. About 5 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="gScreen">
+          <div class="rpair" id="gPair" aria-live="polite"></div>
+          <p class="rcap" id="gCap"></p>
+          <div class="tbar" aria-hidden="true"><i id="gTb" style="width:0"></i></div>
+          <form class="rin" id="gForm" hidden><label class="sr-only" for="gIn">Your answer</label><input id="gIn" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="30"><button class="nbtn" type="submit">Enter</button></form>
+          <button class="brk" id="gBrk" hidden aria-label="Tap when the circle is orange"></button>
+          <p class="prog" id="gProg" aria-live="polite">Press Start.</p>
+        </div>
+        <div>
+          <p class="phase" id="gPhase">Ready</p>
+          <p class="mtitle" id="gTitle">Does a wrong guess help?</p>
+          <p class="mtext" id="gText" aria-live="polite">You’ll almost never guess right. That’s the point: the question is whether a wrong guess, followed by the answer, helps you remember.</p>
+          <div id="gRes"></div>
+          <div class="mrow"><button class="nbtn" id="gGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Whole lessons</span>Productive failure</h2>
+    <p>The same idea scales up. In productive failure, students wrestle with a problem before they are taught the method, and usually fall short. Then the teacher explains. In 2021, Tanmay Sinha and Manu Kapur pooled 53 studies with 166 comparisons. Problem solving first generally beat instruction first for conceptual understanding and transfer, and the advantage was larger when the method was used as designed. But not always: younger students, in primary school, did better with instruction first.</p>
+    <h2 class="sec"><span class="n">Feedback</span>Errors help only when feedback follows</h2>
+    <p>Without feedback, an error can stick. Multiple-choice tests expose students to wrong options, and a wrong option chosen can later be recalled as if it were true. In 2008, Andrew Butler and Henry Roediger showed that feedback after the test both increased correct answers later and reduced these intrusions.</p>
+    <p>Not all feedback helps, though. In 1996, Avraham Kluger and Angelo DeNisi pooled 607 effects of feedback. On average, feedback improved performance, yet more than a third of the feedback interventions made performance worse. Feedback did least good when it drew attention away from the task and toward the person.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each comparison from the research, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Some caution</span>Errors are not free</h2>
+    <p>Errors help when they are followed quickly by clear correction. Left alone, they can be learned. And struggle before instruction suits some learners and topics better than others, so watch who is still lost when the explanation comes.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Make errors cheap, and correct them fast</h3>
+      <p>Ask students to predict or attempt before you explain. Make errors ungraded, private and expected. Ask how confident they are, so surprising errors get attention. Follow every attempt with clear feedback, aimed at the work rather than the person, then let them try again.</p>
+    </aside>
+  </div>
+''',
+tips_h='An error is a signal to update',
+tips='''      <li><b>Attempt first</b><span>Predict or try before the explanation.</span></li>
+      <li><b>Make errors cheap</b><span>Ungraded, private and expected.</span></li>
+      <li><b>Feedback on the work</b><span>Clear, fast, and about the task, not the person.</span></li>''',
+sources='''        <li><a href="https://pubmed.ncbi.nlm.nih.gov/19586265/">Kornell, N., Hays, M. J., &amp; Bjork, R. A. (2009). Unsuccessful retrieval attempts enhance subsequent learning. <i>Journal of Experimental Psychology: Learning, Memory, and Cognition</i>.</a></li>
+        <li><a href="https://www.scientificamerican.com/article/the-pluses-of-getting-it-wrong/">Scientific American: The pluses of getting it wrong (weak associates: about a 5% chance of guessing the target).</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4036076">Butterfield, B., &amp; Metcalfe, J. (2001). Errors committed with high confidence are hypercorrected. <i>Journal of Experimental Psychology: Learning, Memory, and Cognition</i>. (Summarized in a later review.)</a></li>
+        <li><a href="https://doi.org/10.3102/00346543211019105">Sinha, T., &amp; Kapur, M. (2021). When problem solving followed by instruction works: Evidence for productive failure. <i>Review of Educational Research</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/18491500/">Butler, A. C., &amp; Roediger, H. L. (2008). Feedback enhances the positive effects and reduces the negative effects of multiple-choice testing. <i>Memory &amp; Cognition</i>.</a></li>
+        <li><a href="https://scholars.huji.ac.il/node/1802">Kluger, A. N., &amp; DeNisi, A. (1996). The effects of feedback interventions on performance. <i>Psychological Bulletin</i>.</a></li>''',
+quiz='''[
+ {q:'What did guessing before seeing the answer do in the 2009 study?',o:['Improved memory, even though the guesses were wrong','Made people learn their wrong guesses','Made no difference'],a:0,f:'A wrong guess followed by the answer is a learning event.'},
+ {q:'Which errors are most likely to be corrected after feedback?',o:['Errors people were confident about','Errors people were unsure about','Neither: confidence makes no difference'],a:0,f:'This is the hypercorrection effect.'},
+ {q:'When did feedback most often fail to help?',o:['When it drew attention to the person rather than the task','When it was about the task','When it came quickly'],a:0,f:'More than a third of feedback interventions made performance worse.'}]''',
+js=r'''
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+/* ---------- guess first, or just study ----------
+   16 of 20 loosely related pairs: 8 guess-first (cue alone for up to 6 s to type a guess, then the pair for 4 s),
+   8 study-only (the pair for 10 s). Same total time. Random order. 30 s easy task, then a cued test of all 16
+   (no feedback). Pairs guessed right during learning are reported separately and left out of the comparison,
+   as in the 2009 study. */
+const POOL=[['tide','moon'],['candle','wick'],['garden','hose'],['rocket','fuel'],['storm','shelter'],['violin','bow'],['bread','crumb'],['mountain','goat'],['river','bank'],['coffee','filter'],['winter','coat'],['paper','clip'],['honey','comb'],['desert','camel'],['piano','stool'],['camera','lens'],['forest','ranger'],['ladder','rung'],['clock','tower'],['ticket','booth']];
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const norm=t=>t.toLowerCase().trim().replace(/^(a|an|the)\s+/,'').replace(/[^a-z]/g,'');
+function ok(typed,a){const t=norm(typed);if(!t)return false;return t===a||t===a+'s'||(a.length>=4&&ed1(t,a))}
+let gr=null;
+function gTimer(sec,me){const t0=performance.now();const tick=()=>{if(!gr||gr.tok!==me)return;const f=Math.min(1,(performance.now()-t0)/(sec*1000));$('gTb').style.width=(100-f*100)+'%';if(f<1)requestAnimationFrame(tick)};tick()}
+const pairHTML=(c,t)=>`${c} <span aria-hidden="true">→</span><span class="sr-only">goes with</span> <span class="en">${t}</span>`;
+async function hold(sec){const me=Symbol();gr.tok=me;gTimer(sec,me);await sw(sec*1000);if(!gr)return false;gr.tok=null;$('gTb').style.width='0';return true}
+function gAsk(sec){return new Promise(res=>{gr.res=res;$('gForm').hidden=false;$('gIn').value='';$('gIn').focus();if(sec){const me=Symbol();gr.tok=me;gTimer(sec,me);gr.to=setTimeout(()=>{if(gr&&gr.res===res){gr.res=null;gr.tok=null;$('gTb').style.width='0';$('gForm').hidden=true;res($('gIn').value)}},sec*1000)}})}
+$('gForm').addEventListener('submit',e=>{e.preventDefault();if(!gr||!gr.res)return;const r=gr.res;gr.res=null;clearTimeout(gr.to);gr.tok=null;$('gTb').style.width='0';$('gForm').hidden=true;r($('gIn').value)});
+async function gBreak(){$('gPair').textContent='Easy break';$('gCap').textContent='';$('gBrk').hidden=false;$('gBrk').focus();let on=false;const me=Symbol();gr.tok=me;
+ $('gProg').textContent='For 30 seconds, tap the circle (or press Space) whenever it turns orange.';
+ const brk=$('gBrk');brk.onclick=()=>{if(on){on=false;brk.classList.remove('on')}};const t0=performance.now();gTimer(30,me);
+ while(performance.now()-t0<30000){await sw(1000+Math.random()*1800);if(!gr)return;on=true;brk.classList.add('on');await sw(900);on=false;brk.classList.remove('on')}
+ brk.hidden=true;gr.tok=null;$('gTb').style.width='0'}
+$('gBrk').addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();$('gBrk').click()}});
+$('gGo').addEventListener('click',async()=>{if(gr)return;gr={};const g=$('gGo');g.disabled=true;g.textContent='In progress';$('gRes').innerHTML='';
+ const sets=shuf([...'GGGGGGGGSSSSSSSS']);const items=shuf([...POOL]).slice(0,16).map((p,i)=>({c:p[0],t:p[1],set:sets[i],hit:false}));
+ $('gPhase').textContent='Step 1 of 3 · Learn';$('gTitle').textContent='Guess or study';$('gText').textContent='When only one word appears, type your best guess for the word that goes with it. When a pair appears, just study it.';
+ for(let i=0;i<16;i++){const it=items[i];$('gProg').textContent=`Pair ${i+1} of 16`;
+  if(it.set==='S'){$('gPair').innerHTML=pairHTML(it.c,it.t);$('gCap').textContent='Study this pair.';if(!await hold(10))return}
+  else{$('gPair').textContent=it.c;$('gCap').textContent='Guess the word that goes with it.';const v=await gAsk(6);if(!gr)return;it.hit=ok(v,it.t);
+   $('gPair').innerHTML=pairHTML(it.c,it.t);$('gCap').textContent=it.hit?'You guessed it!':(norm(v)?`You guessed “${v.trim().slice(0,20)}”. Here’s the answer.`:'Here’s the answer.');if(!await hold(4))return}}
+ $('gPair').textContent='';$('gCap').textContent='';
+ $('gPhase').textContent='Step 2 of 3 · Break';$('gTitle').textContent='Step away';$('gText').textContent='An easy, 30-second task.';await gBreak();if(!gr)return;
+ $('gPhase').textContent='Step 3 of 3 · Test';$('gTitle').textContent='Test';$('gText').textContent='Type the word that went with each one. Leave it blank if you don’t know. No feedback.';
+ const order=shuf([...items]);
+ for(let i=0;i<16;i++){const it=order[i];$('gPair').textContent=it.c;$('gCap').textContent='Which word went with it?';$('gProg').textContent=`Word ${i+1} of 16`;
+  const v=await gAsk(0);if(!gr)return;it.got=ok(v,it.t)}
+ $('gPair').textContent='Done';$('gCap').textContent='';$('gProg').textContent='Done.';$('gPhase').textContent='Your results';
+ const G=items.filter(x=>x.set==='G'&&!x.hit),S=items.filter(x=>x.set==='S'),hits=items.filter(x=>x.set==='G'&&x.hit).length;
+ const gN=G.filter(x=>x.got).length,sN=S.filter(x=>x.got).length,gP=G.length?Math.round(100*gN/G.length):0,sP=Math.round(100*sN/8);
+ const row=(l,p,n,d,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${p}%;background:${c}"></i></div><b>${n} of ${d}</b></div>`;
+ $('gRes').innerHTML=G.length<4?'':`<div class="res wl2">${row('Studied',sP,sN,8,'#C9D3E3')}${row('Guessed wrong first',gP,gN,G.length,'#FCB316')}</div>`;
+ const hitTxt=hits?` You guessed ${hits} right during learning; ${hits>1?'those are':'that one is'} left out, so the comparison is only between wrong guesses and plain study.`:' Every guess was wrong, as expected.';
+ let title,text;
+ if(G.length<4){title='Too many right guesses to compare';text=`You guessed ${hits} of 8 pairs right during learning, which leaves too few wrong guesses to compare. Try again with new pairs.`}
+ else if(gP>=85&&sP>=85){title='Near perfect on both';text=`You recalled ${gP}% of the pairs you guessed wrong first and ${sP}% of the pairs you studied.${hitTxt} After a short break, both can still be fresh; in the 2009 study, the advantage of guessing held after a delay of more than a day.`}
+ else if(gP-sP>=20){title='The wrong guesses helped';text=`You recalled ${gP}% of the pairs you guessed wrong first, and ${sP}% of the pairs you just studied.${hitTxt} Guessing made you search, and the answer then filled a gap you had just noticed.`}
+ else if(sP-gP>=20){title='Studying won this time';text=`You recalled ${sP}% of the pairs you studied and ${gP}% of the pairs you guessed wrong first.${hitTxt} With eight pairs in each set, chance plays a big part. In the 2009 study, guessing first helped on average, by about 10 percent.`}
+ else{title='Close this time';text=`You recalled ${gP}% of the pairs you guessed wrong first and ${sP}% of the pairs you studied.${hitTxt} The point is just as important: wrong guesses didn’t hurt, as long as the answer followed. In the 2009 study, guessing first helped on average.`}
+ $('gTitle').textContent=title;$('gText').textContent=text;g.textContent='Try again';g.disabled=false;g.focus();gr=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Guessing a word before seeing it, compared with studying the pair for the same time',['Better memory, despite wrong guesses','Worse memory: the wrong guesses stuck','No difference'],0,'Wrong guesses, followed by the answer, improved memory.'],
+ ['Errors made with high confidence, after the right answer is shown',['More likely to be corrected','Less likely to be corrected','As likely as low-confidence errors'],0,'The hypercorrection effect.'],
+ ['Across 53 studies, problem solving before instruction, for conceptual understanding',['Generally better than instruction first','Generally worse','No difference'],0,'Though primary-school students did better with instruction first.'],
+ ['A multiple-choice test with no feedback: wrong options chosen',['Sometimes recalled later as if true','Always forgotten','Corrected on their own'],0,'Wrong options can be learned. Feedback reduced these intrusions.'],
+ ['Across 607 effects, how often did feedback make performance worse?',['More than a third of the time','Almost never','About half the time'],0,'On average feedback helped, but more than a third of interventions hurt.'],
+ ['Feedback that focuses attention on the person rather than the task',['Tends to help less','Tends to help more','Makes no difference'],0,'Feedback was least helpful when it drew attention to the self.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: errors followed by clear feedback help learning; errors left alone, or feedback aimed at the person, can hurt.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+''')
+open('lb12/template.html','w').write(page(o))

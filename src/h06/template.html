@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stress and the Exam: Two Techniques Tested with Students</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}.bscen{font:600 clamp(19px,2.4vw,22px)/1.45 var(--body);color:#fff;max-width:40ch;min-height:5.8em;margin:0}
+.bopts{display:grid;grid-template-columns:repeat(var(--nb,3),minmax(0,1fr));gap:8px;width:100%;max-width:600px}
+@media (max-width:520px){.bopts{grid-template-columns:1fr}}
+.bopts[hidden]{display:none}
+.bopts button{min-height:52px;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer;padding:4px 8px}
+.bopts button small{display:block;font-size:13px;color:#C9D3E3;font-weight:600}
+.bopts button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.bopts button.ok{border-color:#7DD3A8;background:#173B33}.bopts button.no{border-color:#FFB38A;background:#3B2420}
+.bopts button:disabled{cursor:default}
+.bfb{font-size:18px;line-height:1.45;color:#E9EEF6;margin:0;min-height:3em;max-width:44ch}
+.bfb b.ok{color:#7DD3A8}.bfb b.no{color:#FFB38A}
+.qq{font:600 clamp(18px,2.2vw,21px)/1.45 var(--body);color:#fff;max-width:42ch;margin:0;text-align:center}
+.jb{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.jb[hidden]{display:none}
+.wform{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:560px}
+.wform[hidden]{display:none}
+.wform textarea{width:100%;min-height:200px;font:500 17px/1.5 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;padding:10px 12px;box-sizing:border-box;resize:vertical}
+.wform textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.wclock{font:800 40px var(--body);color:#FCB316;margin:0}
+.wclock[hidden]{display:none}
+.wprompts{margin:0;padding-left:20px;color:#E9EEF6;font-size:16px;line-height:1.5;max-width:46ch}
+.wprompts[hidden]{display:none}
+.reap{background:#0F2240;border:1px solid #3A4E72;border-radius:10px;padding:12px 14px;max-width:46ch;color:#E9EEF6;font-size:18px;line-height:1.5;margin:0}
+.reap[hidden]{display:none}
+.reap b{display:block;font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#FCB316;margin-bottom:4px}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Habits of the Learner · Topic 6</div>
+      <h1 id="title">Stress and the exam <em>Nerves are energy; point them at the test</em></h1>
+      <p class="dek">Your heart races, your palms sweat, and the first question looks unfamiliar. Exam stress is common, and two simple techniques have been tested with students.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#wT">Write it out</a></span><span><a href="#bT">Which thought helps?</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the amygdala, deep inside, and the prefrontal cortex, at the front, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Stress and the exam</b> · The Learning Brain, Habits of the Learner, episode 6</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Worry takes up working memory, the mental space you need to solve problems. So at the University of Chicago, Gerardo Ramirez and Sian Beilock asked students to write about their exam worries for 10 minutes, just before a test. They reported the results in 2011.</p>
+    <p>In the lab, students under pressure who sat quietly scored about 12% lower than on an earlier test. Those who wrote about their worries improved by about 5%. In ninth-grade biology classes, anxious students who wrote about their worries scored nearly one grade point higher on their final exam: say, a B+ instead of a B−. Students low in anxiety did not need it.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>10 minutes</strong><span>of writing about exam worries, just before the test</span></div>
+      <div role="listitem"><strong>−12% vs +5%</strong><span>under pressure: sitting quietly, against writing about worries</span></div>
+      <div role="listitem"><strong>~1 grade point</strong><span>higher for anxious ninth graders who wrote first</span></div>
+      <div role="listitem"><strong>2018</strong><span>a large replication project did not find the effect again</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Be careful</span>Worth trying, not guaranteed</h2>
+    <p>In 2018, a large project that repeated 21 high-profile social-science experiments did not find the writing effect again. So treat expressive writing as worth trying, not guaranteed.</p>
+    <h2 class="sec"><span class="n">Reappraisal</span>Your body getting ready</h2>
+    <p>The second idea is reappraisal. At Harvard, Jeremy Jamieson and colleagues told students preparing for the GRE that feeling keyed up can actually help performance. They scored higher on the maths section of a practice test, and one to three months later, on the real GRE too.</p>
+  </div>
+
+  <section class="night" aria-labelledby="wT">
+    <div class="col">
+      <h2 class="sec" id="wT"><span class="n">Try it</span>Write it out</h2>
+      <p>A private space to try the technique before your next exam. Choose a length, write honestly about your worries, and finish with a reappraisal. Nothing you write is saved or leaves this page; it is cleared when you finish.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="wScreen">
+          <p class="qq" id="wQ" aria-live="polite">How long do you want to write?</p>
+          <div class="jb" id="wLen" role="group" aria-label="Writing time"><button class="nbtn" type="button" data-m="10">10 minutes, as in the study</button><button class="nbtn ghost" type="button" data-m="5">5 minutes</button><button class="nbtn ghost" type="button" data-m="2">2-minute practice</button></div>
+          <ol class="wprompts" id="wP" hidden><li>What exactly are you worried about in this exam?</li><li>What would happen if it went badly? How likely is that, really?</li><li>How does the worry feel in your body right now?</li></ol>
+          <form class="wform" id="wF" hidden><label class="sr-only" for="wI">Your worries</label><textarea id="wI" spellcheck="false"></textarea><button class="nbtn ghost" type="submit">I’m done early</button></form>
+          <p class="wclock" id="wC" hidden aria-live="off"></p>
+          <p class="reap" id="wR" hidden><b>Now, before you start</b>Your racing heart is your body getting ready: more blood and oxygen to your brain and muscles. People who see that arousal as helpful tend to perform better. Point it at the first question.</p>
+          <p class="prog" id="wProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="wPhase">Ready</p>
+          <p class="mtitle" id="wTitle">Unload, then reframe</p>
+          <p class="mtext" id="wText" aria-live="polite">Writing about worries may free up working memory. Reframing the nerves turns them into energy.</p>
+          <div class="mrow"><button class="nbtn ghost" id="wReset" type="button" hidden>Start over</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="night" aria-labelledby="bT">
+    <div class="col">
+      <h2 class="sec" id="bT"><span class="n">Try it</span>Which thought helps?</h2>
+      <p>Eight things a student might tell themselves just before an exam. For each, decide: does it help (reappraising the nerves as energy, or facing the worry), or work against them? You’ll get feedback after each one.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="bScreen">
+          <p class="bscen" id="bScen" aria-live="polite">Press Start.</p>
+          <div class="bopts" id="bOpts" hidden role="group" aria-label="Helps or works against you?" style="--nb:2"><button type="button" data-k="H">Helps</button><button type="button" data-k="A">Works against you</button></div>
+          <p class="prog" id="bProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="bPhase">Ready</p>
+          <p class="mtitle" id="bTitle">Which thought helps?</p>
+          <p class="bfb" id="bFb" aria-live="polite">The question is always: does it treat the nerves as a threat, or as energy?</p>
+          <div id="bRes"></div>
+          <div class="mrow"><button class="nbtn" id="bGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">A caution</span>Small studies; severe anxiety is different</h2>
+    <p>These studies are small, and some findings have not held up. And severe anxiety is different: it deserves real support from a counsellor or doctor.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each study in the video, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Try this</h3>
+      <p>Before an exam, spend 10 minutes writing honestly about your worries. When your heart races, tell yourself this is your body getting ready. Practise under test-like conditions. And if anxiety feels overwhelming, talk to your campus counselling service.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Nerves are energy. Point them at the test.</h2>
+    <ol class="tips">
+      <li><b>Write out the worry</b><span>Ten minutes, just before. Worth trying, not guaranteed.</span></li>
+      <li><b>Reframe the racing heart</b><span>Your body getting ready.</span></li>
+      <li><b>Overwhelmed?</b><span>Talk to your campus counselling service.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1126/science.1199427">Ramirez, G., &amp; Beilock, S. L. (2011). Writing about testing worries boosts exam performance in the classroom. <i>Science, 331</i>(6014), 211–213.</a></li>
+        <li><a href="https://doi.org/10.1038/s41562-018-0399-z">Camerer, C. F., Dreber, A., Holzmeister, F., et al. (2018). Evaluating the replicability of social science experiments in Nature and Science between 2010 and 2015. <i>Nature Human Behaviour, 2</i>, 637–644.</a></li>
+        <li><a href="https://doi.org/10.1016/j.jesp.2009.08.015">Jamieson, J. P., Mendes, W. B., Blackstock, E., &amp; Schmader, T. (2010). Turning the knots in your stomach into bows: Reappraising arousal improves performance on the GRE. <i>Journal of Experimental Social Psychology, 46</i>(1), 208–212.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.amy.lab=[330,740];BR.R.amy.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['amy','pfc'],labels:['amy','pfc'],labelT:{amy:0.8,pfc:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- write it out ----------
+   Choose 10/5/2 minutes; prompts + textarea + countdown; at the end (or "done early") the text is cleared and a reappraisal is shown. */
+let wr=null;
+function stopW(){if(wr&&wr.tm)clearTimeout(wr.tm);wr=null}
+function finish(early){if(!wr)return;stopW();$('wI').value='';$('wF').hidden=true;$('wP').hidden=true;$('wC').hidden=true;$('wR').hidden=false;$('wQ').textContent=early?'Done.':'Time’s up.';$('wProg').textContent='';
+ $('wPhase').textContent='Reframe';$('wTitle').textContent='Your writing has been cleared';$('wText').textContent='The point was to get the worry out of your head, not to keep it. Now read the reappraisal, and take one slow breath before the first question.';$('wReset').hidden=false;$('wReset').focus()}
+$('wLen').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||wr)return;wr={};let s=+b.dataset.m*60;
+ $('wLen').hidden=true;$('wR').hidden=true;$('wP').hidden=false;$('wF').hidden=false;$('wC').hidden=false;$('wQ').textContent='Write honestly about your worries. Some prompts, if they help:';
+ $('wPhase').textContent='Writing';$('wTitle').textContent='Just write';$('wText').textContent='Spelling and grammar don’t matter. No one will read it.';
+ const show=()=>{$('wC').textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;if(s%60===0&&s>0)$('wProg').textContent=`${s/60} minute${s===60?'':'s'} left`;else if(s%60===55)$('wProg').textContent=''};
+ show();const tick=()=>{if(!wr)return;s--;show();if(s<=0)finish(false);else wr.tm=setTimeout(tick,1000)};wr.tm=setTimeout(tick,1000);$('wI').focus()});
+$('wF').addEventListener('submit',e=>{e.preventDefault();finish(true)});
+$('wReset').addEventListener('click',()=>{stopW();$('wI').value='';$('wR').hidden=true;$('wReset').hidden=true;$('wLen').hidden=false;$('wQ').textContent='How long do you want to write?';$('wPhase').textContent='Ready';$('wTitle').textContent='Unload, then reframe';$('wText').textContent='Writing about worries may free up working memory. Reframing the nerves turns them into energy.';$('wLen').querySelector('button').focus()});
+
+/* ---------- classifier ---------- */
+const NM={H:'Helps',A:'Works against you'};
+const CASES=[
+ ['“My heart’s racing. That’s my body getting ready to perform.”','H','Helps: this is reappraisal, treating arousal as energy.'],
+ ['“I must calm down completely before I can do anything.”','A','Works against you: trying to suppress arousal is hard. Reframing it tends to work better.'],
+ ['“I’m nervous because this matters to me. Good.”','H','Helps: it reframes the nerves as a sign you care, and as fuel.'],
+ ['“If I fail this, my whole future is over.”','A','Works against you: catastrophizing feeds the worry that takes up working memory.'],
+ ['Writing down exactly what you are worried about, ten minutes before the exam','H','Helps, maybe: it may free up working memory, though a large replication did not find the effect.'],
+ ['“Don’t think about failing. Don’t think about failing.”','A','Works against you: trying not to think about something tends to keep it in mind.'],
+ ['“The first question looks unfamiliar. I’ll start with one I know and come back.”','H','Helps: it turns the jolt into a plan.'],
+ ['“Everyone else looks calm, so something must be wrong with me.”','A','Works against you: nerves are common, and other people’s calm is often only on the surface.']];
+let br=null;
+function bAnswer(){return new Promise(res=>{br.res=res;const o=$('bOpts');o.hidden=false;o.querySelectorAll('button').forEach(b=>{b.disabled=false;b.classList.remove('ok','no')});o.querySelector('button').focus()})}
+$('bOpts').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!br||!br.res)return;const r=br.res;br.res=null;r(b.dataset.k)});
+function bWait(label){return new Promise(res=>{const g=$('bGo');g.textContent=label;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.disabled=true;g.textContent='In progress';res()}})}
+$('bGo').addEventListener('click',async()=>{if(br||$('bGo').onclick)return;br={};const g=$('bGo');g.disabled=true;g.textContent='In progress';$('bRes').innerHTML='';
+ const order=shuf([...CASES]);const n=order.length;let right=0;const tot={},got={},miss={};Object.keys(NM).forEach(k=>{tot[k]=0;got[k]=0;miss[k]=0});
+ $('bTitle').textContent='Helps or works against you?';
+ for(let i=0;i<n;i++){const [txt,k,ex]=order[i];tot[k]++;$('bPhase').textContent=`Case ${i+1} of ${n}`;$('bScen').textContent=txt;$('bProg').textContent='';$('bFb').textContent='';
+  const a=await bAnswer();if(!br)return;const ok=a===k;if(ok){right++;got[k]++}else miss[k]++;
+  $('bOpts').querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.k===k)b.classList.add('ok');else if(b.dataset.k===a)b.classList.add('no')});
+  $('bFb').innerHTML=(ok?'<b class="ok">Right.</b> ':`<b class="no">Not quite.</b> You chose “${NM[a]}”. `)+ex;$('bProg').textContent=`${right} of ${i+1} right so far.`;
+  if(i<n-1){await bWait('Next case');if(!br)return}}
+ $('bOpts').hidden=true;$('bScen').textContent='Done.';$('bProg').textContent='';$('bPhase').textContent='Your results';
+ $('bRes').innerHTML=`<div class="res wl2">${Object.keys(NM).map(k=>barRow(NM[k],got[k],tot[k],got[k]+' of '+tot[k],'#FCB316')).join('')}</div>`;
+ const weak=Object.keys(miss).filter(k=>miss[k]>0).map(k=>'“'+NM[k]+'”');const wj=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];const missed=weak.length===Object.keys(NM).length?(weak.length===2?'cases in both groups':'cases in every group'):'some '+wj(weak)+' cases';let title,text;
+
+ if(right>=7){title='You can reframe it';text=`${right} of 8 right. Treat the racing heart as energy, face the worry rather than fighting it, and turn it into a plan.`}
+ else if(right>=5){title='Mostly there';text=`${right} of 8 right. You missed ${missed}. Suppressing or catastrophizing tends to backfire; reframing the arousal tends to help.`}
+ else{title='Worth another look';text=`${right} of 8 right. Helpful thoughts treat the nerves as energy, or name the worry and make a plan. Unhelpful ones fight the feeling or blow it up.`}
+ $('bTitle').textContent=title;$('bFb').textContent=text;g.onclick=null;g.textContent='Try again';g.disabled=false;g.focus();br=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Under pressure, students who sat quietly before the test scored…',['About 12% lower than before','About the same','About 5% higher'],0,'Ramirez and Beilock, 2011.'],
+ ['Students who wrote about their worries first…',['Improved by about 5%','Dropped by about 12%','Didn’t change'],0,'Writing may free up working memory.'],
+ ['Anxious ninth graders who wrote first scored…',['Nearly one grade point higher','A full letter grade lower','The same'],0,'Students low in anxiety didn’t need it.'],
+ ['In a large 2018 replication project, the writing effect…',['Was not found again','Doubled','Was confirmed exactly'],0,'Worth trying, not guaranteed.'],
+ ['GRE students told that feeling keyed up can help scored higher…',['On maths, in practice and on the real GRE','Only in practice','Not at all'],0,'Jamieson and colleagues, 2010.'],
+ ['Severe anxiety…',['Deserves real support from a counsellor or doctor','Is solved by writing','Is solved by reappraisal'],0,'These techniques are for everyday exam nerves.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: unloading the worry and reframing the arousal can help ordinary exam nerves, but the evidence is mixed, and severe anxiety needs real support.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Under pressure, students who wrote about their worries before a test…',o:['Improved by about 5%','Dropped by about 12%','Didn’t change'],a:0,f:'Those who sat quietly dropped by about 12%.'},
+ {q:'What happened when a large project repeated the writing study in 2018?',o:['It did not find the effect again','It found a bigger effect','It was never repeated'],a:0,f:'Worth trying, not guaranteed.'},
+ {q:'Students told that feeling keyed up can help…',o:['Scored higher on GRE maths, in practice and on the real test','Felt calmer but scored the same','Scored lower'],a:0,f:'Jamieson and colleagues, 2010.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','h06');
+})();
+</script>
+</body>
+</html>

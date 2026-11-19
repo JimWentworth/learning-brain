@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teamwork: How a Memory Moves Through the Brain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+/* Henry grid */
+.hgrid{margin-top:22px;border:1px solid var(--night-line);border-radius:10px;overflow:hidden}
+.hrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--night-line);background:var(--night-2)}
+.hrow:first-child{border-top:0}
+.hrow .it{font-size:18px;line-height:1.4;color:#fff;margin:0}
+.hrow fieldset{border:0;margin:0;padding:0;display:flex;gap:10px}
+.hrow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.hrow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #8FA3C2;border-radius:22px;color:#fff;font-weight:700;font-size:17px;cursor:pointer}
+.hrow input{width:20px;height:20px;accent-color:#FF5F05}
+.hrow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5;color:#E9EEF6}
+.hrow .ex b{color:#FCB316}
+.hrow .ex[hidden]{display:none}
+@media (max-width:640px){.hrow{grid-template-columns:minmax(0,1fr)}}
+.hsum{font-size:18px;line-height:1.5;color:#E9EEF6;margin:16px 0 0}
+.hsum b{color:#fff}
+/* word list */
+.wbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.wshow{font:800 clamp(40px,7vw,64px)/1.1 var(--body);text-align:center;min-height:1.3em;margin:10px 0;color:var(--ink)}
+.small{font-size:16px;color:var(--ink-2);margin:10px 0 0;text-align:center}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 0;justify-content:center}
+.qrow[hidden]{display:none}
+.pbtn{appearance:none;min-height:52px;min-width:120px;padding:0 20px;border-radius:26px;font:700 18px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:16px auto 0;max-width:640px}
+.pmsg b{display:block;font-size:19px;margin-bottom:4px}
+.lres{display:grid;gap:10px;margin:16px auto 0;max-width:560px}
+.lres .row{display:grid;grid-template-columns:200px minmax(0,1fr) 64px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:130px minmax(0,1fr) 56px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+__POPCSS__
+__COLLCSS__
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Brain regions</div>
+      <h1 id="title">Teamwork <em>How a memory moves through the brain</em></h1>
+      <p class="dek">No single part of the brain holds a memory. The hippocampus ties an experience together, other areas mark what matters, and over nights of sleep and months of time the memory settles into the cortex, changing a little each time we recall it.</p>
+      <div class="byline"><span>About 9 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#henT">What could Henry do?</a></span><span><a href="#wrdT">A list to remember</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the brain with three members of the memory team glowing orange and labelled: the hippocampus deep in the temporal lobe, the amygdala just in front of it, and the prefrontal cortex at the front."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2.5 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Teamwork: how a memory moves through the brain</b> · The Learning Brain</span><span>Captions are on; turn them off in the player.</span></div>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>In 1953, the surgeon William Scoville removed most of the hippocampus, and nearby tissue, from both sides of the brain of a 27-year-old man named Henry Molaison. The aim was to control his severe epilepsy, and the seizures did become much less frequent. But Henry could no longer form lasting new memories of events. For the rest of his life, he met the people who studied him as if for the first time.</p>
+    <p>Yet much of his past survived. He knew who he was, and he could still talk about his childhood. Only the years just before the surgery were patchy. Whatever the hippocampus does, it could not be the place where all memories are kept for good.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>1953</strong><span>the operation that made Henry Molaison the best-known patient in memory research</span></div>
+      <div role="listitem"><strong>3 days</strong><span>for Henry to master a mirror-drawing task he never remembered doing</span></div>
+      <div role="listitem"><strong>97% vs 86%</strong><span>card locations remembered after a rose scent was, or wasn’t, given during deep sleep</span></div>
+      <div role="listitem"><strong>40%</strong><span>of the time, people recalled a word that was never on the list</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Where it starts</span>The hippocampus ties it together</h2>
+    <p>An experience arrives in pieces. Different parts of the cortex handle what you see, what you hear and what it means. The hippocampus, deep inside each temporal lobe, links those pieces into a single episode, so that one part, a smell or a song, can later bring back the rest.</p>
+    <p>Henry’s case showed that this linking is only one kind of memory. With his hippocampus gone, he still had normal intelligence and attention, and he could still learn skills.</p>
+  </div>
+
+  <section class="night" aria-labelledby="henT">
+    <div class="col">
+      <h2 class="sec" id="henT"><span class="n">Try it</span>What could Henry still do?</h2>
+      <p>For each item, predict whether Henry could do it after his surgery. Then check your answers.</p>
+    </div>
+    <div class="wide">
+      <form class="hgrid" id="hGrid"></form>
+      <div class="mrow"><button class="nbtn" id="hCheck" type="button">Check my predictions</button><button class="nbtn" id="hReset" type="button" hidden>Try again</button></div>
+      <p class="hsum" id="hSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The team</span>Who else is involved</h2>
+    <p>The hippocampus doesn’t work alone. The amygdala marks emotional moments as important, which is one reason they stick (see <a href="@@LB:amy@@">The amygdala</a>). The dopamine system flags surprise, reward and curiosity, and in curious states it works more closely with the hippocampus (see <a href="@@LB:rew@@">The reward system</a>). The prefrontal cortex helps organise what we learn and later search for it. And the cortex itself is where the pieces live.</p>
+
+    <h2 class="sec"><span class="n">Sleep</span>Replaying the day</h2>
+    <p>Much of the moving seems to happen while we sleep. In 1994, Matthew Wilson and Bruce McNaughton recorded groups of place cells in the hippocampus of three rats as they explored. Cells that fired together during exploring were more likely to fire together again in the deep, slow-wave sleep that followed than in the sleep before.</p>
+    <p>In people, the same kind of reactivation can be nudged. In 2007, Björn Rasch, Jan Born and colleagues had volunteers learn the locations of pairs of picture cards while smelling roses. When the scent was given again during slow-wave sleep, they remembered 97% of the locations the next day, compared with 86% without it. The scent did nothing when given during REM sleep or while awake.</p>
+
+    <h2 class="sec"><span class="n">Over time</span>From hippocampus to cortex</h2>
+    <p>Over weeks to years, links between the pieces within the cortex grow stronger, and many memories come to depend less on the hippocampus. This gradual shift is called systems consolidation, and it fits Henry’s pattern: the older a memory was, the more likely it was to survive. Researchers still debate whether all memories make the move, especially vivid personal memories of events.</p>
+
+    <h2 class="sec"><span class="n">Rebuilt</span>Every recall is a rewrite</h2>
+    <p>Consolidated memories aren’t fixed for good. In 2000, Karim Nader, Glenn Schafe and Joseph LeDoux trained rats to fear a tone. Later, they played the tone again to bring the memory back, and then blocked protein-making in the amygdala. The memory was lost, but only if it had just been recalled. Recalling it had made it fragile again, so it had to be stored again, a process called reconsolidation.</p>
+    <p>Each act of remembering rebuilds the memory, which is why practising recall strengthens it. But it also means memories can drift. Remembering involves reconstruction, and sometimes we fill in what probably happened.</p>
+  </div>
+
+  <section aria-labelledby="wrdT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="wrdT"><span class="n">Try it</span>A list to remember</h2>
+      <p>Thirty words will appear one at a time, about one a second. Try to remember as many as you can. Then you’ll be asked which words were on the list.</p>
+    </div>
+    <div class="wide">
+      <div class="wbox">
+        <p class="wshow" id="wShow" aria-live="polite" aria-atomic="true"></p>
+        <p class="small" id="wProg" aria-live="polite">Press Start when you’re ready to watch.</p>
+        <div class="qrow" id="wYN" hidden role="group" aria-label="Was this word on the list?"><button class="pbtn" id="wYes">Yes, it was<span class="sr-only"> on the list</span> (Y)</button><button class="pbtn sec" id="wNo">No, it wasn’t (N)</button></div>
+        <div class="qrow"><button class="pbtn" id="wGo">Start</button></div>
+        <div id="wRes" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <p>This is the Deese–Roediger–McDermott procedure. In 1995, Henry Roediger and Kathleen McDermott found that people recalled the missing word about 40% of the time, and later recognised it with high confidence. The brain stores the gist of the list, and when you remember, it rebuilds the details from that gist.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Sleep is part of studying</h3>
+      <p>Much of the work of making a memory last happens after the learning session is over, especially overnight. Cramming late and cutting sleep short undermines the very process that stores what was studied.</p>
+    </aside>
+  </div>
+
+  <section class="pop wide" aria-labelledby="popT">
+    <div style="max-width:700px;margin:0 auto">
+      <h2 class="sec" id="popT"><span class="n">In popular culture</span>Memory at the movies</h2>
+      <p>An animated film about the mind, a thriller told backwards, and a romantic comedy where sleep wipes the slate clean.</p>
+    </div>
+    <div class="poptabs" role="tablist" aria-label="Memory in popular culture" id="popTabs"></div>
+    <div id="popPanels"></div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Memory is teamwork that takes time</h2>
+    <ol class="tips">
+      <li><b>Spread it out</b><span>Several shorter sessions, with nights in between, give memories time to settle.</span></li>
+      <li><b>Sleep on it</b><span>Sleep after learning helps move new memories into longer-term storage.</span></li>
+      <li><b>Practise recalling</b><span>Each recall rebuilds the memory and makes it stronger. Check it against the source, because recall can also drift.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://www.thenation.com/?p=88642">The Nation: on Henry Molaison, Scoville’s surgery and Brenda Milner’s mirror-drawing studies.</a></li>
+        <li><a href="https://www.todayifoundout.com/index.php/2013/12/man-stuck-1950s/">Today I Found Out: the man who was stuck in the 1950s (Henry Molaison’s memory before and after surgery).</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/8036517/">Wilson, M. A., &amp; McNaughton, B. L. (1994). Reactivation of hippocampal ensemble memories during sleep. <i>Science</i>.</a></li>
+        <li><a href="https://www.nature.com/news/2007/070305/full/news070305-10.html">Nature News (2007). Rose-scented sleep improves memory, on Rasch, Büchel, Gais &amp; Born, <i>Science</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5847173/">Ólafsdóttir, Bush &amp; Barry (2018). The role of hippocampal replay in memory and planning. <i>Current Biology</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/10963596/">Nader, K., Schafe, G. E., &amp; LeDoux, J. E. (2000). Fear memories require protein synthesis in the amygdala for reconsolidation after retrieval. <i>Nature</i>.</a></li>
+        <li><a href="https://personality-project.org/revelle/syllabi/classreadings/rm95/rm95.html">Roediger, H. L., &amp; McDermott, K. B. (1995). Creating false memories. <i>Journal of Experimental Psychology: Learning, Memory, and Cognition</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4252494">Gruber, M. J., Gelman, B. D., &amp; Ranganath, C. (2014). States of curiosity modulate hippocampus-dependent learning. <i>Neuron</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC535990">Baxendale, S. (2004). Memories aren’t made of this: amnesia at the movies. <i>BMJ</i>.</a></li>
+        <li><a href="https://staff.washington.edu/chudler/moviemem.html">Neuroscience for Kids: movie amnesia vs. real amnesia.</a></li>
+        <li><a href="https://neuwritesd.org/2015/07/02/turning-the-brain-inside-out">NeuWrite San Diego (2015). Turning the brain Inside Out.</a></li>
+        <li><a href="https://theness.com/neurologicablog/?p=8018">NeuroLogica Blog (2015). Inside Out.</a></li>
+        <li><a href="https://neurocritic.blogspot.com/2010/06/unique-case-of-50-first-dates-amnesia.html">The Neurocritic (2010). The unique case of “50 First Dates” amnesia.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawings and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__POPJS__
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+BR.R.pfc.lab=[60,590];BR.R.pfc.al='left';BR.R.amy.lab=[330,740];BR.R.amy.al='left';BR.R.hip.lab=[600,665];BR.R.hip.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.52,cy:H*0.44,s:fitS(W,H,1.32),t,active:['hip','amy','pfc'],labels:['hip','amy','pfc'],labelT:{hip:0.8,amy:1.0,pfc:1.2},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560)),deep:0.5})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(1).join(' ')})();
+
+/* ---------- what could Henry still do? ----------
+   Six predictions, yes or no. Checking reveals every answer with an explanation; unanswered items count as not answered.
+   The summary separates what he could do (skills, attention, old memories) from what he couldn't (new memories of events and people, the years just before surgery). */
+const HI=[
+ ['Get better at tracing a star while watching only his hand in a mirror, over three days of practice',true,'He improved each day and was almost perfect by the third, yet each time he had no memory of having done the task before. Skill learning doesn’t depend on the hippocampus.'],
+ ['Recognise a researcher who had tested him many times',false,'He met the scientists who studied him for decades as if for the first time. New memories of people and events need the hippocampus.'],
+ ['Talk about events from his childhood',true,'Memories from long before the surgery largely survived. They no longer depended on the hippocampus.'],
+ ['Remember events from the year or two just before his surgery',false,'These were largely lost, with patchy gaps going back years further. Recent memories hadn’t yet finished moving into the cortex.'],
+ ['Score normally on intelligence tests and pay attention normally',true,'His intelligence and attention span were normal. The surgery took away a kind of memory, not his ability to think.'],
+ ['Remember what he had for lunch an hour later',false,'Once his attention moved on, a new event was gone. This is anterograde amnesia: trouble forming new lasting memories.']];
+$('hGrid').innerHTML=HI.map(([q],i)=>`<div class="hrow"><p class="it" id="hq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="hq${i}"><legend>${q}</legend><label><input type="radio" name="h${i}" value="1">Could</label><label><input type="radio" name="h${i}" value="0">Couldn’t</label></fieldset><p class="ex" id="hx${i}" hidden></p></div>`).join('');
+$('hCheck').addEventListener('click',()=>{let right=0,ans=0;HI.forEach(([q,yes,ex],i)=>{const sel=document.querySelector(`input[name="h${i}"]:checked`);const x=$('hx'+i);
+  let lead;if(!sel)lead=`<b>Not answered.</b> He ${yes?'could':'couldn’t'}. `;else{ans++;const ok=(sel.value==='1')===yes;if(ok)right++;lead=`<b>${ok?'Right':'Not quite'}:</b> he ${yes?'could':'couldn’t'}. `}
+  x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#hGrid input').forEach(n=>n.disabled=true);
+ const pre=ans===0?'You didn’t make any predictions, so here are the answers.':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<6?` (${6-ans} left blank)`:''}.`;
+ $('hSum').innerHTML=`${pre} <b>The pattern:</b> Henry kept skills, attention, intelligence and old memories. He lost new memories of events and people, and the recent past. That split is what showed memory is teamwork, with the hippocampus needed to make new memories of events but not to store old ones forever.`;
+ $('hCheck').hidden=true;$('hReset').hidden=false;$('hReset').focus()});
+$('hReset').addEventListener('click',()=>{document.querySelectorAll('#hGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#hGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('hSum').innerHTML='';$('hReset').hidden=true;$('hCheck').hidden=false;document.querySelector('#hGrid input').focus()});
+
+/* ---------- a list to remember (DRM) ----------
+   Two 15-word lists from Roediger & McDermott (1995), shown in blocks at 1 word per second: the "needle" list and the "sweet" list.
+   Neither "needle" nor "sweet" is shown. Test: 12 words in random order, yes or no:
+   6 studied words, the 2 missing theme words (lures), and 4 unrelated new words. */
+const L1=['thread','pin','eye','sewing','sharp','point','prick','thimble','haystack','thorn','hurt','injection','syringe','cloth','knitting'];
+const L2=['sour','candy','sugar','bitter','good','taste','tooth','nice','honey','soda','chocolate','heart','cake','tart','pie'];
+const OLD=['thread','sewing','thimble','candy','honey','chocolate'],LURE=['needle','sweet'],NEW=['river','window','chair','mountain'];
+let w=null;const wait=ms=>new Promise(r=>setTimeout(r,ms));
+$('wGo').addEventListener('click',async()=>{w={i:0,items:shuffle([...OLD.map(x=>({x,k:'old'})),...LURE.map(x=>({x,k:'lure'})),...NEW.map(x=>({x,k:'new'}))]),live:false,run:Symbol()};const run=w.run;
+ $('wGo').hidden=true;$('wRes').innerHTML='';$('wYN').hidden=true;const words=[...L1,...L2];
+ for(let i=0;i<words.length;i++){if(!w||w.run!==run)return;$('wShow').textContent=words[i];$('wProg').textContent=`Word ${i+1} of ${words.length}`;await wait(1000)}
+ $('wShow').textContent='';$('wProg').textContent='Now count backwards from 20 in your head…';await wait(5000);if(!w||w.run!==run)return;wAsk()});
+function wAsk(){const it=w.items[w.i];$('wShow').textContent=it.x;$('wProg').textContent=`Test word ${w.i+1} of ${w.items.length}: was it on the list?`;$('wYN').hidden=false;w.live=true;$('wYes').focus()}
+function wAns(yes){if(!w||!w.live)return;w.live=false;w.items[w.i].yes=yes;w.i++;if(w.i<w.items.length){wAsk();return}wEnd()}
+function wEnd(){$('wYN').hidden=true;$('wShow').textContent='';$('wProg').textContent='Done.';
+ const c=k=>w.items.filter(t=>t.k===k&&t.yes).length,h=c('old'),l=c('lure'),f=c('new');const said=w.items.filter(t=>t.k==='lure'&&t.yes).map(t=>`“${t.x}”`);
+ const row=(lab,k,n,col)=>`<div class="row"><span>${lab}</span><div class="bar"><i style="width:${k/n*100}%;background:${col}"></i></div><b>${k} of ${n}</b></div>`;
+ let html=`<div class="lres">${row('Words on the list',h,6,'#13294B')}${row('Missing theme words',l,2,'#B84300')}${row('Unrelated new words',f,4,'#5A6B82')}</div>`;
+ let head,body;
+ if(l>0){head=l===2?'You “remembered” two words you never saw':'You “remembered” a word you never saw';body=`Neither “needle” nor “sweet” was on the list, but you said yes to ${said.join(' and ')}. Every list word was linked to them, so your memory stored the gist and filled in the obvious missing word. That’s reconstruction at work.`}
+ else if(h<=2){head='Mostly “no”';body=`You said no to “needle” and “sweet”, which were never on the list, but also to ${6-h} of the 6 list words. Saying no to almost everything avoids false memories but misses real ones, so try again and answer yes when a word feels familiar.`}
+ else{head='You weren’t fooled this time';body=`Neither “needle” nor “sweet” was on the list, and you correctly said no to both. Many people say yes, because every list word was linked to them and memory stores the gist. Knowing the trick can help you resist it.`}
+ if(f>=2)body+=` You also said yes to ${f} unrelated words, so some of your yeses may have been guesses.`;
+
+ $('wRes').innerHTML=html+`<p class="pmsg"><b>${head}</b>${body}</p>`;$('wGo').hidden=false;$('wGo').textContent='Try again';$('wGo').focus();w=null}
+$('wYes').addEventListener('click',()=>wAns(true));$('wNo').addEventListener('click',()=>wAns(false));
+document.addEventListener('keydown',e=>{if(!w||!w.live)return;const k=e.key.toLowerCase();if(k==='y'){e.preventDefault();wAns(true)}else if(k==='n'){e.preventDefault();wAns(false)}});
+
+/* ---------- in popular culture ---------- */
+renderPop([
+ {id:'inside',title:'Memory orbs and core memories',sub:'Inside Out (2015)',kind:'Animated film',films:[['Inside Out (2015)','https://www.imdb.com/title/tt2096673/']],verdict:['mixed','Clever, with liberties'],
+  desc:'Inside the mind of 11-year-old Riley, each experience becomes a glowing orb. Each night, while she sleeps, the day’s orbs are sent off to the vast shelves of long-term memory. A few “core memories” power islands that make up her personality.',
+  right:['Sending memories to long-term storage during sleep echoes real research: sleep helps consolidate new memories.','Emotional moments are often the ones that last longest, as the film’s glowing core memories suggest.','When Sadness touches a happy memory and it turns sad, it resembles reconsolidation: recalling a memory can change it.'],
+  wrong:['Memories aren’t stored as complete objects in one place. The pieces are spread across the cortex and rebuilt each time we remember.','There are no core memories that power personality. That part of the film has no real counterpart in neuroscience.'],
+  src:'NeuWrite San Diego (2015); NeuroLogica Blog (2015).'},
+ {id:'memento',title:'Living without new memories',sub:'Memento (2000)',kind:'Film',films:[['Memento (2000)','https://www.imdb.com/title/tt0209144/']],verdict:['good','Close to real amnesia'],
+  desc:'Leonard can’t form new memories after an attack. He keeps track of his life with notes, photos and tattoos, and the story is told backwards so the audience shares his confusion.',
+  right:['Neuropsychologist Sallie Baxendale singled it out as a realistic portrayal of amnesia.','Like Henry Molaison, Leonard can’t form new memories but keeps his old ones, his identity and his personality.'],
+  wrong:['Like many films, it blames an assault. In real life, the most common causes of amnesia are brain surgery, brain infection, stroke and head injury.'],
+  src:'Baxendale (2004), BMJ.'},
+ {id:'dates',title:'Sleep that wipes the slate',sub:'50 First Dates (2004)',kind:'Film',films:[['50 First Dates (2004)','https://www.imdb.com/title/tt0343660/']],verdict:['bad','Sleep works the other way'],
+  desc:'After a car accident, Lucy has a made-up condition the film calls Goldfield syndrome: each night, sleep erases everything that happened that day.',
+  right:['In 2010, researchers described a real patient, known as FL, who said she lost each day’s memories overnight. Tests suggested a psychological rather than a neurological cause.'],
+  wrong:['In the film, sleep destroys new memories. In healthy brains, sleep does the opposite: it helps stabilise them.','Baxendale described the film’s syndrome as bearing no relation to any known neurological or psychiatric condition.'],
+  src:'Baxendale (2004), BMJ; Smith et al. (2010), via The Neurocritic.'}],'popTabs','popPanels');
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'After his surgery, which of these could Henry Molaison still do?',o:['Remember people he met again and again','Learn a new motor skill','Remember the year before surgery'],a:1,f:'Skill learning doesn’t depend on the hippocampus. He improved at mirror drawing without remembering doing it.'},
+ {q:'In the rose-scent study, when did the scent improve memory?',o:['During deep, slow-wave sleep','During REM sleep','While awake'],a:0,f:'The scent helped only during slow-wave sleep, when the hippocampus replays recent memories.'},
+ {q:'What happens to a memory when you recall it?',o:['Nothing; it is fixed','It can become fragile and be stored again, strengthened or changed','It is deleted'],a:1,f:'This is reconsolidation. It’s why recall practice strengthens memories, and why they can drift.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','team');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Working Memory Limits: Why Less Is More</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+
+:root{
+  /* Layout idea: a magazine spread. Light reading pages, dark "night" spreads for the brain and the video.
+     Contrast (WCAG AA): ink 13.4:1 and ink-2 8.0:1 on paper; accent-ink 5.1:1 on paper; on night, text 11.3:1, muted 8.6:1, orange 5.6:1. */
+  --paper:#F4F6F9; --ink:#13294B; --ink-2:#3D4C66; --rule:#C9D2DF;
+  --accent-ink:#B84300;   /* orange for text/marks on light backgrounds */
+  --orange:#FF5F05;       /* bright orange only on dark backgrounds */
+  --night:#0D1C35; --night-2:#0A172C; --night-ink:#E9EEF6; --night-muted:#AEB9CC; --night-line:#2A426B;
+  --ok:#1C7A55; --no:#B42A4A;
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --body:'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.6}
+a{color:var(--ink);text-decoration-color:var(--accent-ink);text-underline-offset:3px}
+.night a,.hero a{color:var(--night-ink);text-decoration-color:var(--orange)}
+:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px;border-radius:4px}
+.night :focus-visible{outline-color:var(--orange)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.label{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+.night .label,.hero .label,.watch .label{color:var(--orange)}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:var(--ink);padding:8px 14px;z-index:10}
+.skip:focus{left:8px}
+
+/* Hero */
+.hero{position:relative;background:var(--night);color:var(--night-ink);overflow:hidden}
+.hero-inner{position:relative;max-width:1180px;margin:0 auto;padding:56px 24px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:end}
+@media (max-width:900px){.hero-inner{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(44px,8.4vw,118px);overflow-wrap:break-word;line-height:.9;font-weight:900;letter-spacing:-.035em;margin:16px 0 22px}
+.hero h1 em{display:block;font-weight:300;font-style:italic;color:var(--orange)}
+.dek{font-family:var(--display);font-weight:300;font-size:clamp(21px,2.3vw,27px);line-height:1.35;max-width:28ch;margin:0;color:var(--night-ink)}
+.byline{margin-top:24px;font-size:16px;color:var(--night-muted);display:flex;gap:18px;flex-wrap:wrap}
+.byline b{color:var(--night-ink);font-weight:600}
+.hero-brain{position:relative;aspect-ratio:1.35/1}
+.hero-brain canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Watch */
+.watch{background:var(--night);color:var(--night-ink);padding:8px 0 64px}
+.frame{border-radius:6px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 1px var(--night-line);background:#000}
+.frame video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.watch .meta{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:16px;color:var(--night-muted)}
+.watch .meta b{color:var(--night-ink);font-family:var(--display);font-weight:600;font-size:21px}
+details.transcript{margin-top:14px;border-top:1px solid var(--night-line);padding-top:12px}
+details.transcript summary{cursor:pointer;font-weight:600;color:var(--night-ink)}
+details.transcript p{color:#C9D3E3;max-width:70ch}
+
+/* Article */
+.col{max-width:700px;margin:0 auto;padding:0 24px}
+.wide{max-width:1140px;margin:0 auto;padding:0 24px}
+article p{margin:0 0 1.15em}
+.lede{padding-top:64px}
+.lede p:first-child::first-letter{font-family:var(--display);font-weight:900;float:left;font-size:92px;line-height:.82;padding:8px 12px 0 0;color:var(--accent-ink)}
+h2.sec{font-size:clamp(34px,4.6vw,52px);font-weight:800;letter-spacing:-.02em;line-height:1.04;margin:84px 0 20px}
+h2.sec .n{display:block;font-family:var(--body);font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:12px}
+.night h2.sec{color:#fff}.night h2.sec .n{color:var(--orange)}
+.pull{font-family:var(--display);font-weight:800;font-size:clamp(38px,6vw,78px);line-height:1;letter-spacing:-.03em;margin:84px auto;max-width:1120px;padding:0 24px;color:var(--ink)}
+.pull em{font-style:italic;font-weight:300;color:var(--accent-ink)}
+.note{font-size:16px;color:var(--ink-2);border-left:3px solid var(--accent-ink);padding-left:12px;margin:0 0 1.2em}
+.night .note{color:var(--night-muted);border-color:var(--orange)}
+figure{margin:40px auto 56px}
+figcaption{font-size:16px;color:var(--ink-2);line-height:1.5;margin-top:12px;max-width:70ch}
+.night figcaption{color:var(--night-muted)}
+
+/* Night spread + explorer */
+.night{background:var(--night);color:var(--night-ink);padding:76px 0 68px;margin:84px 0}
+.night p{color:#C9D3E3}
+.explorer{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:28px;align-items:start;margin-top:28px}
+@media (max-width:900px){.explorer{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;aspect-ratio:1.45/1}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{appearance:none;font:600 16px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:40px}
+.chip:hover{border-color:#8FA3C2}
+.chip[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:#13294B}
+.panel{background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;padding:24px;min-height:300px}
+.panel h3{font-size:34px;font-weight:800;color:var(--orange);margin:6px 0 10px;line-height:1.1}
+.panel .where{font-size:16px;color:var(--night-muted);margin:0 0 14px}
+.panel p{color:#E9EEF6;margin:0 0 12px}
+.panel .ep{font-size:16px;color:var(--night-muted);border-top:1px solid var(--night-line);padding-top:12px;margin-top:14px}
+
+/* Big number + link lab */
+.num-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:32px;align-items:center}
+@media (max-width:820px){.num-row{grid-template-columns:minmax(0,1fr)}}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(110px,16vw,210px);line-height:.85;letter-spacing:-.05em;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.big-sub{font-family:var(--display);font-size:clamp(26px,3vw,36px);font-weight:600;margin-top:8px}
+.linklab{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:20px}
+.linklab canvas{width:100%;aspect-ratio:2/1;display:block}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.btn{appearance:none;font:600 16px var(--body);border-radius:999px;padding:10px 18px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;min-height:44px}
+.btn.sec{background:transparent;color:var(--ink)}
+.night .btn{background:var(--orange);border-color:var(--orange);color:#13294B}
+.night .btn.sec{background:transparent;color:var(--night-ink);border-color:#8FA3C2}
+.meter{font-size:16px;color:var(--ink-2)}
+.meter b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Memory composer */
+.composer{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:28px;align-items:center;margin-top:24px}
+@media (max-width:900px){.composer{grid-template-columns:minmax(0,1fr)}}
+.composer .stage{aspect-ratio:1.4/1}
+.parts{display:grid;gap:10px}
+.part{display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:left;font:600 18px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:8px;padding:12px 14px;cursor:pointer;min-height:48px}
+.part span{font-weight:400;color:var(--night-muted);font-size:16px}
+.part[aria-pressed="true"]{border-color:var(--orange);background:rgba(255,95,5,.12)}
+.status{min-height:3em;font-size:17px;color:#E9EEF6;margin:10px 0 0}
+
+/* Case box */
+.box{border-top:6px solid var(--ink);background:#fff;padding:26px 28px;margin:40px 0;border-radius:0 0 6px 6px;box-shadow:0 1px 0 var(--rule)}
+.box h3{font-size:28px;font-weight:800;margin-bottom:10px}
+.timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);margin:20px 0 6px}
+@media (max-width:640px){.timeline{grid-template-columns:minmax(0,1fr)}}
+.timeline div{padding:14px 14px 10px 0}
+.timeline strong{display:block;font-family:var(--display);font-size:40px;font-weight:900;color:var(--accent-ink);line-height:1}
+.timeline span{font-size:16px;color:var(--ink-2)}
+.dd{width:100%;border-collapse:collapse;margin:16px 0 8px;font-size:17px}
+.dd th,.dd td{border-bottom:1px solid var(--rule);padding:10px 8px;text-align:left;vertical-align:top}
+.dd thead th{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.dd tbody th{font-weight:600;color:var(--ink)}
+.yes{color:var(--ok);font-weight:700}.no{color:var(--no);font-weight:700}
+
+/* Why */
+.why{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center}
+@media (max-width:820px){.why{grid-template-columns:minmax(0,1fr)}}
+.ways{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.ways button{width:100%;text-align:left;font:300 italic clamp(30px,4vw,46px)/1.15 var(--display);color:var(--ink);background:none;border:none;border-bottom:1px solid var(--rule);padding:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ways button span{font:400 16px var(--body);color:var(--ink-2)}
+.ways button[aria-pressed="true"]{color:var(--accent-ink);font-weight:600}
+.why .mini{background:var(--night);border-radius:6px;aspect-ratio:1.35/1;position:relative}
+.why .mini canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Quiz */
+.quiz{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:26px}
+.q{border-top:1px solid var(--rule);padding:18px 0 6px}
+.q:first-child{border-top:0;padding-top:0}
+.q .qt{font-family:var(--display);font-size:22px;font-weight:600;line-height:1.25;margin:0 0 12px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;font:400 17px var(--body);color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:6px;padding:11px 14px;cursor:pointer;min-height:44px}
+.opt:hover{border-color:var(--ink-2)}
+.opt.right{border-color:var(--ok);background:#E7F4EE}
+.opt.wrong{border-color:var(--no);background:#FBEAEE}
+.fb{font-size:16.5px;color:var(--ink-2);min-height:1.4em;margin:10px 0 0}
+.score{font-family:var(--display);font-size:21px;margin-top:14px}
+
+/* Collection */
+.coll{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:20px}
+.card{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:14px 16px}
+.card b{display:block;font-family:var(--display);font-size:20px;line-height:1.2;margin-bottom:4px}
+.card span{font-size:15px;color:var(--ink-2)}
+.card.here{background:var(--ink);border-color:var(--ink)}
+.card.here b{color:#fff}.card.here span{color:#C9D3E3}
+
+footer.sources{margin:84px 0 0;padding:36px 0 60px;border-top:2px solid var(--ink)}
+footer.sources ol{padding-left:20px;font-size:16px;color:var(--ink-2)}
+footer.sources li{margin:6px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:560px){body{font-size:18px}.panel,.quiz,.box{padding:18px}}
+
+.hero h1{font-size:clamp(44px,6vw,84px)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);margin:24px 0}
+@media (max-width:760px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.facts div{padding:16px 16px 14px 0}
+.facts strong{display:block;font-family:var(--display);font-weight:900;font-size:clamp(34px,4.4vw,54px);line-height:1;color:var(--accent-ink);letter-spacing:-.02em}
+.facts span{font-size:16px;color:var(--ink-2)}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);padding:0;margin:0}
+@media (max-width:760px){.tips{grid-template-columns:minmax(0,1fr)}}
+.tips li{list-style:none;padding:20px 20px 20px 0;border-right:1px solid var(--rule)}
+.tips li:last-child{border-right:0}
+.tips b{display:block;font-family:var(--display);font-size:26px;line-height:1.15;margin-bottom:6px}
+.tips span{font-size:17px;color:var(--ink-2)}
+/* read the map */
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.mapgrid{grid-template-columns:minmax(0,1fr)}}
+.arena{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;aspect-ratio:1.25/1;touch-action:manipulation}
+.arena canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:8px}
+.arena canvas:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.cells{list-style:none;padding:0;margin:0 0 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cells li{display:flex;align-items:center;gap:10px;font-size:17px;color:var(--night-muted);padding:6px 10px;border:1.5px solid var(--night-line);border-radius:8px}
+.cells li i{width:18px;height:18px;border-radius:50%;border:3px solid currentColor;flex:none}
+.cells li.on{color:#fff;border-color:#C9D3E3;font-weight:700}
+.cells li.on i{background:currentColor}
+.mapgrid .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.mapgrid .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.mapgrid .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.mapgrid .mtext b.ok{color:#3CC9B8}.mapgrid .mtext b.no{color:#F08CBE}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.gbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:transparent;color:#fff;border:2px solid #8FA3C2}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscore{font-size:16px;color:var(--night-muted);margin-top:12px}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.cl{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 8px;min-height:1.4em;max-width:100%}
+.cl span{font:800 clamp(22px,4.6vw,38px)/1.3 var(--body);color:#fff;min-width:.8em;text-align:center}
+.cl .msg{font-size:clamp(20px,3vw,26px);font-weight:700;color:#C9D3E3}
+.cin{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.cin[hidden]{display:none}
+.cin input{min-height:52px;width:min(300px,100%);padding:0 12px;font:700 22px var(--body);letter-spacing:.12em;text-transform:uppercase;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff}
+.cin input:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.res.wl .row{grid-template-columns:150px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl .row{grid-template-columns:110px minmax(0,1fr) 80px}}
+.dq{font:800 clamp(22px,3vw,28px)/1.3 var(--body);color:var(--ink);text-align:center;margin:0 0 12px;min-height:1.3em}
+.dwrap{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:56px;align-items:center}
+@media (max-width:700px){.dwrap{grid-template-columns:minmax(0,1fr);gap:18px}}
+.dg{position:relative;height:340px;background:#F3F6FA;border-radius:10px}
+@media (max-width:700px){.dg{height:300px}}
+.dg svg{position:absolute;inset:0;width:100%;height:100%}
+.dg button{position:absolute;transform:translate(-50%,-50%);min-width:86px;min-height:46px;padding:0 8px;border-radius:10px;border:3px solid #13294B;background:#fff;color:#13294B;font:800 17px var(--body);cursor:pointer}
+@media (max-width:700px){.dg button{min-width:70px;min-height:44px;font-size:15px;padding:0 4px}}
+.dg button.num{min-width:48px;border-radius:50%;font-size:19px}
+.dg button:focus-visible{outline:3px solid #B84300;outline-offset:2px}
+.dg button.bad{border-color:#B84300;background:#FCE9DE}
+.dleg{background:#fff;border:2px solid #13294B;border-radius:10px;padding:12px 16px;min-height:120px}
+.dleg h3{font:800 15px var(--body);letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px;color:var(--ink-2)}
+.dleg ol{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:17px}
+@media (max-width:700px){.dleg ol{grid-template-columns:1fr 1fr}}
+.dleg ol b{display:inline-block;min-width:1.6em}
+.dleg p{margin:0;font-size:17px;color:var(--ink-2)}
+.dmsg{text-align:center;font-size:17px;margin:12px 0 0;min-height:1.5em}
+.coll{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.card{display:flex;flex-direction:column}
+.card a{color:inherit;text-decoration:none;display:flex;flex-direction:column;height:100%}
+.card a::after{content:none}
+.card p{font-size:16px;line-height:1.4;color:var(--ink-2);margin:2px 0 8px}
+.card i{font-style:normal;font-size:15px;color:var(--ink-2);margin-bottom:8px}
+.card .st{margin-top:auto;font-size:15px;font-weight:700;color:var(--ink-2)}
+.card.live{border-color:var(--ink)}
+.card.live .st{color:var(--accent-ink)}.card.live .st::after{content:' →'}
+.card.live:hover{box-shadow:0 4px 14px rgba(19,41,75,.15)}
+.card.here p,.card.here i,.card.here .st{color:#C9D3E3}
+
+.collsub{grid-column:1/-1;font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin:14px 0 0}
+.collsub:first-child{margin-top:0}
+
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+<script src="../assets/nav.js" data-page="lb06"></script>
+
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Topic 6</div>
+      <h1 id="title">Working memory limits <em>Why less is more</em></h1>
+      <p class="dek">You can hold only a few things in mind at once, and they fade within seconds. Experts get around the limit by packing more into each chunk. Teaching that respects the limit leaves room for the ideas that matter.</p>
+      <div class="byline"><span>About 8 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#cT">Hold the letters</a></span><span><a href="#dT">Find the part</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with two areas glowing orange and labelled: the prefrontal cortex at the front, and the intraparietal sulcus, a groove in the parietal lobe. Both are active when people hold information in mind."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2½ minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Working memory limits</b> · The Learning Brain, episode 6</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Read these ten letters once, then look away and say them back: F B I C I A N A S A. Hard? Now read them as FBI, CIA, NASA. Three things instead of ten, and suddenly easy.</p>
+    <p>That is working memory: the small mental space where you hold and work with ideas right now. It is tiny, it fades fast, and it decides how much new material a learner can take in at once.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>7 ± 2</strong><span>items, George Miller’s famous 1956 estimate of how much people can hold</span></div>
+      <div role="listitem"><strong>About 4</strong><span>chunks, Nelson Cowan’s 2001 estimate once rehearsal and grouping are ruled out</span></div>
+      <div role="listitem"><strong>18 s</strong><span>after which fewer than 1 in 10 unrehearsed three-letter strings were recalled</span></div>
+      <div role="listitem"><strong>20+</strong><span>chess pieces a master could put back after a 5-second look at a real game</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The limit</span>How much fits</h2>
+    <p>In 1956, the psychologist George Miller noted that people can repeat back about seven items, give or take two. He also saw that the unit that counts is not a letter or a digit but a chunk: a group that means something to you. In 2001, Nelson Cowan reviewed the evidence again and argued that once people can’t rehearse or group items, the true limit is nearer four chunks. Prefrontal and parietal regions, including the intraparietal sulcus, are among the areas that stay active while people hold information in mind.</p>
+    <h2 class="sec"><span class="n">The fade</span>Gone in seconds</h2>
+    <p>Working memory also fades. In 1959, Lloyd and Margaret Peterson asked students to remember three consonants, then count backwards by threes so they couldn’t rehearse. After 3 seconds, about 80% of the letter strings were recalled. After 18 seconds, fewer than 10% were.</p>
+  </div>
+
+  <section class="night" aria-labelledby="cT">
+    <div class="col">
+      <h2 class="sec" id="cT"><span class="n">Try it</span>Hold the letters</h2>
+      <p>You’ll see a row of 12 letters for 6 seconds. When they disappear, type as many as you can, in order. Six rows in all. About 3 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="cScreen">
+          <div class="cl" id="cL"></div>
+          <div class="tbar" aria-hidden="true"><i id="cTb" style="width:0"></i></div>
+          <form class="cin" id="cForm" hidden><label class="sr-only" for="cIn">Type the letters in order</label><input id="cIn" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20"><button class="nbtn" type="submit">Check</button></form>
+          <p class="prog" id="cProg" aria-live="polite">Press Start.</p>
+        </div>
+        <div>
+          <p class="phase" id="cPhase">Ready</p>
+          <p class="mtitle" id="cTitle">How many letters can you hold?</p>
+          <p class="mtext" id="cText" aria-live="polite">Read the letters any way you like. You’ll get a score for each row: the number of letters you typed in the right order.</p>
+          <div id="cRes"></div>
+          <div class="mrow"><button class="nbtn" id="cGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Expertise</span>Chunks are where expertise lives</h2>
+    <p>In the 1940s, the Dutch psychologist Adriaan de Groot showed chess players a real game position for a few seconds, then asked them to rebuild it. Masters put back almost every piece. In 1973, William Chase and Herbert Simon repeated the test with a 5-second look: a master could place 20 or more pieces, a beginner about four. Then came the control. On boards with the pieces placed at random, everyone, master or beginner, placed only about three or four.</p>
+    <p>The master’s working memory was no bigger. Years of play had stored thousands of familiar patterns in long-term memory, so a cluster of pieces became one chunk. Knowledge makes working memory go further, but only for material in your own field.</p>
+    <h2 class="sec"><span class="n">Teaching</span>Load you can’t avoid, and load you can</h2>
+    <p>John Sweller’s cognitive load theory, first set out in 1988, builds on this limit. Some load comes from the material itself: a hard idea with many parts that interact. That load can only be broken into smaller steps. Other load comes from how the material is presented, and that part is under the teacher’s control.</p>
+    <p>One example is split attention. When a diagram’s labels sit in a separate key, learners have to hold a name in mind while they search for it, so effort goes into the layout, not the content. Paul Chandler and John Sweller found that putting the text into the diagram itself helped learning. Decorative pictures and on-screen text that is read aloud word for word add load too.</p>
+  </div>
+
+  <section aria-labelledby="dT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="dT"><span class="n">Try it</span>Find the part</h2>
+      <p>A machine with eight parts. Each round, tap the part named above it as fast as you can. Sometimes the names are on the drawing. Sometimes the parts have numbers and the names are in a key. 12 rounds, about 1 minute.</p>
+    </div>
+    <div class="wide">
+      <div class="lbox">
+        <p class="dq" id="dQ" aria-live="polite">Press Start.</p>
+        <div class="dwrap">
+          <div class="dg" id="dG" role="group" aria-label="Machine diagram"></div>
+          <div class="dleg" id="dLeg"><h3>Key</h3><p>The key appears here when it’s needed.</p></div>
+        </div>
+        <p class="dmsg" id="dMsg" aria-live="polite"></p>
+        <div class="qrow" style="justify-content:center"><button class="pbtn" id="dGo">Start</button></div>
+        <div id="dRes" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Some caution</span>Two limits of the theory</h2>
+    <p>First, load is hard to measure. Studies use self-ratings of effort, speed on a second task, or body signals, and these don’t always agree. Ton de Jong, among others, has argued that this makes the theory hard to test. Second, what helps a beginner can hinder an expert. Slava Kalyuga and colleagues called this the expertise reversal effect: worked examples and full guidance help novices, but for learners who already know the material, the extra guidance becomes redundant and can make learning worse.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Spend the space on what matters</h3>
+      <p>Give new material in small steps, put labels on the diagram, and cut what doesn’t teach. Start beginners with worked examples, then fade the help as their chunks grow, and give more freedom to the learners who are ready for it.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Working memory is a narrow doorway</h2>
+    <ol class="tips">
+      <li><b>Small steps</b><span>Break complex ideas into parts a learner can hold at once.</span></li>
+      <li><b>Labels on the diagram</b><span>Don’t make learners hunt between a picture and a key.</span></li>
+      <li><b>Worked examples first</b><span>Then fade the help as knowledge builds up.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://memory.psych.missouri.edu/assets/doc/articles/2001/cowan-bbs-2001.pdf">Cowan, N. (2001). The magical number 4 in short-term memory: A reconsideration of mental storage capacity. <i>Behavioral and Brain Sciences</i>. (Discusses Miller, 1956.)</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2864034">Cowan, N. (2010). The magical mystery four: How is working memory capacity limited, and why? <i>Current Directions in Psychological Science</i>.</a></li>
+        <li><a href="https://www.simplypsychology.org/peterson-peterson.html">Simply Psychology: Peterson, L. R., &amp; Peterson, M. J. (1959). Short-term retention of individual verbal items.</a></li>
+        <li><a href="https://andymatuschak.org/prompts/Chase1973.pdf">Chase, W. G., &amp; Simon, H. A. (1973). Perception in chess. <i>Cognitive Psychology</i>.</a></li>
+        <li><a href="https://www.Gwern.net/doc/psychology/chess/1973-simon.pdf">Simon, H. A., &amp; Chase, W. G. (1973). Skill in chess. <i>American Scientist</i>. (Random positions: about three or four pieces for all players.)</a></li>
+        <li><a href="https://doi.org/10.1207/s15516709cog1202_4">Sweller, J. (1988). Cognitive load during problem solving: Effects on learning. <i>Cognitive Science</i>.</a></li>
+        <li><a href="https://doi.org/10.1207/s1532690xci0804_2">Chandler, P., &amp; Sweller, J. (1991). Cognitive load theory and the format of instruction. <i>Cognition and Instruction</i>.</a></li>
+        <li><a href="https://doi.org/10.1007/s11251-009-9110-0">de Jong, T. (2010). Cognitive load theory, educational research, and instructional design: Some food for thought. <i>Instructional Science</i>.</a></li>
+        <li><a href="https://doi.org/10.1207/S15326985EP3801_4">Kalyuga, S., Ayres, P., Chandler, P., &amp; Sweller, J. (2003). The expertise reversal effect. <i>Educational Psychologist</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = "1\n00:00:00,500 --> 00:00:01,928\nThe Learning Brain\n\n2\n00:00:06,100 --> 00:00:07,336\nEpisode 6\n\n3\n00:00:07,416 --> 00:00:09,581\nWorking memory limits\n\n4\n00:00:12,381 --> 00:00:14,597\nTry to hold these ten letters in your head.\n\n5\n00:00:14,943 --> 00:00:15,831\nF, B, I, C,\n\n6\n00:00:15,851 --> 00:00:16,738\nI, A, N, A,\n\n7\n00:00:16,758 --> 00:00:17,191\nS, A.\n\n8\n00:00:17,211 --> 00:00:17,860\nHard.\n\n9\n00:00:18,003 --> 00:00:19,072\nNow group them.\n\n10\n00:00:19,092 --> 00:00:19,737\nF B I.\n\n11\n00:00:19,795 --> 00:00:20,705\nC I A.\n\n12\n00:00:20,845 --> 00:00:21,481\nNASA.\n\n13\n00:00:21,721 --> 00:00:23,751\nSame ten letters, three chunks.\n\n14\n00:00:23,843 --> 00:00:25,198\nSuddenly it's easy.\n\n15\n00:00:25,368 --> 00:00:30,155\nWorking memory is the small space where you hold and work on ideas right now.\n\n16\n00:00:30,651 --> 00:00:33,081\nThe classic estimate was seven items,\n\n17\n00:00:33,169 --> 00:00:34,726\ngive or take two.\n\n18\n00:00:35,124 --> 00:00:38,210\nMost researchers now put it closer to four chunks.\n\n19\n00:00:38,469 --> 00:00:42,116\nAnd without rehearsal, what's in it fades within seconds.\n\n20\n00:00:42,286 --> 00:00:44,387\nChunks are where expertise lives.\n\n21\n00:00:44,663 --> 00:00:45,799\nIn a classic study,\n\n22\n00:00:45,819 --> 00:00:49,327\nchess players saw a real game position for five seconds.\n\n23\n00:00:49,692 --> 00:00:52,269\nA master rebuilt twenty or more pieces.\n\n24\n00:00:52,517 --> 00:00:54,032\nA beginner, about four.\n\n25\n00:00:54,467 --> 00:00:56,595\nBut with the pieces scattered at random,\n\n26\n00:00:56,689 --> 00:00:59,034\neveryone managed only three or four.\n\n27\n00:00:59,483 --> 00:01:01,925\nExperts don't have bigger working memories.\n\n28\n00:01:02,197 --> 00:01:03,571\nThey have bigger chunks,\n\n29\n00:01:03,593 --> 00:01:05,744\nstored in long-term memory.\n\n30\n00:01:05,914 --> 00:01:09,206\nSo when a lesson asks for more than those few slots,\n\n31\n00:01:09,411 --> 00:01:11,289\nlearning doesn't just slow down.\n\n32\n00:01:11,600 --> 00:01:12,577\nIt stalls.\n\n33\n00:01:12,974 --> 00:01:16,195\nCognitive load theory splits the demand in two.\n\n34\n00:01:16,538 --> 00:01:19,480\nIntrinsic load comes from the material itself.\n\n35\n00:01:19,834 --> 00:01:22,762\nExtraneous load comes from how it's presented.\n\n36\n00:01:22,932 --> 00:01:25,653\nExtraneous load is the part you control.\n\n37\n00:01:26,116 --> 00:01:28,760\nPut a diagram here and its labels over there,\n\n38\n00:01:28,958 --> 00:01:31,781\nand students must hold one while searching for the other.\n\n39\n00:01:32,233 --> 00:01:33,568\nIntegrating them helps.\n\n40\n00:01:33,941 --> 00:01:38,551\nDecorative images, and on-screen text read aloud word for word,\n\n41\n00:01:38,822 --> 00:01:41,636\nalso take up slots without teaching anything.\n\n42\n00:01:41,806 --> 00:01:42,979\nTwo cautions.\n\n43\n00:01:43,308 --> 00:01:46,184\nCognitive load is hard to measure directly,\n\n44\n00:01:46,342 --> 00:01:48,686\nand the theory has been criticized for that.\n\n45\n00:01:49,165 --> 00:01:53,592\nAnd supports that help beginners can get in the way of more advanced students.\n\n46\n00:01:53,930 --> 00:01:55,556\nAs students gain knowledge,\n\n47\n00:01:55,741 --> 00:01:57,473\ntake the scaffolding down.\n\n48\n00:01:57,643 --> 00:01:58,441\nFor teaching.\n\n49\n00:01:58,843 --> 00:02:01,227\nBreak new material into small steps.\n\n50\n00:02:01,462 --> 00:02:03,004\nPut labels on the diagram,\n\n51\n00:02:03,024 --> 00:02:04,024\nnot beside it.\n\n52\n00:02:04,426 --> 00:02:06,018\nCut what's only decorative.\n\n53\n00:02:06,453 --> 00:02:10,229\nShow worked examples before asking students to solve alone.\n\n54\n00:02:10,598 --> 00:02:15,121\nAnd sequence, so each new idea lands on one they've already chunked.\n\n55\n00:02:15,291 --> 00:02:17,624\nWorking memory is a narrow doorway.\n\n56\n00:02:18,041 --> 00:02:20,836\nGood teaching doesn't push everything through at once.\n\n57\n00:02:21,058 --> 00:02:22,707\nIt builds bigger chunks.\n\n"
+;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+// ===== Labelled "glass brain": lateral view facing left, local box 1000 x 680
+function crPath(pts,closed){const p=new Path2D();const n=pts.length;const P=i=>closed?pts[(i+n)%n]:pts[Math.max(0,Math.min(n-1,i))];
+ p.moveTo(pts[0][0],pts[0][1]);const last=closed?n:n-1;
+ for(let i=0;i<last;i++){const p0=P(i-1),p1=P(i),p2=P(i+1),p3=P(i+2);p.bezierCurveTo(p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6,p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6,p2[0],p2[1])}
+ if(closed)p.closePath();return p}
+function polyPath(pts){const p=new Path2D();p.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(q=>p.lineTo(q[0],q[1]));p.closePath();return p}
+const BR=(()=>{
+ const OUT=[[90,330],[98,245],[150,165],[250,102],[375,64],[500,50],[625,56],[735,88],[805,128],[872,188],[920,268],[936,350],[908,418],[852,452],[762,470],[640,484],[500,482],[385,472],[305,452],[272,416],[225,424],[165,428],[112,398]];
+ const CS=[[500,50],[482,128],[458,212],[440,300],[436,338]];
+ const SF=[[272,416],[360,372],[440,338],[520,312],[600,298],[662,306]];
+ const PO=[[805,128],[788,228],[772,330],[766,470]];
+ const TP=[[662,306],[715,316],[772,330]];
+ const fro=[[272,416],[225,424],[165,428],[112,398],[90,330],[98,245],[150,165],[250,102],[375,64],[500,50],...CS.slice(1),[360,372]];
+ const par=[[500,50],[625,56],[735,88],[805,128],...PO.slice(1,3),...TP.slice().reverse().slice(1),...SF.slice(2,5).reverse(),...CS.slice(1).reverse()];
+ const occ=[[805,128],[872,188],[920,268],[936,350],[908,418],[852,452],[766,470],[772,330],[788,228]];
+ const tem=[[272,416],...SF.slice(1),...TP.slice(1),[766,470],[640,484],[500,482],[385,472],[305,452]];
+ const pfc=[[272,416],[225,424],[165,428],[112,398],[90,330],[98,245],[150,165],[250,102],[330,76],[300,190],[290,300],[300,400]];
+ const cer=[[760,440],[830,420],[900,418],[946,450],[956,505],[922,556],[850,580],[786,570],[748,536],[744,480]];
+ const stem=[[650,430],[730,440],[744,520],[736,630],[700,632],[686,540]];
+ const hip=[[505,398],[545,384],[590,372],[640,364],[690,360],[718,352],[728,334],[716,322]];
+ const amy=[[452,392],[478,378],[502,386],[504,408],[482,420],[458,414]];
+ const ent=[[500,428],[560,414],[620,410],[640,428],[600,446],[530,450]];
+ const caud=[[330,250],[372,212],[430,196],[500,198],[560,214],[600,244],[612,282],[600,318],[580,340]];
+ const put=[[380,268],[430,252],[478,262],[490,300],[458,330],[404,326],[376,300]];
+ const tha=[[520,262],[566,250],[606,268],[608,300],[570,316],[526,304]];
+ const vta=[[664,404],[694,398],[706,418],[684,432],[662,424]];
+ const ffa=[[590,452],[650,446],[712,448],[722,462],[652,470],[592,468]];
+ const ips=[[560,128],[620,150],[690,184],[748,226]];
+ const v1=[[880,250],[922,282],[936,350],[912,410],[870,420],[858,340]];
+ const GYRI=[[[160,200],[220,170],[260,210],[300,170]],[[130,300],[190,280],[230,320],[280,300]],[[300,130],[340,160],[380,120],[420,150]],[[340,240],[380,270],[400,230]],
+  [[560,90],[600,120],[650,100],[700,130]],[[540,230],[590,250],[640,230],[690,270]],[[400,420],[460,400],[520,430],[580,410],[650,420],[720,400]],[[820,220],[860,260],[880,320]],[[820,380],[860,400],[890,380]]];
+ const P={OUT:crPath(OUT,true),fro:polyPath(fro),par:polyPath(par),occ:polyPath(occ),tem:polyPath(tem),pfc:polyPath(pfc),cer:crPath(cer,true),stem:crPath(stem,true),
+  hip:crPath(hip,false),amy:crPath(amy,true),ent:crPath(ent,true),caud:crPath(caud,false),put:crPath(put,true),tha:crPath(tha,true),vta:crPath(vta,true),ffa:crPath(ffa,true),ips:crPath(ips,false),v1:crPath(v1,true),
+  CS:crPath(CS,false),SF:crPath(SF,false),PO:crPath(PO,false),GY:GYRI.map(g=>crPath(g,false))};
+ // region specs: path keys, label anchor (local), label position (local), kind (fill|line|deep)
+ const R={
+  fro:{name:'frontal lobe',k:['fro'],pt:[250,170],lab:[150,-40],al:'right'},
+  pfc:{name:'prefrontal cortex',k:['pfc'],pt:[175,300],lab:[-30,260],al:'right'},
+  par:{name:'parietal lobe',k:['par'],pt:[650,140],lab:[720,-40],al:'left'},
+  tem:{name:'temporal lobe',k:['tem'],pt:[420,440],lab:[260,560],al:'right'},
+  occ:{name:'occipital lobe',k:['occ'],pt:[870,300],lab:[1040,250],al:'left'},
+  cer:{name:'cerebellum',k:['cer'],pt:[870,520],lab:[1040,560],al:'left'},
+  stem:{name:'brainstem',k:['stem'],pt:[716,590],lab:[640,680],al:'right'},
+  hip:{name:'hippocampus',k:['hip'],pt:[640,366],lab:[600,660],al:'left',deep:1,line:1},
+  amy:{name:'amygdala',k:['amy'],pt:[478,400],lab:[300,610],al:'right',deep:1},
+  ent:{name:'entorhinal cortex',k:['ent'],pt:[580,432],lab:[480,680],al:'right',deep:1},
+  str:{name:'striatum',k:['caud','put'],pt:[440,290],lab:[330,-40],al:'right',deep:1},
+  tha:{name:'thalamus',k:['tha'],pt:[566,284],lab:[560,-40],al:'left',deep:1},
+  vta:{name:'midbrain dopamine area',k:['vta'],pt:[684,414],lab:[1040,660],al:'left',deep:1},
+  ffa:{name:'fusiform face area',k:['ffa'],pt:[680,458],lab:[1040,470],al:'left',deep:1},
+  ips:{name:'intraparietal sulcus',k:['ips'],pt:[690,184],lab:[1040,120],al:'left',line:1},
+  v1:{name:'visual cortex',k:['v1'],pt:[905,330],lab:[1040,360],al:'left'}};
+ const GYR=[];{let sd=7;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};for(let i=0;i<46;i++){const x0=80+rnd()*860,y0=60+rnd()*420,ang=rnd()*Math.PI,len=50+rnd()*90;const pts=[];for(let k=0;k<6;k++){const u=k/5-0.5;pts.push([x0+Math.cos(ang)*len*u+Math.sin(ang)*Math.sin(k*2.1+i)*14,y0+Math.sin(ang)*len*u-Math.cos(ang)*Math.sin(k*2.1+i)*14])}GYR.push(crPath(pts,false))}}
+ return{P,R,GYR}})();
+// draw the brain. o: {cx,cy,s,t,active:[keys],labels:[keys],alpha,draw(0..1),glow(0..1),dim,labelAlpha}
+function brainDraw(o){const{cx=960,cy=560,s=0.9,sy=1.16,t=0,active=[],labels=[],alpha=1,draw=1,glow=1,deep=0.55,labelT={},la=1,labSize=32,lobeTint=1,gmap={}}=o;const GL=k=>glow*(gmap[k]??1);if(alpha<=0)return;
+ const{P,R}=BR;const L=([x,y])=>[cx+(x-500)*s,cy+(y-300)*s*sy];
+ ctx.save();ctx.translate(cx,cy);ctx.scale(s,s*sy);ctx.translate(-500,-300);
+ ctx.lineJoin='round';ctx.lineCap='round';
+ // cerebellum + stem first, so the cortex overlaps them
+ [['stem','#18304F'],['cer','#1A3459']].forEach(([k,c])=>{ga(alpha*sat(draw*1.5-0.3));ctx.fillStyle=c;ctx.fill(P[k])});
+ active.forEach(k=>{if(k==='cer'||k==='stem'){ga(alpha*0.9*GL(k));ctx.fillStyle='rgba(255,95,5,0.5)';ctx.fill(P[k])}});
+ ctx.save();ctx.clip(P.cer);ctx.strokeStyle='rgba(200,215,235,0.18)';ctx.lineWidth=2;ga(alpha*sat(draw*1.6-0.5));for(let k=0;k<7;k++){ctx.beginPath();ctx.ellipse(852,500,120-k*15,70-k*8,-0.12,Math.PI*0.02,Math.PI*0.98);ctx.stroke()}ctx.restore();
+ ctx.strokeStyle='#E9EEF6';ctx.lineWidth=4;ga(alpha);if(draw<1){ctx.setLineDash([900*draw,900])}ctx.stroke(P.cer);ctx.stroke(P.stem);ctx.setLineDash([]);
+ // cortex base fill (hides what lies under it)
+ ga(alpha*sat(draw*2));ctx.fillStyle='#16305A';ctx.fill(P.OUT);
+ // lobe tints
+ const tints={fro:'#1E3B66',par:'#1B3760',tem:'#1A3459',occ:'#1D3964'};
+ ctx.save();ctx.clip(P.OUT);for(const k in tints){ga(alpha*0.9*lobeTint*sat(draw*1.5-0.3));ctx.fillStyle=tints[k];ctx.fill(P[k])}
+ // gyri texture
+ ctx.strokeStyle='rgba(200,215,235,0.11)';ctx.lineWidth=2.4;ctx.lineCap='round';ga(alpha*sat(draw*1.6-0.5));BR.GYR.forEach(g=>ctx.stroke(g));
+ // active glows inside clip (cortical)
+ active.forEach((k,i)=>{const r=R[k];if(!r||r.deep||r.line||k==='cer'||k==='stem')return;const g=GL(k)*(0.85+0.15*Math.sin(t*2.4+i));const gr=ctx.createRadialGradient(r.pt[0],r.pt[1],0,r.pt[0],r.pt[1],260);gr.addColorStop(0,'rgba(255,110,30,0.85)');gr.addColorStop(1,'rgba(255,95,5,0.32)');ga(alpha*g);ctx.fillStyle=gr;r.k.forEach(q=>ctx.fill(P[q]));ctx.strokeStyle='rgba(255,140,70,0.9)';ctx.lineWidth=3;r.k.forEach(q=>ctx.stroke(P[q]))});
+ ctx.restore();
+ // sulci
+ ctx.strokeStyle='rgba(233,238,246,0.55)';ctx.lineWidth=3;ga(alpha*sat(draw*1.6-0.6));[P.CS,P.SF,P.PO].forEach(q=>ctx.stroke(q));
+ // outline (draw-on)
+ ctx.strokeStyle='#E9EEF6';ctx.lineWidth=4;ga(alpha);if(draw<1){ctx.setLineDash([2600*draw,2600])}ctx.stroke(P.OUT);ctx.setLineDash([]);
+ // deep structures (glass view)
+ const dk=['hip','amy','ent','str','tha','vta','ffa'];
+ dk.forEach(k=>{const r=R[k],on=active.includes(k);const a=alpha*(on?1:deep)*sat(draw*1.5-0.5);if(a<=0)return;
+  r.k.forEach(q=>{if(on){ctx.save();ga(a*GL(k));ctx.shadowColor=ORANGE;ctx.shadowBlur=24;ctx.fillStyle='rgba(255,95,5,0.75)';ctx.strokeStyle=ORANGE;ctx.lineWidth=(q==='caud'||q==='hip')?16:4;
+    if(q==='caud'||q==='hip'){ctx.stroke(P[q])}else{ctx.fill(P[q]);ctx.stroke(P[q])}ctx.restore()}
+   else{ga(a*0.8);ctx.setLineDash([7,7]);ctx.strokeStyle='rgba(201,211,227,0.7)';ctx.lineWidth=(q==='caud'||q==='hip')?5:2.5;ctx.stroke(P[q]);ctx.setLineDash([])}})});
+ // IPS line
+ {const on=active.includes('ips');ga(alpha*(on?Math.max(0.6,GL('ips')):0.6)*sat(draw*1.6-0.6));ctx.strokeStyle=on?ORANGE:'rgba(233,238,246,0.5)';ctx.lineWidth=on?7:3;if(on){ctx.shadowColor=ORANGE;ctx.shadowBlur=18}ctx.stroke(P.ips);ctx.shadowBlur=0}
+ // v1 glow
+ if(active.includes('v1')){ctx.save();ctx.clip(P.OUT);ga(alpha*GL('v1')*0.9);ctx.fillStyle='rgba(255,95,5,0.6)';ctx.fill(P.v1);ctx.restore()}
+ ctx.restore();
+ // labels
+ labels.forEach((k,i)=>{const r=R[k];if(!r)return;const t0=labelT[k]??0,p=sat((t-t0)/0.45);if(p<=0)return;const on=active.includes(k);
+  const a=L(r.pt),b=L(r.lab);const ex=r.al==='right'?b[0]+12:r.al==='left'?b[0]-12:b[0];
+  ctx.save();ga(alpha*la);ctx.strokeStyle=on?ORANGE:'rgba(201,211,227,0.85)';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(lerp(a[0],ex,ez(p)),lerp(a[1],b[1],ez(p)));ctx.stroke();
+  ctx.fillStyle=on?ORANGE:'#E9EEF6';ctx.beginPath();ctx.arc(a[0],a[1],on?7:5,0,7);ctx.fill();ctx.restore();
+  const q=sat((t-t0-0.25)/0.35);if(q>0){ctx.save();ga(alpha*la*q);ctx.font=`${on?700:600} ${labSize}px ${BODY}`;ctx.textAlign=r.al==='right'?'right':r.al==='left'?'left':'center';ctx.textBaseline='middle';ctx.fillStyle=on?ORANGE:'#E9EEF6';ctx.fillText(r.name,b[0],b[1]);ctx.restore()}})}
+
+</script>
+<script>
+/* renderColl() is defined by assets/nav.js */
+
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[60,730];BR.R.pfc.al='left';BR.R.ips.lab=[560,-70];BR.R.ips.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.44,s:fitS(W,H,1.32),t,active:['pfc','ips'],labels:['pfc','ips'],labelT:{pfc:0.8,ips:1.0},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+/* ---------- hold the letters ----------
+   6 rows of 12 letters, shown 6 s. Three rows are four familiar abbreviations run together; three rows use the letters
+   of four other abbreviations shuffled, so no abbreviation (and no doubled letter) remains. Same letters, different chunks.
+   Score: longest common subsequence of typed and shown letters (letters in the right order, 0-12). */
+const ACR=['USA','DVD','ATM','CEO','PDF','VIP','DIY','FAQ','GPS','SUV','UFO','CPR','BBQ','IOU'];
+function lcs(a,b){const d=Array.from({length:a.length+1},()=>new Array(b.length+1).fill(0));for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]+1:Math.max(d[i-1][j],d[i][j-1]);return d[a.length][b.length]}
+function scrambled(){const src=shuf([...ACR]).slice(0,4).join('').split('');let s,n=0;
+ do{s=shuf(src).join('');n++}while(n<500&&(/(.)\1/.test(s)||ACR.some(a=>s.includes(a))));return s}
+let cr=null;
+function cTimer(sec,me){const t0=performance.now();const tick=()=>{if(!cr||cr.tok!==me)return;const f=Math.min(1,(performance.now()-t0)/(sec*1000));$('cTb').style.width=(100-f*100)+'%';if(f<1)requestAnimationFrame(tick)};tick()}
+function cShow(s){$('cL').innerHTML=s.split('').map(c=>`<span>${c}</span>`).join('');$('cL').setAttribute('aria-label',s.split('').join(' '))}
+function cMsg(t){$('cL').innerHTML=`<span class="msg">${t}</span>`;$('cL').removeAttribute('aria-label')}
+function cAnswer(){return new Promise(res=>{cr.res=res;$('cForm').hidden=false;$('cIn').value='';$('cIn').focus()})}
+$('cForm').addEventListener('submit',e=>{e.preventDefault();if(!cr||!cr.res)return;const v=$('cIn').value.toUpperCase().replace(/[^A-Z]/g,'');const r=cr.res;cr.res=null;$('cForm').hidden=true;r(v)});
+function cNext(){return new Promise(res=>{const b=$('cGo');b.textContent='Next row';b.disabled=false;b.focus();b.onclick=()=>{b.onclick=null;b.disabled=true;b.textContent='In progress';res()}})}
+$('cGo').addEventListener('click',async()=>{if(cr||$('cGo').onclick)return;cr={};const go=$('cGo');go.disabled=true;go.textContent='In progress';$('cRes').innerHTML='';
+ const pool=shuf([...ACR]);const kinds=shuf(['C','C','C','R','R','R']);let ci=0;const sc={C:[],R:[]};
+ for(let i=0;i<6;i++){
+  const k=kinds[i];let s,grp;if(k==='C'){grp=pool.slice(ci*4,ci*4+4);ci++;s=grp.join('')}else{s=scrambled()}
+  $('cPhase').textContent=`Row ${i+1} of 6`;$('cTitle').textContent='Watch the letters';$('cText').textContent='They disappear after 6 seconds.';
+  cMsg('Get ready…');$('cProg').textContent=`Row ${i+1} of 6`;await sw(1000);if(!cr)return;
+  cShow(s);const me=Symbol();cr.tok=me;cTimer(6,me);await sw(6000);if(!cr)return;cr.tok=null;$('cTb').style.width='0';
+  cMsg('Type them in order');$('cTitle').textContent='Now type them';$('cText').textContent='Type the letters you remember, in order. Leave out any you’ve lost.';
+  const v=await cAnswer();if(!cr)return;const n=lcs(v,s);sc[k].push(n);
+  $('cL').innerHTML=(k==='C'?grp:[s]).map(g=>`<span>${g}</span>`).join('<span aria-hidden="true">·</span>');$('cL').setAttribute('aria-label','The letters were '+(k==='C'?grp.join(', '):s.split('').join(' ')));
+  $('cProg').textContent=`${n} of 12 in order.`;
+  $('cTitle').textContent=n>=11?'Nearly all of them':n>=7?'More than half':'A tough row';
+  $('cText').textContent=k==='C'?`This row was made of four abbreviations: ${grp.join(', ')}. You got ${n} of 12 letters in order.`:`This row had no familiar groups. You got ${n} of 12 letters in order.`;
+  if(i<5){await cNext();if(!cr)return}}
+ cMsg('Done');$('cProg').textContent='Done.';$('cPhase').textContent='Your results';
+ const av=a=>a.reduce((x,y)=>x+y,0)/a.length,mC=av(sc.C),mR=av(sc.R),f=x=>x.toFixed(1).replace(/\.0$/,'');
+ const row=(l,m,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${m/12*100}%;background:${c}"></i></div><b>${f(m)} of 12</b></div>`;
+ $('cRes').innerHTML=`<div class="res wl">${row('No familiar groups',mR,'#C9D3E3')}${row('Abbreviations',mC,'#FCB316')}</div>`;
+ let title,text;const d=mC-mR;
+ if(mC>=11&&mR>=11){title='Near perfect on both';text=`You averaged ${f(mR)} of 12 without familiar groups and ${f(mC)} with them. Twelve letters in 6 seconds is beyond most people’s limit, so you probably found a strategy of your own, such as grouping or saying the letters in a rhythm. That is chunking too.`}
+ else if(d>=1.5){title='Chunks did the work';text=`Same letters, very different results: an average of ${f(mR)} of 12 without familiar groups, and ${f(mC)} when the letters formed abbreviations you know. Twelve loose letters are far more than four things to hold. Four abbreviations are four things. What you already know set how much you could hold.`}
+ else if(d>-1.5){title='About the same this time';text=`You averaged ${f(mR)} of 12 without familiar groups and ${f(mC)} with them. Did you spot the abbreviations while the letters were showing? Chunking helps only when you recognise the chunks in time, which is why it depends on what you already know.`}
+ else{title='The rows without groups went better this time';text=`You averaged ${f(mR)} of 12 without familiar groups and ${f(mC)} with them. With only three rows of each, chance plays a big part. In studies, letters that form familiar groups are reliably easier to hold.`}
+ $('cTitle').textContent=title;$('cText').textContent=text;go.onclick=null;go.textContent='Try again';go.disabled=false;go.focus();cr=null});
+
+/* ---------- find the part (split attention) ----------
+   8 parts placed at random in 8 slots each round. 12 rounds, 6 with names on the parts and 6 with numbers plus a key,
+   in random order. Time from showing the round to the correct tap; wrong taps are counted. Compare medians. */
+const PARTS=['valve','filter','pump','tank','gauge','heater','fan','switch'];
+const SLOTS=[[12,26],[37,22],[63,26],[88,22],[12,74],[37,78],[63,74],[88,78]];
+let dr=null;
+const med=a=>{const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2};
+function dRound(mode,target){return new Promise(res=>{
+ const jit=SLOTS.map(([x,y])=>[x+(Math.random()*6-3),y+(Math.random()*8-4)]);const pos=shuf([...jit]);const nums=shuf([1,2,3,4,5,6,7,8]);
+ const path=[0,1,2,3,7,6,5,4,0].map(k=>jit[k]);
+ let h=`<svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="${path.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#8FA3C2" stroke-width="1.2" vector-effect="non-scaling-stroke" style="stroke-width:6px"/></svg>`;
+ h+=PARTS.map((p,i)=>`<button type="button" data-i="${i}" class="${mode==='S'?'num':''}" style="left:${pos[i][0]}%;top:${pos[i][1]}%" ${mode==='S'?`aria-label="Part ${nums[i]}"`:''}>${mode==='S'?nums[i]:p}</button>`).join('');
+ $('dG').innerHTML=h;
+ $('dLeg').innerHTML=mode==='S'?`<h3>Key</h3><ol>${PARTS.map((p,i)=>[nums[i],p]).sort((a,b)=>a[0]-b[0]).map(([n,p])=>`<li><b>${n}</b>${p}</li>`).join('')}</ol>`:`<h3>Key</h3><p>No key this round: the names are on the drawing.</p>`;
+ $('dQ').textContent=`Tap the ${PARTS[target]}`;$('dMsg').textContent=mode==='S'?'Numbers and a key':'Names on the drawing';
+ const t0=performance.now();let err=0;
+ $('dG').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{if(!dr)return;if(+b.dataset.i===target){res({t:(performance.now()-t0)/1000,err})}else{err++;b.classList.add('bad');$('dMsg').textContent='Not that one.'}}));
+ const first=$('dG').querySelector('button');if(dr.kb)first.focus()})}
+$('dGo').addEventListener('click',async e=>{dr={kb:e.detail===0};$('dGo').hidden=true;$('dRes').innerHTML='';
+ const modes=shuf(['I','I','I','I','I','I','S','S','S','S','S','S']);const R={I:[],S:[]},E={I:0,S:0};let last=-1;
+ for(let i=0;i<12;i++){let tg;do{tg=Math.floor(Math.random()*8)}while(tg===last);last=tg;
+  const r=await dRound(modes[i],tg);if(!dr)return;R[modes[i]].push(r.t);E[modes[i]]+=r.err;
+  $('dG').innerHTML='';$('dQ').textContent=i<11?`Round ${i+2} of 12…`:'Done.';$('dMsg').textContent='';await sw(i<11?700:200);if(!dr)return}
+ $('dLeg').innerHTML='<h3>Key</h3><p>The key appears here when it’s needed.</p>';$('dQ').textContent='Your results';
+ const mI=med(R.I),mS=med(R.S),mx=Math.max(mI,mS),f=x=>x.toFixed(1);
+ const row=(l,m,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${m/mx*100}%;background:${c}"></i></div><b>${f(m)} s</b></div>`;
+ const r=mS/mI;let head,body;
+ const errs=E.I+E.S?` Wrong taps: ${E.I} with names on the drawing, ${E.S} with the key.`:'';
+ if(r>=1.2){head='The key cost you time';body=`Typical time to find a part: ${f(mI)} s with names on the drawing, ${f(mS)} s with numbers and a key.${errs} With the key, you had to hold a name and a number in mind while your eyes moved back and forth. That effort went into the layout, not the content: split attention.`}
+ else if(r>=0.85){head='Little difference this time';body=`Typical time to find a part: ${f(mI)} s with names on the drawing, ${f(mS)} s with the key.${errs} With only eight parts and short names, the look-up is easy, and you may have started to remember numbers. In studies, the cost of a separate key is clearest when the material is complex and the words and picture only make sense together.`}
+ else{head='The key was faster this time';body=`Typical time to find a part: ${f(mI)} s with names on the drawing, ${f(mS)} s with the key.${errs} With only six rounds of each, chance plays a big part. A short sorted list can also be quick to scan. In learning studies, labels placed in the diagram usually help more than a separate key.`}
+ $('dRes').innerHTML=`<div class="lres">${row('Names on the drawing',mI,'#13294B')}${row('Numbers and a key',mS,'#B84300')}</div><p class="pmsg"><b class="h">${head}</b>${body}</p>`;
+ $('dGo').hidden=false;$('dGo').textContent='Try again';$('dGo').focus();dr=null});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Why could a chess master rebuild a real game position from a 5-second look?',o:['Familiar patterns let a group of pieces count as one chunk','Masters have a bigger working memory','Masters see faster'],a:0,f:'On random boards, masters did no better than beginners.'},
+ {q:'Which kind of load can a teacher reduce by changing how material is presented?',o:['Extraneous load, such as labels kept apart from a diagram','Intrinsic load, the difficulty of the idea itself','Neither'],a:0,f:'The difficulty of the idea can only be broken into smaller steps.'},
+ {q:'What is the expertise reversal effect?',o:['Help that suits beginners can hinder learners who already know the material','Experts forget faster than beginners','Beginners learn best without guidance'],a:0,f:'Worked examples help novices; for experts they become redundant.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','lb06');
+})();
+</script>
+</body>
+</html>

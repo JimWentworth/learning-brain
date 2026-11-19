@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Values Affirmation: A Promising Idea, Tested</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}
+.vals{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:560px}
+.vals[hidden]{display:none}
+.vals button{min-height:44px;padding:6px 14px;border-radius:999px;border:2px solid #8FA3C2;background:transparent;color:#fff;font:600 16px var(--body);cursor:pointer}
+.vals button[aria-pressed="true"]{border-color:#FCB316;background:#22375C}
+.vals button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.qq{font:600 clamp(18px,2.2vw,21px)/1.45 var(--body);color:#fff;max-width:42ch;margin:0;text-align:center}
+.wform{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:560px}
+.wform[hidden]{display:none}
+.wform textarea{width:100%;min-height:150px;font:500 17px/1.5 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;padding:10px 12px;box-sizing:border-box;resize:vertical}
+.wform textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.gfb{font:600 16px/1.45 var(--body);color:#FFB38A;min-height:1.4em;margin:0;text-align:center}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Belonging · Topic 5</div>
+      <h1 id="title">Values affirmation <em>Promising ideas deserve testing, not faith</em></h1>
+      <p class="dek">Can a brief writing exercise narrow an achievement gap? A 2006 study in Science said yes. Bigger, careful replications mostly did not. Here is what that means for your course.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#vT">Try the exercise</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the prefrontal cortex, at the front, and the amygdala, deep inside, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Values affirmation</b> · The Learning Brain, Belonging, episode 5</span><span>Captions are on; turn them off in the player.</span></div>
+    <p class="vnote"><b>About this video.</b> It mentions a district-wide study that closed about a quarter of the gap, and a college biology study. We couldn’t confirm those details, so this page leaves them out.</p>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>The exercise is called values affirmation. Students choose values that matter to them, like family, friends, music or sport, and write briefly about why. The theory: reminding students of a larger sense of self buffers the threat of being judged through a stereotype.</p>
+    <p>In the original study, by Geoffrey Cohen and colleagues in 2006, seventh graders did the exercise early in the school year. For African American students, it reduced the racial achievement gap in the course by about 40%, and follow-ups reported benefits lasting two years.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>~40%</strong><span>of the gap closed in the original 2006 study</span></div>
+      <div role="listitem"><strong>No effect</strong><span>in a large, careful replication in the same district</span></div>
+      <div role="listitem"><strong>&gt;0.10</strong><span>benefits larger than this could be ruled out</span></div>
+      <div role="listitem"><strong>Not reliable</strong><span>may help in some settings, but no one can yet predict where</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Bigger tests</span>Mostly empty</h2>
+    <p>Then came bigger tests. A study across the original district reported a smaller benefit. But a large, careful replication by Paul Hanselman and colleagues in the same district found no effect, and could rule out benefits larger than about 0.1. Other replications, including one by John Protzko and Joshua Aronson, and one in college physics, also came up empty.</p>
+    <p>So values affirmation is not a reliable fix. It may help in some settings, perhaps where threat is high and the exercise is delivered with care. But no one can yet predict where.</p>
+  </div>
+
+  <section class="night" aria-labelledby="vT">
+    <div class="col">
+      <h2 class="sec" id="vT"><span class="n">Try it</span>Try the exercise</h2>
+      <p>Experience what students do: pick two or three values that matter to you, and write briefly about why. It is private: nothing you write is saved or leaves this page. About 3 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="vScreen">
+          <p class="qq" id="vQ" aria-live="polite">Pick two or three values that matter most to you.</p>
+          <div class="vals" id="vV" role="group" aria-label="Values"></div>
+          <form class="wform" id="vF" hidden><label class="sr-only" for="vI">Why these values matter to you</label><textarea id="vI"></textarea><button class="nbtn" type="submit">Done</button></form>
+          <p class="gfb" id="vFb" aria-live="polite"></p>
+          <div class="mrow" style="justify-content:center"><button class="nbtn" id="vGo" type="button" disabled>Write about them</button></div>
+        </div>
+        <div>
+          <p class="phase" id="vPhase">Choose</p>
+          <p class="mtitle" id="vTitle">Your values</p>
+          <p class="mtext" id="vText" aria-live="polite">Choose the ones that matter to you, not the ones that sound good.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">A caution</span>An experiment, not a fix</h2>
+    <p>The original results were striking, and the best replications did not find them. If you use the exercise, you are running an experiment, and it should not replace the structural work in the rest of this series.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each study in the video, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">For teaching</h3>
+      <p>If you try it, treat it as an experiment. Keep it brief, private and ungraded, early in the term or before a high-stakes test. Track what happens. And don’t let it replace the structural work in the rest of this series.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Promising ideas deserve testing, not faith.</h2>
+    <ol class="tips">
+      <li><b>Brief, private, ungraded</b><span>If you try it at all.</span></li>
+      <li><b>Track what happens</b><span>It is an experiment.</span></li>
+      <li><b>Not a replacement</b><span>For structural work.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1126/science.1128317">Cohen, G. L., Garcia, J., Apfel, N., &amp; Master, A. (2006). Reducing the racial achievement gap: A social-psychological intervention. <i>Science, 313</i>(5791), 1307–1310.</a></li>
+        <li><a href="https://doi.org/10.1037/edu0000141">Hanselman, P., Rozek, C. S., Grigg, J., &amp; Borman, G. D. (2017). New evidence on self-affirmation effects and theorized sources of heterogeneity from large-scale replications. <i>Journal of Educational Psychology, 109</i>(3), 405–424.</a></li>
+        <li><a href="https://doi.org/10.1177/1948550616646426">Protzko, J., &amp; Aronson, J. (2016). Context moderates affirmation effects on the ethnic achievement gap. <i>Social Psychological and Personality Science, 7</i>(6), 500–507.</a></li>
+        <li><a href="https://doi.org/10.1103/PhysRevPhysEducRes.17.020121">A 2021 replication of values-affirmation exercises in introductory physics. <i>Physical Review Physics Education Research, 17</i>, 020121.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.amy.lab=[330,740];BR.R.amy.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['pfc','amy'],labels:['pfc','amy'],labelT:{pfc:0.8,amy:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- try the exercise ---------- */
+const VAL=['Family','Friends','Music','Sport','Faith or spirituality','Creativity','Humour','Learning','Helping others','Nature','Independence','Community','Art','Honesty'];
+$('vV').innerHTML=VAL.map(v=>`<button type="button" aria-pressed="false">${v}</button>`).join('');
+const picked=()=>[...$('vV').querySelectorAll('button[aria-pressed="true"]')].map(b=>b.textContent);
+$('vV').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const on=b.getAttribute('aria-pressed')==='true';if(!on&&picked().length>=3){$('vFb').textContent='Three at most.';return}$('vFb').textContent='';b.setAttribute('aria-pressed',String(!on));const n=picked().length;$('vGo').disabled=n<2;$('vText').textContent=n<2?'Pick at least two.':`You picked: ${picked().join(', ')}.`});
+$('vGo').addEventListener('click',()=>{const p=picked();$('vV').hidden=true;$('vGo').hidden=true;$('vF').hidden=false;$('vI').value='';const lst=p.length>2?p.slice(0,-1).join(', ')+' and '+p[p.length-1]:p.join(' and ');$('vQ').textContent=`Why do ${lst.toLowerCase()} matter to you? Describe a time when one of them was important.`;$('vPhase').textContent='Write';$('vTitle').textContent='A few sentences';$('vText').textContent='No one will read it. Spelling doesn’t matter.';$('vI').focus()});
+$('vF').addEventListener('submit',e=>{e.preventDefault();const n=$('vI').value.trim().split(/\s+/).filter(Boolean).length;if(n<10){$('vFb').textContent=`A few sentences, at least 10 words (you have ${n}).`;$('vI').focus();return}
+ $('vFb').textContent='';$('vI').value='';$('vF').hidden=true;$('vQ').textContent='Done. Your writing has been cleared.';$('vPhase').textContent='Reflect';$('vTitle').textContent='That’s the whole exercise';
+ $('vText').textContent='In the original study, students did something like this, briefly, early in the year. Notice how it felt. If you try it with students, keep it this short, private and ungraded, and track what happens: in the best replications, it made no measurable difference to grades.';
+ const r=$('vGo');r.hidden=false;r.disabled=false;r.textContent='Start over';r.onclick=()=>{r.onclick=null;$('vV').hidden=false;$('vV').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed','false'));r.textContent='Write about them';r.disabled=true;$('vQ').textContent='Pick two or three values that matter most to you.';$('vPhase').textContent='Choose';$('vTitle').textContent='Your values';$('vText').textContent='Choose the ones that matter to you, not the ones that sound good.'};r.focus()});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['In the original 2006 study, the racial achievement gap in the course closed by about…',['40%','10%','90%'],0,'Cohen and colleagues, 2006.'],
+ ['The original exercise was done by…',['Seventh graders, early in the school year','College seniors','Teachers'],0,'Students wrote briefly about values that mattered to them.'],
+ ['A large, careful replication in the same district found…',['No effect','A 40% effect','A bigger effect for everyone'],0,'Hanselman and colleagues, 2017.'],
+ ['That replication could rule out benefits larger than about…',['0.1','1','10'],0,'Precise enough to say: not a big effect.'],
+ ['Other replications, including in college physics, found…',['No effect','Large effects','Harm'],0,'Several came up empty.'],
+ ['So values affirmation is…',['Not a reliable fix; it may help in some settings','A proven fix','Harmful'],0,'No one can yet predict where.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: a striking early result shrank or vanished in larger tests. Treat the exercise as an experiment, not a fix.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'In the original 2006 study, the racial achievement gap closed by about…',o:['40%','5%','100%'],a:0,f:'With follow-ups reporting benefits lasting two years.'},
+ {q:'A large, careful replication in the same district found…',o:['No effect, ruling out benefits above about 0.1','A bigger effect','The same 40%'],a:0,f:'Hanselman and colleagues, 2017.'},
+ {q:'If you try values affirmation, treat it as…',o:['An experiment: brief, private, ungraded, tracked','A guaranteed fix','A graded assignment'],a:0,f:'And don’t let it replace structural work.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','b05');
+})();
+</script>
+</body>
+</html>

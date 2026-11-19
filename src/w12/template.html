@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Designing for Language: Before, During and After</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+
+.ptabs{display:flex;gap:6px;margin:18px 0 0;border-bottom:2px solid var(--night-line);flex-wrap:wrap}
+.ptabs button{appearance:none;background:transparent;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;color:#C9D3E3;font:700 18px var(--body);padding:10px 16px 8px;cursor:pointer;min-height:48px}
+.ptabs button[aria-selected="true"]{color:#fff;border-bottom-color:var(--orange)}
+.ptabs button:hover{color:#fff}
+.ptabs button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.ppanel{padding-top:6px}
+.ppanel:focus-visible{outline:3px solid #FCB316;outline-offset:4px}
+.ppanel[hidden]{display:none}
+.iguide{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;margin-top:22px}
+@media (max-width:760px){.iguide{grid-template-columns:minmax(0,1fr)}}
+.iguide h3{font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin:0 0 8px}
+.iguide ol,.iguide ul{margin:0 0 18px;padding-left:1.3em;color:#E9EEF6;font-size:17px;line-height:1.5}
+.iguide li{margin:0 0 8px}
+.iguide p{color:#E9EEF6;font-size:17px;line-height:1.5;margin:0 0 16px}
+.iguide .itime{display:inline-block;background:#1B2E50;border:1px solid var(--night-line);border-radius:16px;padding:3px 12px;font-weight:700;color:#fff;margin:0 0 14px}
+.icard{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:18px 20px}
+.pscreen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.pscreen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.pchoices{display:flex;gap:10px;flex-wrap:wrap}
+.pchoices[hidden]{display:none}
+.pchoices button{appearance:none;min-height:48px;padding:6px 18px;text-align:left;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer}
+.pchoices button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.pchoices button.ok{border-color:#7DD3A8;background:#173B33}.pchoices button.no{border-color:#FFB38A;background:#3B2420}
+.pchoices button:disabled{cursor:default}
+.mtext b.ok{color:#7DD3A8}.mtext b.no{color:#FFB38A}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.res .row{display:grid;grid-template-columns:150px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6;margin:6px 0}
+@media (max-width:520px){.res .row{grid-template-columns:100px minmax(0,1fr) 76px}}
+.res .bar{height:14px;background:#1B2E50;border-radius:7px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:7px}
+.res b{text-align:right;font-variant-numeric:tabular-nums}
+
+__COLLCSS__
+</style>
+<style>.xvnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Language and Learning · Topic 12</div>
+      <h1 id="title">Designing for language: <em>before, during and after</em></h1>
+      <p class="dek">Every course is taught in a language, and every discipline has its own. This topic gathers the series into practical moves that help all students, and especially those learning in a second language.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#tryT">Try it first</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the temporal lobe and the prefrontal cortex, part of the language network, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<main id="main">
+<article>
+  <section class="night" aria-labelledby="tryT" style="margin-top:0">
+    <div class="col">
+      <h2 class="sec" id="tryT"><span class="n">Try it first</span>Helps, or gets in the way?</h2>
+      <p>Ten decisions instructors make about language. Sort each one.</p>
+    </div>
+    <div class="wide">
+      <div class="ptabs" role="tablist" aria-label="Versions of this activity">
+        <button type="button" role="tab" id="tabS" aria-controls="panS" aria-selected="true">For students</button>
+        <button type="button" role="tab" id="tabI" aria-controls="panI" aria-selected="false" tabindex="-1">For instructors</button>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panS" aria-labelledby="tabS" tabindex="0">
+        <div class="lab">
+          <div class="pscreen" id="sScreen">
+            <p id="csS" style="font:600 clamp(19px,2.4vw,22px)/1.45 var(--body);color:#fff;max-width:40ch;margin:0;min-height:5.8em" aria-live="polite">Press Start.</p>
+            <p class="prog" id="csP"></p>
+          </div>
+          <div>
+            <p class="phase" id="sPhase">Ready</p>
+            <p class="mtitle" id="sTitle">Helps, or gets in the way?</p>
+            <p class="mtext" id="sText" aria-live="polite">Ten teaching decisions. For each, decide whether it helps students learn through language, or gets in the way. Each case links to the topic it comes from.</p>
+            <div class="pchoices" id="sCh" role="group" aria-label="Your answer" hidden></div>
+            <div id="sRes"></div>
+            <div class="mrow"><button class="nbtn" id="sGo" type="button">Start</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panI" aria-labelledby="tabI" tabindex="0" hidden>
+        <div class="iguide">
+          <div>
+            <span class="itime">About 15 minutes</span>
+            <h3>Run it in class</h3>
+            <ol><li>Run the ten cases with the class voting, or in pairs.</li><li>Ask students who learn in a second language (if they are willing) which moves help them most.</li><li>Pick three moves to try in the next two weeks.</li><li>Revisit after a few weeks: which stuck, and what changed?</li></ol>
+          </div>
+          <div class="icard">
+            <h3>Ask the room</h3>
+            <ul><li>Which of these do you already do?</li><li>Which would cost least and help most in your course?</li><li>What does a student learning in a second language need most from your lectures?</li></ul>
+            <h3>Connect it to your course</h3>
+            <p>Before class, share key terms and slides. During class, flag technical uses of everyday words, speak at a steady pace, point and gesture, and prompt explanation. After class, caption recordings, use short writing to check understanding, and bring key terms back in quizzes.</p>
+            <h3>Good to know</h3><p>Each case links to a topic in this series, so the class can follow up on any one.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col lede">
+    <p>The topics in this series point the same way. Language is a specialised system, distinct from reasoning. Words build up over many encounters and stick through recall. Reading and listening depend on knowing nearly all the words. Explaining, writing and gesturing turn ideas into language, and help learning.</p>
+    <p>None of these moves is only for second-language learners. They make a course clearer for everyone, and essential for some.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>Before</strong><span>share key terms, slides and readings ahead of class</span></div>
+      <div role="listitem"><strong>During</strong><span>flag technical words, pace, point, and prompt explanation</span></div>
+      <div role="listitem"><strong>After</strong><span>caption recordings, write to check understanding, quiz the terms</span></div>
+      <div role="listitem"><strong>12</strong><span>topics in this series, each with an activity to use in class</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Before</span>Prepare the words</h2>
+    <p>Students can follow speech when they know 95–98% of the words. Post key terms with definitions and example sentences before class, and share slides or notes so students can preview them. Flag everyday words that have technical meanings in your field.</p>
+    <h2 class="sec"><span class="n">During</span>Make meaning visible</h2>
+    <p>Speak at a steady pace, pause after key points, and face the room. Point to what you are describing and use your hands to show shapes and changes. Ask students to explain steps to themselves and to each other.</p>
+    <h2 class="sec"><span class="n">After</span>Bring the language back</h2>
+    <p>Caption recordings. Use a minute of writing to see what students understood. Quiz key terms over several weeks, asking students to recall them, not just recognise them. When grading, decide whether you are assessing the ideas, the language, or both.</p>
+    <h2 class="sec"><span class="n">A caution</span>Principles, not a formula</h2>
+    <p>Much of the evidence comes from language classrooms, school settings or lab studies with short materials. The effects vary with learners and contexts. Use these moves as defaults and ask your students what helps them.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Check your intuition</span>Predict the findings</h2>
+      <p>Each question comes from a topic in this series. Predict, then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Plan for the language, not just the content.</h2>
+    <ol class="tips">
+      <li><b>Before: share the words</b><span>Key terms, slides and readings ahead of class.</span></li>
+      <li><b>During: show and prompt</b><span>Point, gesture, flag technical words, ask “why?”</span></li>
+      <li><b>After: recall and caption</b><span>Quiz key terms; caption recordings.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1038/s41583-024-00802-4">Fedorenko, E., Ivanova, A. A., &amp; Regev, T. I. (2024). The language network as a natural kind within the broader landscape of the human brain. <i>Nature Reviews Neuroscience, 25</i>(5), 289–312.</a></li>
+        <li><a href="https://doi.org/10.1111/lang.12343">Uchihara, T., Webb, S., &amp; Yanagisawa, A. (2019). The effects of repetition on incidental vocabulary learning: A meta-analysis of correlational studies. <i>Language Learning, 69</i>(3), 559–599.</a></li>
+        <li><a href="https://doi.org/10.1016/j.system.2013.07.013">Montero Perez, M., Van Den Noortgate, W., &amp; Desmet, P. (2013). Captioned video for L2 listening and vocabulary learning: A meta-analysis. <i>System, 41</i>(3), 720–739.</a></li>
+        <li><a href="https://doi.org/10.1007/s10648-018-9434-x">Bisra, K., Liu, Q., Nesbit, J. C., Salimi, F., &amp; Winne, P. H. (2018). Inducing self-explanation: A meta-analysis. <i>Educational Psychology Review, 30</i>.</a></li>
+        <li>The other topics in this series list their own sources.</li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The ten cases are illustrations drawn from the topics in this series. The brain drawing is a simplified illustration.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.tem.lab=[300,770];BR.R.tem.al='left';BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['tem','pfc'],labels:['tem','pfc'],labelT:{tem:0.8,pfc:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+
+
+
+/* ---------- tabs ---------- */
+(function(){const tl=document.querySelector('.ptabs');if(!tl)return;const tabs=[...tl.querySelectorAll('[role=tab]')];
+ function sel(t,focus){tabs.forEach(b=>{const on=b===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;$(b.getAttribute('aria-controls')).hidden=!on});if(focus)t.focus()}
+ tabs.forEach((b,i)=>{b.addEventListener('click',()=>sel(b));b.addEventListener('keydown',e=>{let j=null;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;if(j!==null){e.preventDefault();sel(tabs[j],true)}})})})();
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?Math.min(100,val/mx*100):0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+let RUN=null;
+function ask(opts,lab){return new Promise(res=>{const c=$('sCh');c.setAttribute('aria-label',lab||'Your answer');c.innerHTML=opts.map((t,j)=>`<button type="button" data-v="${j}">${t}</button>`).join('');c.hidden=false;RUN.res=res;c.querySelector('button').focus()})}
+$('sCh').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!RUN||!RUN.res||b.disabled)return;const r=RUN.res;RUN.res=null;$('sCh').querySelectorAll('button').forEach(x=>x.disabled=true);r(+b.dataset.v)});
+function mark(right,chosen){$('sCh').querySelectorAll('button').forEach((b,j)=>{if(j===right)b.classList.add('ok');else if(j===chosen)b.classList.add('no')})}
+function hideCh(){$('sCh').hidden=true;$('sCh').innerHTML=''}
+function nextBtn(label){return new Promise(res=>{const g=$('sGo');g.textContent=label;g.hidden=false;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.hidden=true;res()}})}
+function say(phase,title,text){if(phase!=null)$('sPhase').textContent=phase;if(title!=null)$('sTitle').textContent=title;if(text!=null)$('sText').innerHTML=text}
+function startRun(fn){$('sGo').addEventListener('click',async()=>{if(RUN)return;RUN={};const g=$('sGo');g.hidden=true;$('sRes').innerHTML='';try{await fn()}finally{hideCh();g.onclick=null;g.textContent='Try again';g.hidden=false;g.disabled=false;RUN=null}})}
+
+/* ---------- cases ---------- */
+const CASES=[
+ ['You post a list of key terms, with definitions and example sentences, before each lecture.',0,'Helps. Students can meet the words before they have to follow them at speaking speed. (Topic 8)'],
+ ['You lecture quickly and post the slides only after the exam.',1,'Gets in the way. Listeners can’t reread, and students learning in a second language lose words with no way to recover them. (Topic 8)'],
+ ['When you say “significant” in a statistics class, you contrast it with its everyday meaning.',0,'Helps. Familiar words with technical meanings are easy to misread. (Topic 4)'],
+ ['You grade lab reports mainly on grammar, though the learning goal is experimental design.',1,'Gets in the way. Language and reasoning are different systems; grade what you mean to assess. (Topics 1 and 5)'],
+ ['You caption all your recorded lectures.',0,'Helps. Captions had a large effect on second-language listening comprehension. (Topic 8)'],
+ ['You end class with a one-minute “muddiest point” writing prompt.',0,'Helps. Short reflective writing is the kind most linked to learning. (Topic 9)'],
+ ['A key term appears once in the assigned reading and never comes up again.',1,'Gets in the way. Words build up over many encounters, and stick through recall. (Topics 2 and 7)'],
+ ['Worked examples include a “why does this step work?” prompt, and pairs explain steps to each other.',0,'Helps. Self-explanation prompts had a medium average benefit. (Topic 10)'],
+ ['You tell bilingual students that their two languages give them a brain-training advantage.',1,'Gets in the way of accuracy. After correcting for publication bias, no advantage in executive function remained. Value their languages for real reasons. (Topic 6)'],
+ ['You trace a rising curve in the air when describing growth, and point at the diagram as you talk.',0,'Helps. Gestures that picture or point added to comprehension. (Topic 11)']],OPTS=["Helps","Gets in the way"];
+startRun(async()=>{const order=shuf([...CASES]);let right=0;const n=order.length;
+ for(let i=0;i<n;i++){const [t,k,ex,o]=order[i];$('csS').innerHTML=t;$('csP').textContent=`${i+1} of ${n}`;
+  say(`${i+1} of ${n}`,'Helps, or gets in the way?','');
+  const a=await ask(o||OPTS,'Helps, or gets in the way?');if(!RUN)return;mark(k,a);if(a===k)right++;
+  say(null,null,(a===k?'<b class="ok">Right.</b> ':'<b class="no">Not quite.</b> ')+ex);
+  if(i<n-1){await nextBtn('Next');if(!RUN)return;hideCh()}}
+ $('csS').textContent='Done.';$('csP').textContent='';let title,text;
+ title=`${right} of ${n} right`;text=right>=n-1?'You have the idea. The sections below explain the evidence.':right>=n/2?'Mostly there. The sections below explain the ones you missed.':'Worth another look. The sections below explain each one.';
+ say('Your results',title,text)});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Is the brain’s language network distinct from its systems for reasoning?',['Yes, though closely linked','No, they are the same','Language has no network'],0,'Topic 1.'],
+ ['What share of words must be known for adequate comprehension?',['About 95–98%','About 70%','About 50%'],0,'Topic 8.'],
+ ['Until about what age is grammar-learning ability preserved?',['About 17','About 5','About 40'],0,'Topic 5.'],
+ ['After correcting for publication bias, the bilingual advantage in executive function was…',['Not supported','Large','Doubled'],0,'Topic 6.'],
+ ['Which had larger effects on comprehension?',['Producing gestures','Observing gestures','Neither'],0,'Topic 11.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: plan for the language, and every student gains.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Which helps second-language listeners most before a lecture?',o:['Key terms and slides shared in advance','A longer lecture','Faster speech'],a:0,f:'Topic 8.'},
+ {q:'To make a technical term stick, students should…',o:['Meet it several times and recall it','See it once in a reading','Copy it out'],a:0,f:'Topics 2 and 7.'},
+ {q:'When grading a lab report about experimental design, focus on…',o:['The design and reasoning','Grammar only','Length'],a:0,f:'Separate the ideas from the language, unless language is the goal.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','w12');
+})();
+</script>
+</body>
+</html>

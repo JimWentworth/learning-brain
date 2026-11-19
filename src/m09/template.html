@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why We Forget: Interference and Lost Paths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}
+.cnt{font:800 44px var(--body);color:#FCB316;text-align:center}
+.wl{font:700 30px/1.35 var(--body);color:#fff;text-align:center}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Memory · Topic 9</div>
+      <h1 id="title">Why we forget <em>Mostly, the way back is lost</em></h1>
+      <p class="dek">Forgetting is not just time passing. Much of it is interference from similar material, and much of what seems forgotten is still stored, just out of reach.</p>
+      <div class="byline"><span>About 8 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#iT">Watch interference build</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the hippocampus, deep inside, and the prefrontal cortex, at the front, glowing orange and labelled. In mice, switching on hippocampal engram cells with light brought back a memory that natural cues could no longer reach."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Why we forget</b> · The Learning Brain, Memory, episode 9</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Ebbinghaus learned lists of nonsense syllables, then timed how long it took to relearn them. Most of the loss came fast, within the first day, and then slowed. A careful replication in 2015 found the same shape.</p>
+    <p>But forgetting isn’t just time passing.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>75% → 25%</strong><span>forgetting over a day, once interference from earlier lists was removed</span></div>
+      <div role="listitem"><strong>Category cues</strong><span>brought back words people couldn’t recall freely</span></div>
+      <div role="listitem"><strong>Light</strong><span>brought back a mouse’s “lost” fear memory by switching on its engram cells</span></div>
+      <div role="listitem"><strong>Harder to reach</strong><span>can mean more to gain from reaching it again</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Interference</span>Similar things compete</h2>
+    <p>Much forgetting is interference. In 1957, Benton Underwood looked across many lab studies and found that the more lists people had learned before, the more they forgot of the next one. With that interference removed, forgetting over a day fell from about 75% to about 25%. Similar material competes, and new learning can also crowd out the old.</p>
+  </div>
+
+  <section class="night" aria-labelledby="iT">
+    <div class="col">
+      <h2 class="sec" id="iT"><span class="n">Try it</span>Watch interference build</h2>
+      <p>Four rounds. In each, you’ll see 5 words, count backward out loud for 15 seconds, then type the words. About 2 minutes. Pay attention to the kinds of words in each round.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="iScreen">
+          <div class="fw" id="iW" aria-live="polite"></div>
+          <form class="fin" id="iForm" hidden><label class="sr-only" for="iIn">Type the words you remember</label><textarea id="iIn" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea><button class="nbtn" type="submit">Done</button></form>
+          <button class="brk" id="iBrk" hidden aria-label="Tap when the circle is orange"></button>
+          <div class="tbar" aria-hidden="true"><i id="iTb" style="width:0"></i></div>
+          <p class="prog" id="iProg" aria-live="polite">Press Start.</p>
+        </div>
+        <div>
+          <p class="phase" id="iPhase">Ready</p>
+          <p class="mtitle" id="iTitle">Does each round get harder?</p>
+          <p class="mtext" id="iText" aria-live="polite">Each word appears for 1½ seconds. When the number appears, count backward from it by threes, out loud, until the bar runs out.</p>
+          <div id="iRes"></div>
+          <div class="mrow"><button class="nbtn" id="iGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Still there</span>Available, but not accessible</h2>
+    <p>Much of what seems forgotten is still stored. As <a href="@@LB:m01@@">the first topic</a> showed, people who couldn’t recall words freely recalled many more when given the category names.</p>
+    <p>Mice show this at the level of cells. In 2015, Tomás Ryan, Susumu Tonegawa and colleagues gave mice a drug that blocked consolidation of a fear memory. The mice could no longer recall the fear from natural cues. But when the engram cells were switched on with light, the memory came back. The trace was stored; the path to it was lost.</p>
+    <h2 class="sec"><span class="n">Forgetting helps</span>Not only failure</h2>
+    <p>Losing access to outdated details, like an old address or last year’s timetable, keeps current ones easy to find. And in Robert and Elizabeth Bjork’s framework, a memory that has become harder to retrieve gains more from being retrieved again, which is one reason <a href="@@LB:lb11@@">spacing</a> works.</p>
+    <h2 class="sec"><span class="n">A caution</span>Depends on the material</h2>
+    <p>Much of this comes from word lists and animal studies. How fast we forget depends on the material, how well it was learned, and how it’s tested.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each study in the video, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">When students go blank</h3>
+      <p>Expect steep early loss, and revisit material within days. Separate similar topics, or teach their differences directly. And when students go blank, give a cue before giving the answer.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Forgetting is rarely erasing</h2>
+    <ol class="tips">
+      <li><b>Revisit within days</b><span>The loss is steepest early.</span></li>
+      <li><b>Separate similar topics</b><span>Or teach their differences directly.</span></li>
+      <li><b>Cue before answering</b><span>The memory may just be out of reach.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1371/journal.pone.0120644">Murre, J. M. J., &amp; Dros, J. (2015). Replication and analysis of Ebbinghaus’ forgetting curve. <i>PLOS ONE</i>.</a></li>
+        <li><a href="https://doi.org/10.1037/h0044616">Underwood, B. J. (1957). Interference and forgetting. <i>Psychological Review</i>.</a></li>
+        <li><a href="https://support.pstnet.com/hc/en-us/articles/360050965574">Wickens, D. D. (1973). Some characteristics of word encoding. <i>Memory &amp; Cognition</i>. (Described by Psychology Software Tools.)</a></li>
+        <li><a href="https://www.sciencedaily.com/releases/2015/05/150528142815.htm">Ryan, T. J., Roy, D. S., Pignatelli, M., Arons, A., &amp; Tonegawa, S. (2015). Engram cells retain memory under retrograde amnesia. <i>Science</i>. (Summary.)</a></li>
+        <li><a href="https://bjorklab.psych.ucla.edu/wp-content/uploads/sites/13/2021/01/RABjorkELBjorkJARMAC2020ForPostingSingleSpaced.pdf">Bjork, R. A., &amp; Bjork, E. L. (2020). Desirable difficulties in theory and practice. <i>Journal of Applied Research in Memory and Cognition</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.hip.lab=[640,770];BR.R.hip.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['hip','pfc'],labels:['hip','pfc'],labelT:{hip:0.8,pfc:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+function iTimer(sec,me){const t0=performance.now();const tick=()=>{if(!ir||ir.tok!==me)return;const f=Math.min(1,(performance.now()-t0)/(sec*1000));$('iTb').style.width=(100-f*100)+'%';if(f<1)requestAnimationFrame(tick)};tick()}
+async function iHold(sec){const me=Symbol();ir.tok=me;iTimer(sec,me);await sw(sec*1000);if(!ir)return false;ir.tok=null;$('iTb').style.width='0';return true}
+function iRecall(ph){return new Promise(res=>{ir.rres=res;$('iForm').hidden=false;$('iIn').value='';$('iIn').placeholder=ph||'Type the words, in any order';$('iIn').focus()})}
+$('iForm').addEventListener('submit',e=>{e.preventDefault();if(!ir||!ir.rres)return;const r=ir.rres;ir.rres=null;$('iForm').hidden=true;r($('iIn').value)});
+async function iBreak(sec,msg){sec=sec||30;$('iW').textContent=msg?'':'Easy break';$('iBrk').hidden=false;$('iBrk').focus();let on=false;const me=Symbol();ir.tok=me;
+ $('iProg').textContent=msg||`For ${sec} seconds, tap the circle (or press Space) whenever it turns orange.`;
+ const brk=$('iBrk');brk.onclick=()=>{if(on){on=false;brk.classList.remove('on')}};const t0=performance.now();iTimer(sec,me);
+ while(performance.now()-t0<sec*1000){await sw(1000+Math.random()*1800);if(!ir)return;on=true;brk.classList.add('on');await sw(900);on=false;brk.classList.remove('on')}
+ brk.hidden=true;ir.tok=null;$('iTb').style.width='0';$('iProg').textContent='';$('iW').textContent=''}
+$('iBrk').addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();$('iBrk').click()}});
+
+/* ---------- watch interference build ----------
+   Four Brown-Peterson rounds of 5 words: rounds 1-3 from one category, round 4 from another (random which).
+   Words 1.5 s each, 15 s counting backward by threes (aloud, honour system), then typed recall. */
+const CAT={fruits:['apple','banana','cherry','grape','lemon','mango','melon','peach','pear','plum','lime','kiwi','apricot','papaya','orange'],
+ animals:['tiger','zebra','horse','rabbit','monkey','camel','otter','wolf','bear','deer','goat','mouse','lion','sheep','fox']};
+let ir=null;
+$('iGo').addEventListener('click',async()=>{if(ir)return;ir={};const g=$('iGo');g.disabled=true;g.textContent='In progress';$('iRes').innerHTML='';
+ const base=Math.random()<0.5?'fruits':'animals',shift=base==='fruits'?'animals':'fruits';
+ const bw=shuf([...CAT[base]]),sw5=shuf([...CAT[shift]]).slice(0,5);const rounds=[bw.slice(0,5),bw.slice(5,10),bw.slice(10,15),sw5];const got=[];
+ for(let r=0;r<4;r++){const L=rounds[r];$('iPhase').textContent=`Round ${r+1} of 4`;$('iTitle').textContent='Remember these words';$('iText').textContent='Each word appears for 1½ seconds.';
+  for(let i=0;i<5;i++){$('iW').innerHTML=`<span class="wl">${L[i]}</span>`;$('iProg').textContent=`Word ${i+1} of 5`;if(!await iHold(1.5))return}
+  const n=300+Math.floor(Math.random()*600);$('iTitle').textContent='Count backward';$('iText').textContent='Out loud, by threes, until the bar runs out.';
+  $('iW').innerHTML=`<span class="cnt">${n}</span>`;$('iProg').textContent=`${n}, ${n-3}, ${n-6}, …`;if(!await iHold(15))return;
+  $('iTitle').textContent='Recall';$('iText').textContent=`Type the 5 words from round ${r+1}.`;$('iW').textContent='Which words?';$('iProg').textContent='';
+  const v=await iRecall();if(!ir)return;const t=toks(v);got.push(L.filter(w=>t.some(x=>match(x,w))).length)}
+ $('iW').textContent='Done';$('iPhase').textContent='Your results';
+ $('iRes').innerHTML=`<div class="res wl2"><p class="gh">Words recalled, out of 5</p>${got.map((n,r)=>barRow(`Round ${r+1} · ${r<3?base:shift}`,n,5,n+' of 5',r<3?'#C9D3E3':'#FCB316')).join('')}</div>`;
+ const [a,b,c,d]=got,drop=a-c,rel=d-c,tot=a+b+c+d;let title,text;
+ if(tot<4){title='Too few words to see a pattern';text=`You recalled ${tot} words across four rounds. Try again, and say each word to yourself as it appears.`}
+ else if(drop>=1&&rel>=1){title='Interference built up, then lifted';text=`Round 1: ${a} of 5. By round 3, after two more rounds of ${base}, ${c} of 5. When the category switched to ${shift} in round 4: ${d} of 5. The earlier ${base} crowded out the later ones; a new category escaped the competition. Delos Wickens called this release from proactive interference.`}
+ else if(drop>=1){title='Interference built up';text=`You went from ${a} of 5 in round 1 to ${c} of 5 by round 3, as ${base} piled up. Switching to ${shift} in round 4 gave ${d} of 5, so the release that most people show didn’t appear this time. With 5 words a round, chance plays a big part.`}
+ else if(c>=4&&a>=4){title='You held on every round';text=`You recalled ${a}, ${b}, ${c} and ${d} of 5. Five words may be too few to show interference for you, or you used a strategy, like linking each round into a story. In studies with many people, recall falls over the first few rounds of one category and rises when it switches.`}
+ else{title='No build-up this time';text=`You recalled ${a}, ${b}, ${c} and ${d} of 5. Round 1 is usually the best, because nothing came before it to compete. With 5 words a round, chance plays a big part, and counting may have taken more of your attention in some rounds than others.`}
+ $('iTitle').textContent=title;$('iText').textContent=text;$('iProg').textContent='';g.textContent='Try again';g.disabled=false;g.focus();ir=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Ebbinghaus relearning syllable lists: when did most of the loss come?',['Within the first day','Evenly over a month','Only after a week'],0,'Then it slowed. A 2015 replication found the same shape.'],
+ ['People who had learned many earlier lists, recalling a new one a day later',['Forgot much more','Forgot the same','Forgot less, from practice'],0,'Underwood, 1957: about 75% against about 25%.'],
+ ['Several rounds of words from one category, then a switch to a new category',['Recall jumps back up','Recall keeps falling','Recall drops to zero'],0,'Release from proactive interference.'],
+ ['People who couldn’t recall words freely, given the category names',['Recalled many more','Recalled none','Recalled the same'],0,'The words were available but not accessible.'],
+ ['Mice that couldn’t recall a fear after a consolidation-blocking drug, when engram cells were switched on with light',['Froze, as if remembering','Stayed calm','Learned a new fear'],0,'The trace was stored; the path was lost.'],
+ ['A memory that has become harder to retrieve, when it is retrieved again',['Gains more','Gains less','Gains nothing'],0,'In the Bjorks’ framework, harder retrieval is a bigger boost.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: forgetting is rarely erasing. Mostly, the way back is lost or crowded out.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Underwood removed interference from earlier lists. What happened to forgetting over a day?',o:['It fell from about 75% to about 25%','It stayed the same','It rose'],a:0,f:'Much forgetting is competition from similar material.'},
+ {q:'Mice couldn’t recall a fear after a drug blocked consolidation. What brought it back?',o:['Switching on the engram cells with light','Nothing','More training'],a:0,f:'The trace was stored; the path to it was lost.'},
+ {q:'When a student goes blank, what should come first?',o:['A cue','The answer','A new topic'],a:0,f:'The memory may just be out of reach.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','m09');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mindset, with Realistic Effects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}.bscen{font:600 clamp(19px,2.4vw,22px)/1.45 var(--body);color:#fff;max-width:40ch;min-height:5.8em;margin:0}
+.bopts{display:grid;grid-template-columns:repeat(var(--nb,3),minmax(0,1fr));gap:8px;width:100%;max-width:600px}
+@media (max-width:520px){.bopts{grid-template-columns:1fr}}
+.bopts[hidden]{display:none}
+.bopts button{min-height:52px;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer;padding:4px 8px}
+.bopts button small{display:block;font-size:13px;color:#C9D3E3;font-weight:600}
+.bopts button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.bopts button.ok{border-color:#7DD3A8;background:#173B33}.bopts button.no{border-color:#FFB38A;background:#3B2420}
+.bopts button:disabled{cursor:default}
+.bfb{font-size:18px;line-height:1.45;color:#E9EEF6;margin:0;min-height:3em;max-width:44ch}
+.bfb b.ok{color:#7DD3A8}.bfb b.no{color:#FFB38A}
+.jb{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.echart{width:100%;max-width:560px;height:auto;display:block}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Habits of the Learner · Topic 11</div>
+      <h1 id="title">Mindset, with realistic effects <em>Abilities can grow; strategies make it happen</em></h1>
+      <p class="dek">Growth mindset is on posters in many schools. The best evidence says its effects are real for some students in some settings, small on average, and depend on strategy, not effort alone.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#eT">How big is “small”?</a></span><span><a href="#bT">Respond to a bad mark</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the prefrontal cortex, at the front, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Mindset, with realistic effects</b> · The Learning Brain, Habits of the Learner, episode 11</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Growth mindset is the belief that your abilities can develop through effort, good strategies and help from others. How much does teaching it actually change results?</p>
+    <p>The biggest test, led by David Yeager and published in 2019, involved more than 12,000 ninth graders across the United States. They did either a growth mindset program or a control activity: two short online sessions of about 25 minutes each. Among lower-achieving students, grades rose by about a tenth of a grade point, and the share with a D or F average fell by more than five percentage points.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>12,000+</strong><span>ninth graders in a national experiment</span></div>
+      <div role="listitem"><strong>+0.10</strong><span>grade points for lower achievers, after under an hour online</span></div>
+      <div role="listitem"><strong>0.08</strong><span>the average effect on achievement in a 2018 meta-analysis: tiny</span></div>
+      <div role="listitem"><strong>2.5×</strong><span>as likely to report benefits: authors with a financial stake, in a 2023 review</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Context</span>A seed that needs fertile soil</h2>
+    <p>Both higher and lower achievers were also a little more likely to take advanced maths the next year. The effect on grades was larger in schools where classmates valued taking on hard work. Yeager compared the program to a seed that grows in fertile soil.</p>
+    <h2 class="sec"><span class="n">Meta-analyses</span>A more modest story</h2>
+    <p>In 2018, Victoria Sisk, Brooke Macnamara and colleagues found the average effect of mindset programs on achievement was tiny, about 0.08. In 2023, Macnamara and Alexander Burgoyne found that the highest-quality studies showed little or no benefit, and that authors with a financial stake were about two and a half times as likely to report positive results. Another 2023 meta-analysis, by Jeni Burnette and colleagues, found meaningful effects for students at academic risk. The debate continues.</p>
+  </div>
+
+  <section class="night" aria-labelledby="eT">
+    <div class="col">
+      <h2 class="sec" id="eT"><span class="n">Try it</span>How big is “small”?</h2>
+      <p>Researchers report effects as standardized differences, like 0.08. Pick a size and see what it means: two groups of students, one with the program and one without, and how much they overlap.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="eScreen">
+          <div class="jb" role="group" aria-label="Effect size"><button class="nbtn" type="button" data-d="0.08">0.08: average mindset effect</button><button class="nbtn ghost" type="button" data-d="0.2">0.2: small</button><button class="nbtn ghost" type="button" data-d="0.5">0.5: medium</button><button class="nbtn ghost" type="button" data-d="0.8">0.8: large</button></div>
+          <svg class="echart" id="eSvg" viewBox="0 0 560 230" role="img" aria-labelledby="eSvgT"><title id="eSvgT">Two overlapping groups</title></svg>
+        </div>
+        <div>
+          <p class="phase" id="ePhase">Effect size</p>
+          <p class="mtitle" id="eTitle"></p>
+          <p class="mtext" id="eText" aria-live="polite"></p>
+          <div id="eRes"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">A caution</span>One ingredient, not a fix</h2>
+    <p>Effects are small on average, and depend on context. A mindset is one ingredient, not a fix. And growth comes from effort plus better strategies, not effort alone.</p>
+  </div>
+
+  <section class="night" aria-labelledby="bT">
+    <div class="col">
+      <h2 class="sec" id="bT"><span class="n">Try it</span>Respond to a bad mark</h2>
+      <p>You get a disappointing mark. Here are eight things a student might think or do next. For each, decide: is it a growth response with a strategy, effort alone, or a fixed response? You’ll get feedback after each one.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="bScreen">
+          <p class="bscen" id="bScen" aria-live="polite">Press Start.</p>
+          <div class="bopts" id="bOpts" hidden role="group" aria-label="Growth with strategy, effort alone, or fixed?" style="--nb:3"><button type="button" data-k="G">Growth + strategy<small>effort and a new approach</small></button><button type="button" data-k="E">Effort alone<small>try harder, same way</small></button><button type="button" data-k="F">Fixed<small>ability can’t change</small></button></div>
+          <p class="prog" id="bProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="bPhase">Ready</p>
+          <p class="mtitle" id="bTitle">Respond to a bad mark</p>
+          <p class="bfb" id="bFb" aria-live="polite">The question is always: is anything going to change about how you study?</p>
+          <div id="bRes"></div>
+          <div class="mrow"><button class="nbtn" id="bGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Try this</h3>
+      <p>When you get a bad mark, ask what it tells you, and what you will change. Pair effort with a new strategy, like self-testing instead of rereading. Ask for help early. And now and then, choose a challenge you might fail.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Abilities can grow. Strategies make it happen.</h2>
+    <ol class="tips">
+      <li><b>What does this mark tell me?</b><span>And what will I change?</span></li>
+      <li><b>Effort plus a new strategy</b><span>Self-testing instead of rereading.</span></li>
+      <li><b>Ask for help early</b><span>And sometimes pick a challenge you might fail.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1038/s41586-019-1466-y">Yeager, D. S., Hanselman, P., Walton, G. M., et al. (2019). A national experiment reveals where a growth mindset improves achievement. <i>Nature, 573</i>, 364–369.</a></li>
+        <li><a href="https://doi.org/10.1177/0956797617739704">Sisk, V. F., Burgoyne, A. P., Sun, J., Butler, J. L., &amp; Macnamara, B. N. (2018). To what extent and under which circumstances are growth mind-sets important to academic achievement? Two meta-analyses. <i>Psychological Science, 29</i>(4), 549–571.</a></li>
+        <li><a href="https://doi.org/10.1037/bul0000352">Macnamara, B. N., &amp; Burgoyne, A. P. (2023). Do growth mindset interventions impact students’ academic achievement? A systematic review and meta-analysis with recommendations for best practices. <i>Psychological Bulletin, 149</i>(3–4), 133–173.</a></li>
+        <li><a href="https://doi.org/10.1037/bul0000368">Burnette, J. L., Billingsley, J., Banks, G. C., et al. (2023). A systematic review and meta-analysis of growth mindset interventions: For whom, how, and why might such interventions work? <i>Psychological Bulletin, 149</i>(3–4), 174–205.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['pfc'],labels:['pfc'],labelT:{pfc:0.8},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- how big is "small"? ----------
+   Two normal curves shifted by d. Report Cohen's U3 (share of program group above the control average = Phi(d))
+   and the chance that a random program student beats a random control student (Phi(d/sqrt2)). */
+const Phi=x=>{const t=1/(1+0.2316419*Math.abs(x)),y=0.3989423*Math.exp(-x*x/2)*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return x>=0?1-y:y};
+function show(d){
+ const X=z=>280+z*80,Y=v=>200-v*380,pdf=(z,m)=>Math.exp(-((z-m)**2)/2)/Math.sqrt(2*Math.PI);
+ const path=m=>{let p='';for(let z=-3.4;z<=4.2;z+=0.05)p+=(p?'L':'M')+X(z).toFixed(1)+' '+Y(pdf(z,m)).toFixed(1);return p};
+ $('eSvg').innerHTML=`<title id="eSvgT">Two overlapping groups, effect size ${d}</title><line x1="10" y1="200" x2="550" y2="200" stroke="#8FA3C2"/><path d="${path(0)}" fill="#C9D3E3" fill-opacity=".25" stroke="#C9D3E3" stroke-width="2"/><path d="${path(d)}" fill="#FCB316" fill-opacity=".25" stroke="#FCB316" stroke-width="3"/><line x1="${X(0)}" y1="40" x2="${X(0)}" y2="200" stroke="#C9D3E3" stroke-dasharray="4 4"/><text x="${X(0)-6}" y="30" text-anchor="end" font-size="18" fill="#C9D3E3">without</text><text x="${X(d)+6}" y="30" font-size="18" fill="#FCB316">with the program</text>`;
+ const u3=Phi(d),ps=Phi(d/Math.SQRT2);
+ $('eRes').innerHTML=`<div class="res wl2">${barRow('Above the other group’s average',u3,1,Math.round(u3*100)+'%','#FCB316')}${barRow('Random pair: program student scores higher',ps,1,Math.round(ps*100)+'%','#7DD3A8')}</div>`;
+ const T={0.08:['Tiny','At 0.08, the two groups almost completely overlap. Only about 53% of students with the program score above the average student without it, against 50% by chance. That was the average effect of mindset programs in the 2018 meta-analysis.'],
+  0.2:['Small','At 0.2, about 58% of the program group is above the other group’s average. Noticeable across thousands of students, hard to see in one classroom.'],
+  0.5:['Medium','At 0.5, about 69% of the program group is above the other group’s average. A difference a teacher would notice.'],
+  0.8:['Large','At 0.8, about 79% of the program group is above the other group’s average. Large, by the usual conventions.']}[d];
+ $('eTitle').textContent=T[0];$('eText').textContent=T[1];
+ document.querySelectorAll('#eScreen .jb button').forEach(b=>{const on=+b.dataset.d===d;b.classList.toggle('ghost',!on);b.setAttribute('aria-pressed',on)})}
+document.querySelector('#eScreen .jb').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(+b.dataset.d)});
+show(0.08);
+
+/* ---------- classifier ---------- */
+const NM={G:'Growth + strategy',E:'Effort alone',F:'Fixed'};
+const CASES=[
+ ['“I’ll find out which questions I got wrong and why, then switch from rereading to self-testing.”','G','Growth with a strategy: effort aimed at a new approach.'],
+ ['“I’ll just study twice as long next time, the same way.”','E','Effort alone: more of the same rarely fixes the problem.'],
+ ['“I’m just not a maths person.”','F','Fixed: it treats ability as something that can’t change.'],
+ ['“I’ll go to office hours this week and ask how to approach these problems.”','G','Growth with a strategy: asking for help early is a strategy.'],
+ ['“I need to want it more.”','E','Effort alone: wanting it more isn’t a plan.'],
+ ['“Some people are naturally good at this, and I’m not one of them.”','F','Fixed: a belief that closes the door on getting better.'],
+ ['“I’ll do practice questions under exam conditions, and check my errors each time.”','G','Growth with a strategy: practice that gives feedback.'],
+ ['“I’ll stay up all night before the next test.”','E','Effort alone, and it costs sleep, which matters for memory.']];
+let br=null;
+function bAnswer(){return new Promise(res=>{br.res=res;const o=$('bOpts');o.hidden=false;o.querySelectorAll('button').forEach(b=>{b.disabled=false;b.classList.remove('ok','no')});o.querySelector('button').focus()})}
+$('bOpts').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!br||!br.res)return;const r=br.res;br.res=null;r(b.dataset.k)});
+function bWait(label){return new Promise(res=>{const g=$('bGo');g.textContent=label;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.disabled=true;g.textContent='In progress';res()}})}
+$('bGo').addEventListener('click',async()=>{if(br||$('bGo').onclick)return;br={};const g=$('bGo');g.disabled=true;g.textContent='In progress';$('bRes').innerHTML='';
+ const order=shuf([...CASES]);const n=order.length;let right=0;const tot={},got={},miss={};Object.keys(NM).forEach(k=>{tot[k]=0;got[k]=0;miss[k]=0});
+ $('bTitle').textContent='Growth with strategy, effort alone, or fixed?';
+ for(let i=0;i<n;i++){const [txt,k,ex]=order[i];tot[k]++;$('bPhase').textContent=`Case ${i+1} of ${n}`;$('bScen').textContent=txt;$('bProg').textContent='';$('bFb').textContent='';
+  const a=await bAnswer();if(!br)return;const ok=a===k;if(ok){right++;got[k]++}else miss[k]++;
+  $('bOpts').querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.k===k)b.classList.add('ok');else if(b.dataset.k===a)b.classList.add('no')});
+  $('bFb').innerHTML=(ok?'<b class="ok">Right.</b> ':`<b class="no">Not quite.</b> You chose “${NM[a]}”. `)+ex;$('bProg').textContent=`${right} of ${i+1} right so far.`;
+  if(i<n-1){await bWait('Next case');if(!br)return}}
+ $('bOpts').hidden=true;$('bScen').textContent='Done.';$('bProg').textContent='';$('bPhase').textContent='Your results';
+ $('bRes').innerHTML=`<div class="res wl2">${Object.keys(NM).map(k=>barRow(NM[k],got[k],tot[k],got[k]+' of '+tot[k],'#FCB316')).join('')}</div>`;
+ const weak=Object.keys(miss).filter(k=>miss[k]>0).map(k=>'“'+NM[k]+'”');const wj=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];const missed=weak.length===Object.keys(NM).length?(weak.length===2?'cases in both groups':'cases in every group'):'some '+wj(weak)+' cases';let title,text;
+
+ if(right>=7){title='Effort plus strategy';text=`${right} of 8 right. A growth mindset only helps if something changes in how you study. Effort alone, more of the same, rarely does it.`}
+ else if(right>=5){title='Mostly there';text=`${right} of 8 right. You missed ${missed}. The key difference: growth responses change the strategy, not just the amount of effort.`}
+ else{title='Worth another look';text=`${right} of 8 right. Fixed responses say ability can’t change; effort-alone responses try harder the same way; growth responses change the approach.`}
+ $('bTitle').textContent=title;$('bFb').textContent=text;g.onclick=null;g.textContent='Try again';g.disabled=false;g.focus();br=null});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'In the national experiment, lower achievers’ grades rose by about…',o:['A tenth of a grade point','A full grade point','Nothing'],a:0,f:'After two short online sessions.'},
+ {q:'The average effect of mindset programs in the 2018 meta-analysis was…',o:['Tiny, about 0.08','Large, about 0.8','Negative'],a:0,f:'Larger for some students at academic risk.'},
+ {q:'Growth comes from…',o:['Effort plus better strategies','Effort alone','Believing alone'],a:0,f:'A mindset is one ingredient, not a fix.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','h11');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Basal Ganglia: Habits and Skills</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+
+:root{
+  /* Layout idea: a magazine spread. Light reading pages, dark "night" spreads for the brain and the video.
+     Contrast (WCAG AA): ink 13.4:1 and ink-2 8.0:1 on paper; accent-ink 5.1:1 on paper; on night, text 11.3:1, muted 8.6:1, orange 5.6:1. */
+  --paper:#F4F6F9; --ink:#13294B; --ink-2:#3D4C66; --rule:#C9D2DF;
+  --accent-ink:#B84300;   /* orange for text/marks on light backgrounds */
+  --orange:#FF5F05;       /* bright orange only on dark backgrounds */
+  --night:#0D1C35; --night-2:#0A172C; --night-ink:#E9EEF6; --night-muted:#AEB9CC; --night-line:#2A426B;
+  --ok:#1C7A55; --no:#B42A4A;
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --body:'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.6}
+a{color:var(--ink);text-decoration-color:var(--accent-ink);text-underline-offset:3px}
+.night a,.hero a{color:var(--night-ink);text-decoration-color:var(--orange)}
+:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px;border-radius:4px}
+.night :focus-visible{outline-color:var(--orange)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.label{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+.night .label,.hero .label,.watch .label{color:var(--orange)}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:var(--ink);padding:8px 14px;z-index:10}
+.skip:focus{left:8px}
+
+/* Hero */
+.hero{position:relative;background:var(--night);color:var(--night-ink);overflow:hidden}
+.hero-inner{position:relative;max-width:1180px;margin:0 auto;padding:56px 24px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:end}
+@media (max-width:900px){.hero-inner{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(44px,8.4vw,118px);overflow-wrap:break-word;line-height:.9;font-weight:900;letter-spacing:-.035em;margin:16px 0 22px}
+.hero h1 em{display:block;font-weight:300;font-style:italic;color:var(--orange)}
+.dek{font-family:var(--display);font-weight:300;font-size:clamp(21px,2.3vw,27px);line-height:1.35;max-width:28ch;margin:0;color:var(--night-ink)}
+.byline{margin-top:24px;font-size:16px;color:var(--night-muted);display:flex;gap:18px;flex-wrap:wrap}
+.byline b{color:var(--night-ink);font-weight:600}
+.hero-brain{position:relative;aspect-ratio:1.35/1}
+.hero-brain canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Watch */
+.watch{background:var(--night);color:var(--night-ink);padding:8px 0 64px}
+.frame{border-radius:6px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 1px var(--night-line);background:#000}
+.frame video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.watch .meta{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:16px;color:var(--night-muted)}
+.watch .meta b{color:var(--night-ink);font-family:var(--display);font-weight:600;font-size:21px}
+details.transcript{margin-top:14px;border-top:1px solid var(--night-line);padding-top:12px}
+details.transcript summary{cursor:pointer;font-weight:600;color:var(--night-ink)}
+details.transcript p{color:#C9D3E3;max-width:70ch}
+
+/* Article */
+.col{max-width:700px;margin:0 auto;padding:0 24px}
+.wide{max-width:1140px;margin:0 auto;padding:0 24px}
+article p{margin:0 0 1.15em}
+.lede{padding-top:64px}
+.lede p:first-child::first-letter{font-family:var(--display);font-weight:900;float:left;font-size:92px;line-height:.82;padding:8px 12px 0 0;color:var(--accent-ink)}
+h2.sec{font-size:clamp(34px,4.6vw,52px);font-weight:800;letter-spacing:-.02em;line-height:1.04;margin:84px 0 20px}
+h2.sec .n{display:block;font-family:var(--body);font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:12px}
+.night h2.sec{color:#fff}.night h2.sec .n{color:var(--orange)}
+.pull{font-family:var(--display);font-weight:800;font-size:clamp(38px,6vw,78px);line-height:1;letter-spacing:-.03em;margin:84px auto;max-width:1120px;padding:0 24px;color:var(--ink)}
+.pull em{font-style:italic;font-weight:300;color:var(--accent-ink)}
+.note{font-size:16px;color:var(--ink-2);border-left:3px solid var(--accent-ink);padding-left:12px;margin:0 0 1.2em}
+.night .note{color:var(--night-muted);border-color:var(--orange)}
+figure{margin:40px auto 56px}
+figcaption{font-size:16px;color:var(--ink-2);line-height:1.5;margin-top:12px;max-width:70ch}
+.night figcaption{color:var(--night-muted)}
+
+/* Night spread + explorer */
+.night{background:var(--night);color:var(--night-ink);padding:76px 0 68px;margin:84px 0}
+.night p{color:#C9D3E3}
+.explorer{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:28px;align-items:start;margin-top:28px}
+@media (max-width:900px){.explorer{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;aspect-ratio:1.45/1}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{appearance:none;font:600 16px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:40px}
+.chip:hover{border-color:#8FA3C2}
+.chip[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:#13294B}
+.panel{background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;padding:24px;min-height:300px}
+.panel h3{font-size:34px;font-weight:800;color:var(--orange);margin:6px 0 10px;line-height:1.1}
+.panel .where{font-size:16px;color:var(--night-muted);margin:0 0 14px}
+.panel p{color:#E9EEF6;margin:0 0 12px}
+.panel .ep{font-size:16px;color:var(--night-muted);border-top:1px solid var(--night-line);padding-top:12px;margin-top:14px}
+
+/* Big number + link lab */
+.num-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:32px;align-items:center}
+@media (max-width:820px){.num-row{grid-template-columns:minmax(0,1fr)}}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(110px,16vw,210px);line-height:.85;letter-spacing:-.05em;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.big-sub{font-family:var(--display);font-size:clamp(26px,3vw,36px);font-weight:600;margin-top:8px}
+.linklab{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:20px}
+.linklab canvas{width:100%;aspect-ratio:2/1;display:block}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.btn{appearance:none;font:600 16px var(--body);border-radius:999px;padding:10px 18px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;min-height:44px}
+.btn.sec{background:transparent;color:var(--ink)}
+.night .btn{background:var(--orange);border-color:var(--orange);color:#13294B}
+.night .btn.sec{background:transparent;color:var(--night-ink);border-color:#8FA3C2}
+.meter{font-size:16px;color:var(--ink-2)}
+.meter b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Memory composer */
+.composer{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:28px;align-items:center;margin-top:24px}
+@media (max-width:900px){.composer{grid-template-columns:minmax(0,1fr)}}
+.composer .stage{aspect-ratio:1.4/1}
+.parts{display:grid;gap:10px}
+.part{display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:left;font:600 18px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:8px;padding:12px 14px;cursor:pointer;min-height:48px}
+.part span{font-weight:400;color:var(--night-muted);font-size:16px}
+.part[aria-pressed="true"]{border-color:var(--orange);background:rgba(255,95,5,.12)}
+.status{min-height:3em;font-size:17px;color:#E9EEF6;margin:10px 0 0}
+
+/* Case box */
+.box{border-top:6px solid var(--ink);background:#fff;padding:26px 28px;margin:40px 0;border-radius:0 0 6px 6px;box-shadow:0 1px 0 var(--rule)}
+.box h3{font-size:28px;font-weight:800;margin-bottom:10px}
+.timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);margin:20px 0 6px}
+@media (max-width:640px){.timeline{grid-template-columns:minmax(0,1fr)}}
+.timeline div{padding:14px 14px 10px 0}
+.timeline strong{display:block;font-family:var(--display);font-size:40px;font-weight:900;color:var(--accent-ink);line-height:1}
+.timeline span{font-size:16px;color:var(--ink-2)}
+.dd{width:100%;border-collapse:collapse;margin:16px 0 8px;font-size:17px}
+.dd th,.dd td{border-bottom:1px solid var(--rule);padding:10px 8px;text-align:left;vertical-align:top}
+.dd thead th{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.dd tbody th{font-weight:600;color:var(--ink)}
+.yes{color:var(--ok);font-weight:700}.no{color:var(--no);font-weight:700}
+
+/* Why */
+.why{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center}
+@media (max-width:820px){.why{grid-template-columns:minmax(0,1fr)}}
+.ways{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.ways button{width:100%;text-align:left;font:300 italic clamp(30px,4vw,46px)/1.15 var(--display);color:var(--ink);background:none;border:none;border-bottom:1px solid var(--rule);padding:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ways button span{font:400 16px var(--body);color:var(--ink-2)}
+.ways button[aria-pressed="true"]{color:var(--accent-ink);font-weight:600}
+.why .mini{background:var(--night);border-radius:6px;aspect-ratio:1.35/1;position:relative}
+.why .mini canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Quiz */
+.quiz{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:26px}
+.q{border-top:1px solid var(--rule);padding:18px 0 6px}
+.q:first-child{border-top:0;padding-top:0}
+.q .qt{font-family:var(--display);font-size:22px;font-weight:600;line-height:1.25;margin:0 0 12px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;font:400 17px var(--body);color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:6px;padding:11px 14px;cursor:pointer;min-height:44px}
+.opt:hover{border-color:var(--ink-2)}
+.opt.right{border-color:var(--ok);background:#E7F4EE}
+.opt.wrong{border-color:var(--no);background:#FBEAEE}
+.fb{font-size:16.5px;color:var(--ink-2);min-height:1.4em;margin:10px 0 0}
+.score{font-family:var(--display);font-size:21px;margin-top:14px}
+
+/* Collection */
+.coll{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:20px}
+.card{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:14px 16px}
+.card b{display:block;font-family:var(--display);font-size:20px;line-height:1.2;margin-bottom:4px}
+.card span{font-size:15px;color:var(--ink-2)}
+.card.here{background:var(--ink);border-color:var(--ink)}
+.card.here b{color:#fff}.card.here span{color:#C9D3E3}
+
+footer.sources{margin:84px 0 0;padding:36px 0 60px;border-top:2px solid var(--ink)}
+footer.sources ol{padding-left:20px;font-size:16px;color:var(--ink-2)}
+footer.sources li{margin:6px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:560px){body{font-size:18px}.panel,.quiz,.box{padding:18px}}
+
+.hero h1{font-size:clamp(44px,6vw,84px)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);margin:24px 0}
+@media (max-width:760px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.facts div{padding:16px 16px 14px 0}
+.facts strong{display:block;font-family:var(--display);font-weight:900;font-size:clamp(34px,4.4vw,54px);line-height:1;color:var(--accent-ink);letter-spacing:-.02em}
+.facts span{font-size:16px;color:var(--ink-2)}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);padding:0;margin:0}
+@media (max-width:760px){.tips{grid-template-columns:minmax(0,1fr)}}
+.tips li{list-style:none;padding:20px 20px 20px 0;border-right:1px solid var(--rule)}
+.tips li:last-child{border-right:0}
+.tips b{display:block;font-family:var(--display);font-size:26px;line-height:1.15;margin-bottom:6px}
+.tips span{font-size:17px;color:var(--ink-2)}
+/* read the map */
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.mapgrid{grid-template-columns:minmax(0,1fr)}}
+.arena{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;aspect-ratio:1.25/1;touch-action:manipulation}
+.arena canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:8px}
+.arena canvas:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.cells{list-style:none;padding:0;margin:0 0 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cells li{display:flex;align-items:center;gap:10px;font-size:17px;color:var(--night-muted);padding:6px 10px;border:1.5px solid var(--night-line);border-radius:8px}
+.cells li i{width:18px;height:18px;border-radius:50%;border:3px solid currentColor;flex:none}
+.cells li.on{color:#fff;border-color:#C9D3E3;font-weight:700}
+.cells li.on i{background:currentColor}
+.mapgrid .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.mapgrid .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.mapgrid .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.mapgrid .mtext b.ok{color:#3CC9B8}.mapgrid .mtext b.no{color:#F08CBE}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.gbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:transparent;color:#fff;border:2px solid #8FA3C2}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscore{font-size:16px;color:var(--night-muted);margin-top:12px}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.gbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:transparent;color:#fff;border:2px solid #8FA3C2}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+/* fast fingers */
+.pad{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:22px}
+.pad:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.lights{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.lights button{appearance:none;aspect-ratio:1;border-radius:50%;border:3px solid #5C7096;background:#13294B;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10%;font:800 clamp(16px,2.6vw,22px) var(--body);color:#AEB9CC;touch-action:manipulation}
+.lights button.on{background:#FCB316;border-color:#FCB316;color:#13294B}
+.lights button.bad{border-color:#F08CBE}
+.lights button:disabled{cursor:default}
+.prog{font-size:16px;color:var(--night-muted);margin:14px 0 0}
+.chart{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;align-items:end;height:170px;margin:6px 0 4px;border-bottom:2px solid #5C7096}
+.chart div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.chart i{display:block;width:70%;border-radius:4px 4px 0 0;background:#58C4E8}
+.chart i.rand{background:#FF7A2E}
+.chart b{font:700 14px var(--body);color:#fff;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.chartx{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;font-size:14px;color:var(--night-muted);text-align:center;margin-bottom:12px}
+.aware{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+/* days */
+.days{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.days label{font-weight:700;font-size:18px;display:block;margin-bottom:8px}
+.days input[type=range]{width:100%;accent-color:#13294B;min-height:44px}
+.days .val{font-family:var(--display);font-weight:900;font-size:44px;line-height:1;margin:6px 0 12px}
+.days .val small{font:600 18px var(--body);color:var(--ink-2)}
+.line{position:relative;height:130px;margin:18px 6px 8px}
+.line .mk.below{flex-direction:column-reverse;top:40px}
+.line .axis{position:absolute;left:0;right:0;top:40px;height:2px;background:var(--ink)}
+.line .rng{position:absolute;top:34px;height:14px;border-radius:7px;background:#B9DCEC}
+.line .mk{position:absolute;top:18px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;font:700 14px var(--body);white-space:nowrap}
+.line .mk i{width:3px;height:44px;display:block}
+.line .tk{position:absolute;top:104px;transform:translateX(-50%);font-size:14px;color:var(--ink-2)}
+.pbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+.pop{margin:56px 0 24px}
+.poptabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid var(--ink);margin-top:20px}
+.poptabs button{appearance:none;background:none;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;padding:12px 16px 10px;min-height:48px;font:700 19px/1.2 var(--display);color:var(--ink-2);cursor:pointer;text-align:left}
+.poptabs button small{display:block;font:600 14px var(--body);color:var(--ink-2);margin-top:2px}
+.poptabs button:hover{color:var(--ink)}
+.poptabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent-ink)}
+@media (max-width:560px){.poptabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0}.poptabs button{font-size:17px;padding:10px 8px 8px}}
+.popp{padding:22px 0 8px}
+.popp[hidden]{display:none}
+.popmeta{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:16px;color:var(--ink-2);margin-bottom:10px}
+.verdictchip{font:700 14px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:12px;background:#E6EBF2;color:var(--ink)}
+.verdictchip.good{background:#D7F2EE;color:#0B5D52}.verdictchip.bad{background:#FBE0EC;color:#8A1C4A}.verdictchip.mixed{background:#FFE9D9;color:#8A3400}
+.popdesc{font-size:19px;line-height:1.55;max-width:760px;margin:0 0 18px}
+.popcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+@media (max-width:760px){.popcols{grid-template-columns:minmax(0,1fr)}}
+.popcols div{border-top:3px solid var(--ink);padding-top:12px}
+.popcols h3{font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;margin:0 0 8px}
+.popcols .pr h3{color:#0B5D52}.popcols .pr{border-color:#1E9E8D}
+.popcols .pw h3{color:#8A1C4A}.popcols .pw{border-color:#C7457F}
+.popcols ul{margin:0;padding-left:20px;display:grid;gap:8px;font-size:17px;line-height:1.5}
+.popnote{margin-top:18px;background:#fff;border:1px solid var(--rule);border-left:4px solid var(--accent-ink);border-radius:6px;padding:14px 16px;font-size:17px;line-height:1.5;max-width:860px}
+.popnote b{display:block;font-family:var(--display);font-size:20px;margin-bottom:4px}
+.popsrc{font-size:15px;color:var(--ink-2);margin-top:14px}
+.popmore{margin-top:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.popmore b{font:800 14px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin-right:4px}
+.popmore a{display:inline-flex;align-items:center;min-height:40px;padding:6px 14px;border-radius:20px;border:1.5px solid var(--ink);color:var(--ink);text-decoration:none;font:600 16px var(--body)}
+.popmore a:hover{background:var(--ink);color:#fff}
+.popmore span.soon{display:inline-flex;align-items:center;min-height:40px;padding:6px 14px;border-radius:20px;border:1.5px dashed #8C99AD;color:var(--ink-2);font:600 16px var(--body)}
+
+.coll{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.card{display:flex;flex-direction:column}
+.card a{color:inherit;text-decoration:none;display:flex;flex-direction:column;height:100%}
+.card a::after{content:none}
+.card p{font-size:16px;line-height:1.4;color:var(--ink-2);margin:2px 0 8px}
+.card i{font-style:normal;font-size:15px;color:var(--ink-2);margin-bottom:8px}
+.card .st{margin-top:auto;font-size:15px;font-weight:700;color:var(--ink-2)}
+.card.live{border-color:var(--ink)}
+.card.live .st{color:var(--accent-ink)}.card.live .st::after{content:' →'}
+.card.live:hover{box-shadow:0 4px 14px rgba(19,41,75,.15)}
+.card.here p,.card.here i,.card.here .st{color:#C9D3E3}
+
+.collsub{grid-column:1/-1;font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin:14px 0 0}
+.collsub:first-child{margin-top:0}
+
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+<script src="../assets/nav.js" data-page="bg"></script>
+
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Brain regions</div>
+      <h1 id="title">The Basal Ganglia <em>Habits and skills</em></h1>
+      <p class="dek">Deep in the brain, the basal ganglia learn slowly, by repetition. They turn practice into routines that run without thinking, which is a gift for learning and a trap for bad habits.</p>
+      <div class="byline"><span>About 9 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#srtT">Fast fingers</a></span><span><a href="#daysT">How long does a habit take?</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the brain from the side, with the striatum, the largest part of the basal ganglia, glowing orange deep inside."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2¼ minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>The basal ganglia: habits and skills</b> · The Learning Brain</span><span>Captions are on; turn them off in the player.</span></div>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>In 1996, Barbara Knowlton, Jennifer Mangels and Larry Squire gave people a game of weather forecasting. On each turn a few cards with shapes appeared, and players guessed rain or sun. Each card predicted the weather only some of the time, so there was no rule to memorise. The game could only be learned slowly, by playing.</p>
+    <p>People with amnesia, caused by damage to memory regions of the brain, learned the game as well as anyone, though they could barely remember the training. People with Parkinson’s disease did the opposite: they remembered the training sessions but did not learn the game. Learning a habit, it seemed, depends on a different part of the brain from remembering what happened.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>1996</strong><span>habit learning and memory for events shown to come apart</span></div>
+      <div role="listitem"><strong>Striatum</strong><span>the largest part of the basal ganglia</span></div>
+      <div role="listitem"><strong>Start &amp; end</strong><span>when striatal cells fire once a route becomes a habit</span></div>
+      <div role="listitem"><strong>66 days</strong><span>typical time for a new daily behavior to become automatic</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Where they are</span>A loop deep in the brain</h2>
+    <p>The basal ganglia are a group of structures deep inside the brain, connected in loops with the cortex. Their largest part is the striatum, made up of the caudate nucleus and the putamen. Knowlton’s team concluded that the striatum is essential for the slow, step-by-step learning of associations that is typical of habits.</p>
+    <p>The striatum depends on dopamine, a chemical sent from cells in the midbrain, in a region called the substantia nigra. In Parkinson’s disease those cells die. By the time movement symptoms appear, most people have lost 60 to 80 percent or more of them. The best-known result is trouble starting and controlling movement, but the 1996 study showed that learning by repetition suffers too.</p>
+    <h2 class="sec"><span class="n">From steps to chunks</span>How a route becomes a habit</h2>
+    <p>Ann Graybiel’s team at MIT recorded cells in the striatum while rats learned to run a maze for a reward. At first, cells fired throughout each run. As the run became a habit, the firing gathered at the beginning and the end, with little in between. The whole run had become one chunk, started and stopped as a single unit. The pattern stayed stable for weeks.</p>
+    <p>That is what a habit is: a routine triggered by a cue that runs with little thought. It frees the prefrontal workbench for other things. It also explains why habits are hard to break, even once they no longer help.</p>
+  </div>
+
+  <section class="night" aria-labelledby="srtT">
+    <div class="col">
+      <h2 class="sec" id="srtT"><span class="n">Try it</span>Fast fingers</h2>
+      <p>A light appears in one of four circles. Press its key as fast as you can: D, F, J or K, or tap the circle. There are six short rounds of 20 lights, about a minute and a half in all.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="pad" id="srPad" tabindex="0" role="group" aria-label="Four circles. Press D, F, J or K for the lit circle, or tap it." aria-describedby="srProg">
+          <div class="lights" id="srLights">
+            <button disabled aria-label="Circle 1, key D">D</button><button disabled aria-label="Circle 2, key F">F</button><button disabled aria-label="Circle 3, key J">J</button><button disabled aria-label="Circle 4, key K">K</button>
+          </div>
+          <p class="prog" id="srProg" aria-live="polite">Press Start, then keep your fingers on D, F, J and K.</p>
+        </div>
+        <div>
+          <p class="phase" id="srPhase">Ready</p>
+          <p class="mtitle" id="srTitle">Hit the lit circle</p>
+          <p class="mtext" id="srText" aria-live="polite">Go as fast as you can while staying accurate. If you press the wrong key, the light waits for the right one.</p>
+          <div id="srRes"></div>
+          <div class="mrow" id="srRow"><button class="nbtn" id="srGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">How long?</span>Not 21 days</h2>
+    <p>In a study published in 2010, Phillippa Lally and colleagues at University College London asked 96 volunteers to pick a new healthy behavior, such as eating a piece of fruit with lunch, and do it every day for 12 weeks. Each day they rated how automatic it felt.</p>
+  </div>
+
+  <section aria-labelledby="daysT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="daysT"><span class="n">Try it</span>How long does a habit take?</h2>
+      <p>Make your guess before you read on.</p>
+    </div>
+    <div class="wide">
+      <div class="days">
+        <label for="dyIn">For a typical person, how many days of daily repetition until a new habit feels automatic?</label>
+        <input type="range" id="dyIn" min="5" max="260" step="1" value="30" aria-describedby="dyVal">
+        <p class="val" id="dyVal">30 <small>days</small></p>
+        <button class="pbtn" id="dyGo">Show the result</button>
+        <div id="dyRes" hidden>
+          <div class="line" aria-hidden="true" id="dyLine"></div>
+          <p class="pmsg" id="dyMsg" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <p>Of the 82 people who finished, the data for 39 fitted a clear habit curve: big gains in automaticity at first, then a plateau. For them, the typical time to reach it was 66 days, but it ranged from 18 to 254 days, and some behaviors took much longer than others. Missing a single day did not significantly set people back. Being very inconsistent did.</p>
+    <aside class="box" aria-labelledby="enT">
+      <h3 id="enT">Skills, not just habits</h3>
+      <p>The same slow, repetition-driven learning builds skills such as reading words at a glance, typing and recalling multiplication facts. Once those basics run on their own, they take up little room on the prefrontal workbench, leaving space for the harder thinking a lesson is really about.</p>
+    </aside>
+  </div>
+
+  <section class="pop wide" aria-labelledby="popT">
+    <div style="max-width:700px;margin:0 auto">
+      <h2 class="sec" id="popT"><span class="n">In popular culture</span>Repetition on screen</h2>
+      <p>A training montage, a medical drama based on a true story, and a number everyone has heard.</p>
+    </div>
+    <div class="poptabs" role="tablist" aria-label="The basal ganglia in popular culture" id="popTabs"></div>
+    <div id="popPanels"></div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Make the basics automatic</h2>
+    <ol class="tips">
+      <li><b>Repeat often</b><span>Short, frequent practice of the basics beats an occasional long session. Missing a day is fine; being inconsistent is not.</span></li>
+      <li><b>Same cue, same setting</b><span>Habits form when the same cue leads to the same action. Tie a new routine to something you already do every day.</span></li>
+      <li><b>Practise with feedback</b><span>Repetition makes whatever you practise automatic, mistakes included. Get the form right early.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://synapsesocial.com/papers/W1979455727">Knowlton, B. J., Mangels, J. A., &amp; Squire, L. R. (1996). A neostriatal habit learning system in humans. <i>Science</i>.</a></li>
+        <li><a href="https://corpora.tika.apache.org/base/docs/govdocs1/261/261527.html">National Institute of Neurological Disorders and Stroke. Parkinson’s disease: Hope through research.</a></li>
+        <li><a href="https://scilit.net/publications/6a96291b81e4c3fd1090fc7427c150b0">Jog, M. S., Kubota, Y., Connolly, C. I., Hillegaart, V., &amp; Graybiel, A. M. (1999). Building neural representations of habits. <i>Science</i>.</a></li>
+        <li><a href="https://bigthink.com/mit-news/distinctive-brain-pattern-helps-habits-form">MIT News (2018). Distinctive brain pattern helps habits form.</a></li>
+        <li><a href="https://bps.org.uk/research-digest/how-form-habit">British Psychological Society Research Digest (2010). How to form a habit (on Lally et al., 2010, <i>European Journal of Social Psychology</i>).</a></li>
+        <li><a href="https://www.thebehavioralscientist.com/articles/how-long-to-form-a-habit">The Behavioral Scientist. How long does it take to form a habit? What Lally et al. (2010) actually found.</a></li>
+        <li><a href="https://link.springer.com/content/pdf/10.3758/BF03202749.pdf">On Nissen, M. J., &amp; Bullemer, P. (1987). Attentional requirements of learning. <i>Cognitive Psychology</i> (the serial reaction time task).</a></li>
+        <li><a href="https://www.colorado.edu/lab/curran-lab/sites/default/files/attached-files/rauchetalhbm1997.pdf">Rauch, S. L., et al. (1997). Striatal recruitment during an implicit sequence learning task. <i>Human Brain Mapping</i>.</a></li>
+        <li><a href="https://ninds.nih.gov/current-research/focus-disorders/parkinsons-disease-research/parkinsons-disease-challenges-progress-and-promise">NINDS. Parkinson’s disease: Challenges, progress, and promise.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawings and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = "1\n00:00:00,500 --> 00:00:01,928\nThe Learning Brain\n\n2\n00:00:03,400 --> 00:00:06,785\nThe basal ganglia: habits and skills\n\n3\n00:00:09,785 --> 00:00:12,405\nIn 1996, Barbara Knowlton,\n\n4\n00:00:12,607 --> 00:00:16,738\nJennifer Mangels and Larry Squire gave people a weather forecasting game.\n\n5\n00:00:17,347 --> 00:00:20,063\nCards with shapes predicted rain or sun,\n\n6\n00:00:20,360 --> 00:00:21,704\nbut only some of the time,\n\n7\n00:00:21,724 --> 00:00:23,803\nso the game had to be learned slowly,\n\n8\n00:00:24,018 --> 00:00:25,393\ntrial by trial.\n\n9\n00:00:25,926 --> 00:00:28,431\nPeople with amnesia learned the game normally,\n\n10\n00:00:28,707 --> 00:00:30,453\nbut could not remember the training.\n\n11\n00:00:30,952 --> 00:00:34,085\nPeople with Parkinson's disease remembered the training,\n\n12\n00:00:34,162 --> 00:00:35,540\nbut did not learn the game.\n\n13\n00:00:35,710 --> 00:00:38,814\nParkinson's disease affects the basal ganglia,\n\n14\n00:00:39,004 --> 00:00:41,231\na group of structures deep in the brain.\n\n15\n00:00:41,754 --> 00:00:44,107\nTheir largest part, the striatum,\n\n16\n00:00:44,165 --> 00:00:46,605\ndepends on the brain chemical dopamine.\n\n17\n00:00:47,081 --> 00:00:51,334\nIn Parkinson's, the midbrain cells that supply it are lost.\n\n18\n00:00:54,004 --> 00:00:56,584\nThe basal ganglia learn by repetition.\n\n19\n00:00:57,084 --> 00:00:58,739\nIn rats learning a maze,\n\n20\n00:00:58,935 --> 00:01:02,835\ncells in the striatum first fired all the way through each run.\n\n21\n00:01:03,371 --> 00:01:05,086\nAs the route became a habit,\n\n22\n00:01:05,330 --> 00:01:07,919\nthey fired mainly at the start and the end,\n\n23\n00:01:08,140 --> 00:01:10,821\nas if the whole run had become one chunk.\n\n24\n00:01:13,491 --> 00:01:16,135\nA habit is an action triggered by a cue,\n\n25\n00:01:16,210 --> 00:01:17,233\nwithout much thought.\n\n26\n00:01:17,770 --> 00:01:20,892\nThat frees the prefrontal workbench for other things.\n\n27\n00:01:21,195 --> 00:01:23,520\nIt also makes habits hard to stop,\n\n28\n00:01:23,793 --> 00:01:25,415\neven when they no longer help.\n\n29\n00:01:27,585 --> 00:01:29,152\nHow long does a habit take?\n\n30\n00:01:29,612 --> 00:01:31,338\nIn a 2010 study,\n\n31\n00:01:31,406 --> 00:01:33,875\npeople repeated a new daily behavior,\n\n32\n00:01:33,938 --> 00:01:35,782\nlike eating fruit with lunch.\n\n33\n00:01:36,191 --> 00:01:37,790\nFor those who formed a habit,\n\n34\n00:01:37,880 --> 00:01:40,449\nthe typical time was 66 days,\n\n35\n00:01:40,682 --> 00:01:43,521\nranging from 18 to 254.\n\n36\n00:01:43,963 --> 00:01:46,455\nMissing a single day did not matter much.\n\n37\n00:01:48,625 --> 00:01:50,347\nWhy does this matter for learning?\n\n38\n00:01:50,694 --> 00:01:56,351\nSkills like reading, typing or solving equations become automatic with practice.\n\n39\n00:01:56,728 --> 00:01:58,906\nRepeat them often, in the same setting,\n\n40\n00:01:58,926 --> 00:01:59,870\nwith feedback.\n\n41\n00:02:00,377 --> 00:02:02,419\nOnce the basics run on their own,\n\n42\n00:02:02,542 --> 00:02:04,795\nyour mind is free for harder thinking.\n\n43\n00:02:06,965 --> 00:02:09,641\nThe basal ganglia turn practice into habit.\n\n44\n00:02:10,018 --> 00:02:12,513\nWhat you repeat, they make automatic.\n\n"
+;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+// ===== Labelled "glass brain": lateral view facing left, local box 1000 x 680
+function crPath(pts,closed){const p=new Path2D();const n=pts.length;const P=i=>closed?pts[(i+n)%n]:pts[Math.max(0,Math.min(n-1,i))];
+ p.moveTo(pts[0][0],pts[0][1]);const last=closed?n:n-1;
+ for(let i=0;i<last;i++){const p0=P(i-1),p1=P(i),p2=P(i+1),p3=P(i+2);p.bezierCurveTo(p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6,p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6,p2[0],p2[1])}
+ if(closed)p.closePath();return p}
+function polyPath(pts){const p=new Path2D();p.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(q=>p.lineTo(q[0],q[1]));p.closePath();return p}
+const BR=(()=>{
+ const OUT=[[90,330],[98,245],[150,165],[250,102],[375,64],[500,50],[625,56],[735,88],[805,128],[872,188],[920,268],[936,350],[908,418],[852,452],[762,470],[640,484],[500,482],[385,472],[305,452],[272,416],[225,424],[165,428],[112,398]];
+ const CS=[[500,50],[482,128],[458,212],[440,300],[436,338]];
+ const SF=[[272,416],[360,372],[440,338],[520,312],[600,298],[662,306]];
+ const PO=[[805,128],[788,228],[772,330],[766,470]];
+ const TP=[[662,306],[715,316],[772,330]];
+ const fro=[[272,416],[225,424],[165,428],[112,398],[90,330],[98,245],[150,165],[250,102],[375,64],[500,50],...CS.slice(1),[360,372]];
+ const par=[[500,50],[625,56],[735,88],[805,128],...PO.slice(1,3),...TP.slice().reverse().slice(1),...SF.slice(2,5).reverse(),...CS.slice(1).reverse()];
+ const occ=[[805,128],[872,188],[920,268],[936,350],[908,418],[852,452],[766,470],[772,330],[788,228]];
+ const tem=[[272,416],...SF.slice(1),...TP.slice(1),[766,470],[640,484],[500,482],[385,472],[305,452]];
+ const pfc=[[272,416],[225,424],[165,428],[112,398],[90,330],[98,245],[150,165],[250,102],[330,76],[300,190],[290,300],[300,400]];
+ const cer=[[760,440],[830,420],[900,418],[946,450],[956,505],[922,556],[850,580],[786,570],[748,536],[744,480]];
+ const stem=[[650,430],[730,440],[744,520],[736,630],[700,632],[686,540]];
+ const hip=[[505,398],[545,384],[590,372],[640,364],[690,360],[718,352],[728,334],[716,322]];
+ const amy=[[452,392],[478,378],[502,386],[504,408],[482,420],[458,414]];
+ const ent=[[500,428],[560,414],[620,410],[640,428],[600,446],[530,450]];
+ const caud=[[330,250],[372,212],[430,196],[500,198],[560,214],[600,244],[612,282],[600,318],[580,340]];
+ const put=[[380,268],[430,252],[478,262],[490,300],[458,330],[404,326],[376,300]];
+ const tha=[[520,262],[566,250],[606,268],[608,300],[570,316],[526,304]];
+ const vta=[[664,404],[694,398],[706,418],[684,432],[662,424]];
+ const ffa=[[590,452],[650,446],[712,448],[722,462],[652,470],[592,468]];
+ const ips=[[560,128],[620,150],[690,184],[748,226]];
+ const v1=[[880,250],[922,282],[936,350],[912,410],[870,420],[858,340]];
+ const GYRI=[[[160,200],[220,170],[260,210],[300,170]],[[130,300],[190,280],[230,320],[280,300]],[[300,130],[340,160],[380,120],[420,150]],[[340,240],[380,270],[400,230]],
+  [[560,90],[600,120],[650,100],[700,130]],[[540,230],[590,250],[640,230],[690,270]],[[400,420],[460,400],[520,430],[580,410],[650,420],[720,400]],[[820,220],[860,260],[880,320]],[[820,380],[860,400],[890,380]]];
+ const P={OUT:crPath(OUT,true),fro:polyPath(fro),par:polyPath(par),occ:polyPath(occ),tem:polyPath(tem),pfc:polyPath(pfc),cer:crPath(cer,true),stem:crPath(stem,true),
+  hip:crPath(hip,false),amy:crPath(amy,true),ent:crPath(ent,true),caud:crPath(caud,false),put:crPath(put,true),tha:crPath(tha,true),vta:crPath(vta,true),ffa:crPath(ffa,true),ips:crPath(ips,false),v1:crPath(v1,true),
+  CS:crPath(CS,false),SF:crPath(SF,false),PO:crPath(PO,false),GY:GYRI.map(g=>crPath(g,false))};
+ // region specs: path keys, label anchor (local), label position (local), kind (fill|line|deep)
+ const R={
+  fro:{name:'frontal lobe',k:['fro'],pt:[250,170],lab:[150,-40],al:'right'},
+  pfc:{name:'prefrontal cortex',k:['pfc'],pt:[175,300],lab:[-30,260],al:'right'},
+  par:{name:'parietal lobe',k:['par'],pt:[650,140],lab:[720,-40],al:'left'},
+  tem:{name:'temporal lobe',k:['tem'],pt:[420,440],lab:[260,560],al:'right'},
+  occ:{name:'occipital lobe',k:['occ'],pt:[870,300],lab:[1040,250],al:'left'},
+  cer:{name:'cerebellum',k:['cer'],pt:[870,520],lab:[1040,560],al:'left'},
+  stem:{name:'brainstem',k:['stem'],pt:[716,590],lab:[640,680],al:'right'},
+  hip:{name:'hippocampus',k:['hip'],pt:[640,366],lab:[600,660],al:'left',deep:1,line:1},
+  amy:{name:'amygdala',k:['amy'],pt:[478,400],lab:[300,610],al:'right',deep:1},
+  ent:{name:'entorhinal cortex',k:['ent'],pt:[580,432],lab:[480,680],al:'right',deep:1},
+  str:{name:'striatum',k:['caud','put'],pt:[440,290],lab:[330,-40],al:'right',deep:1},
+  tha:{name:'thalamus',k:['tha'],pt:[566,284],lab:[560,-40],al:'left',deep:1},
+  vta:{name:'midbrain dopamine area',k:['vta'],pt:[684,414],lab:[1040,660],al:'left',deep:1},
+  ffa:{name:'fusiform face area',k:['ffa'],pt:[680,458],lab:[1040,470],al:'left',deep:1},
+  ips:{name:'intraparietal sulcus',k:['ips'],pt:[690,184],lab:[1040,120],al:'left',line:1},
+  v1:{name:'visual cortex',k:['v1'],pt:[905,330],lab:[1040,360],al:'left'}};
+ const GYR=[];{let sd=7;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};for(let i=0;i<46;i++){const x0=80+rnd()*860,y0=60+rnd()*420,ang=rnd()*Math.PI,len=50+rnd()*90;const pts=[];for(let k=0;k<6;k++){const u=k/5-0.5;pts.push([x0+Math.cos(ang)*len*u+Math.sin(ang)*Math.sin(k*2.1+i)*14,y0+Math.sin(ang)*len*u-Math.cos(ang)*Math.sin(k*2.1+i)*14])}GYR.push(crPath(pts,false))}}
+ return{P,R,GYR}})();
+// draw the brain. o: {cx,cy,s,t,active:[keys],labels:[keys],alpha,draw(0..1),glow(0..1),dim,labelAlpha}
+function brainDraw(o){const{cx=960,cy=560,s=0.9,sy=1.16,t=0,active=[],labels=[],alpha=1,draw=1,glow=1,deep=0.55,labelT={},la=1,labSize=32,lobeTint=1,gmap={}}=o;const GL=k=>glow*(gmap[k]??1);if(alpha<=0)return;
+ const{P,R}=BR;const L=([x,y])=>[cx+(x-500)*s,cy+(y-300)*s*sy];
+ ctx.save();ctx.translate(cx,cy);ctx.scale(s,s*sy);ctx.translate(-500,-300);
+ ctx.lineJoin='round';ctx.lineCap='round';
+ // cerebellum + stem first, so the cortex overlaps them
+ [['stem','#18304F'],['cer','#1A3459']].forEach(([k,c])=>{ga(alpha*sat(draw*1.5-0.3));ctx.fillStyle=c;ctx.fill(P[k])});
+ active.forEach(k=>{if(k==='cer'||k==='stem'){ga(alpha*0.9*GL(k));ctx.fillStyle='rgba(255,95,5,0.5)';ctx.fill(P[k])}});
+ ctx.save();ctx.clip(P.cer);ctx.strokeStyle='rgba(200,215,235,0.18)';ctx.lineWidth=2;ga(alpha*sat(draw*1.6-0.5));for(let k=0;k<7;k++){ctx.beginPath();ctx.ellipse(852,500,120-k*15,70-k*8,-0.12,Math.PI*0.02,Math.PI*0.98);ctx.stroke()}ctx.restore();
+ ctx.strokeStyle='#E9EEF6';ctx.lineWidth=4;ga(alpha);if(draw<1){ctx.setLineDash([900*draw,900])}ctx.stroke(P.cer);ctx.stroke(P.stem);ctx.setLineDash([]);
+ // cortex base fill (hides what lies under it)
+ ga(alpha*sat(draw*2));ctx.fillStyle='#16305A';ctx.fill(P.OUT);
+ // lobe tints
+ const tints={fro:'#1E3B66',par:'#1B3760',tem:'#1A3459',occ:'#1D3964'};
+ ctx.save();ctx.clip(P.OUT);for(const k in tints){ga(alpha*0.9*lobeTint*sat(draw*1.5-0.3));ctx.fillStyle=tints[k];ctx.fill(P[k])}
+ // gyri texture
+ ctx.strokeStyle='rgba(200,215,235,0.11)';ctx.lineWidth=2.4;ctx.lineCap='round';ga(alpha*sat(draw*1.6-0.5));BR.GYR.forEach(g=>ctx.stroke(g));
+ // active glows inside clip (cortical)
+ active.forEach((k,i)=>{const r=R[k];if(!r||r.deep||r.line||k==='cer'||k==='stem')return;const g=GL(k)*(0.85+0.15*Math.sin(t*2.4+i));const gr=ctx.createRadialGradient(r.pt[0],r.pt[1],0,r.pt[0],r.pt[1],260);gr.addColorStop(0,'rgba(255,110,30,0.85)');gr.addColorStop(1,'rgba(255,95,5,0.32)');ga(alpha*g);ctx.fillStyle=gr;r.k.forEach(q=>ctx.fill(P[q]));ctx.strokeStyle='rgba(255,140,70,0.9)';ctx.lineWidth=3;r.k.forEach(q=>ctx.stroke(P[q]))});
+ ctx.restore();
+ // sulci
+ ctx.strokeStyle='rgba(233,238,246,0.55)';ctx.lineWidth=3;ga(alpha*sat(draw*1.6-0.6));[P.CS,P.SF,P.PO].forEach(q=>ctx.stroke(q));
+ // outline (draw-on)
+ ctx.strokeStyle='#E9EEF6';ctx.lineWidth=4;ga(alpha);if(draw<1){ctx.setLineDash([2600*draw,2600])}ctx.stroke(P.OUT);ctx.setLineDash([]);
+ // deep structures (glass view)
+ const dk=['hip','amy','ent','str','tha','vta','ffa'];
+ dk.forEach(k=>{const r=R[k],on=active.includes(k);const a=alpha*(on?1:deep)*sat(draw*1.5-0.5);if(a<=0)return;
+  r.k.forEach(q=>{if(on){ctx.save();ga(a*GL(k));ctx.shadowColor=ORANGE;ctx.shadowBlur=24;ctx.fillStyle='rgba(255,95,5,0.75)';ctx.strokeStyle=ORANGE;ctx.lineWidth=(q==='caud'||q==='hip')?16:4;
+    if(q==='caud'||q==='hip'){ctx.stroke(P[q])}else{ctx.fill(P[q]);ctx.stroke(P[q])}ctx.restore()}
+   else{ga(a*0.8);ctx.setLineDash([7,7]);ctx.strokeStyle='rgba(201,211,227,0.7)';ctx.lineWidth=(q==='caud'||q==='hip')?5:2.5;ctx.stroke(P[q]);ctx.setLineDash([])}})});
+ // IPS line
+ {const on=active.includes('ips');ga(alpha*(on?Math.max(0.6,GL('ips')):0.6)*sat(draw*1.6-0.6));ctx.strokeStyle=on?ORANGE:'rgba(233,238,246,0.5)';ctx.lineWidth=on?7:3;if(on){ctx.shadowColor=ORANGE;ctx.shadowBlur=18}ctx.stroke(P.ips);ctx.shadowBlur=0}
+ // v1 glow
+ if(active.includes('v1')){ctx.save();ctx.clip(P.OUT);ga(alpha*GL('v1')*0.9);ctx.fillStyle='rgba(255,95,5,0.6)';ctx.fill(P.v1);ctx.restore()}
+ ctx.restore();
+ // labels
+ labels.forEach((k,i)=>{const r=R[k];if(!r)return;const t0=labelT[k]??0,p=sat((t-t0)/0.45);if(p<=0)return;const on=active.includes(k);
+  const a=L(r.pt),b=L(r.lab);const ex=r.al==='right'?b[0]+12:r.al==='left'?b[0]-12:b[0];
+  ctx.save();ga(alpha*la);ctx.strokeStyle=on?ORANGE:'rgba(201,211,227,0.85)';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(lerp(a[0],ex,ez(p)),lerp(a[1],b[1],ez(p)));ctx.stroke();
+  ctx.fillStyle=on?ORANGE:'#E9EEF6';ctx.beginPath();ctx.arc(a[0],a[1],on?7:5,0,7);ctx.fill();ctx.restore();
+  const q=sat((t-t0-0.25)/0.35);if(q>0){ctx.save();ga(alpha*la*q);ctx.font=`${on?700:600} ${labSize}px ${BODY}`;ctx.textAlign=r.al==='right'?'right':r.al==='left'?'left':'center';ctx.textBaseline='middle';ctx.fillStyle=on?ORANGE:'#E9EEF6';ctx.fillText(r.name,b[0],b[1]);ctx.restore()}})}
+
+</script>
+<script>
+/* "In popular culture" tabs. Item fields: id, title, sub, kind, year, films:[[name,imdbUrl]], verdict:[class,label], desc, right[], wrong[], note:[title,text]?, src, more:[[label,url|null]]? */
+function renderPop(POP,tabsId,panelsId){const tabs=document.getElementById(tabsId),panels=document.getElementById(panelsId);
+ POP.forEach((f,i)=>{const b=document.createElement('button');b.role='tab';b.id='tab-'+f.id;b.setAttribute('aria-controls','pp-'+f.id);b.setAttribute('aria-selected',i===0);b.tabIndex=i===0?0:-1;b.innerHTML=`${f.title}<small>${f.sub}</small>`;tabs.appendChild(b);
+  const p=document.createElement('div');p.className='popp';p.id='pp-'+f.id;p.role='tabpanel';p.setAttribute('aria-labelledby','tab-'+f.id);p.tabIndex=0;p.hidden=i!==0;
+  const links=(f.films||[]).map(([n,u])=>`<a href="${u}">${n} on IMDb</a>`).join('');
+  p.innerHTML=`<div class="popmeta"><span class="verdictchip ${f.verdict[0]}">${f.verdict[1]}</span><span>${f.kind}</span>${links}</div>
+  <p class="popdesc">${f.desc}</p><div class="popcols"><div class="pr"><h3>What it gets right</h3><ul>${f.right.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="pw"><h3>What it gets wrong</h3><ul>${f.wrong.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>
+  ${f.note?`<div class="popnote"><b>${f.note[0]}</b>${f.note[1]}</div>`:''}
+  ${f.more?`<div class="popmore"><b>Explore further</b>${f.more.map(([l,u])=>u?`<a href="${u}">${l}</a>`:`<span class="soon">${l} · coming soon</span>`).join('')}</div>`:''}
+  <p class="popsrc">Source: ${f.src}</p>`;panels.appendChild(p)});
+ const all=()=>[...tabs.querySelectorAll('[role=tab]')];
+ function sel(b,focus){all().forEach(x=>{const on=x===b;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1;document.getElementById(x.getAttribute('aria-controls')).hidden=!on});if(focus)b.focus()}
+ tabs.addEventListener('click',e=>{const b=e.target.closest('[role=tab]');if(b)sel(b)});
+ tabs.addEventListener('keydown',e=>{const L=all(),i=L.indexOf(document.activeElement);if(i<0)return;let j=null;
+  if(e.key==='ArrowRight')j=(i+1)%L.length;else if(e.key==='ArrowLeft')j=(i-1+L.length)%L.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=L.length-1;
+  if(j!==null){e.preventDefault();sel(L[j],true)}})}
+
+/* renderColl() is defined by assets/nav.js */
+
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.53,s:fitS(W,H,1.32),t,active:['str'],labels:['str'],labelT:{str:0.8},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560)),deep:0.85})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(1).join(' ')})();
+
+/* ---------- fast fingers (serial reaction time task) ----------
+   The 10-step sequence from Nissen & Bullemer (1987): D B C A C B D C B A, mapped to circles 4 2 3 1 3 2 4 3 2 1.
+   Rounds 1-4 and 6 repeat it (20 lights = 2 cycles). Round 5 uses the same 20 positions in a shuffled order with no immediate repeats.
+   Time = first key press after the light; trials with an error, or under 100 ms or over 2 s, are left out of the medians.
+   Learning score = round 5 (shuffled) minus the average of rounds 4 and 6. */
+const SEQ=[3,1,2,0,2,1,3,2,1,0],KEYS=['d','f','j','k'],NB=6,PER=20;
+let sr=null;
+const btns=[...document.querySelectorAll('#srLights button')];
+function shuffledBlock(){const base=[...SEQ,...SEQ];for(let tries=0;tries<500;tries++){for(let i=base.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[base[i],base[j]]=[base[j],base[i]]}if(base.every((v,i)=>i===0||v!==base[i-1]))return base.slice()}return base}
+function med(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2}
+function light(i){btns.forEach((b,k)=>{b.classList.toggle('on',k===i);b.classList.remove('bad')})}
+function srNext(){if(sr.t>=NB*PER)return srEnd();const b=Math.floor(sr.t/PER);if(sr.t%PER===0&&sr.t>0&&sr.pausedAt!==sr.t){sr.pausedAt=sr.t;light(-1);$('srProg').textContent=`Round ${b} done. Round ${b+1} of ${NB} starts in a moment.`;setTimeout(()=>{if(sr)srNext()},1200);return}
+ const pos=sr.stim[sr.t];sr.cur=pos;sr.err=false;setTimeout(()=>{if(!sr)return;light(pos);sr.t0=performance.now();sr.live=true;$('srProg').textContent=`Round ${b+1} of ${NB} · light ${sr.t%PER+1} of ${PER}`},250)}
+function srPress(k){if(!sr||!sr.live)return;if(k!==sr.cur){sr.err=true;btns[k].classList.add('bad');return}
+ const rt=performance.now()-sr.t0;sr.live=false;sr.rts[Math.floor(sr.t/PER)].push({rt,err:sr.err});light(-1);sr.t++;srNext()}
+function srEnd(){const meds=sr.rts.map(b=>med(b.filter(x=>!x.err&&x.rt>=100&&x.rt<=2000).map(x=>x.rt)));const errs=sr.rts.map(b=>b.filter(x=>x.err).length);
+ btns.forEach(b=>b.disabled=true);light(-1);$('srProg').textContent='Done.';
+ const ok=meds.every(m=>m!==null);let html='';
+ if(ok){const mx=Math.max(...meds);html=`<div class="chart" aria-hidden="true">${meds.map((m,i)=>`<div><b>${Math.round(m)}</b><i class="${i===4?'rand':''}" style="height:${m/mx*130}px"></i></div>`).join('')}</div><div class="chartx" aria-hidden="true">${meds.map((m,i)=>`<span>${i===4?'Mixed':'Round '+(i+1)}</span>`).join('')}</div><p class="sr-only">Typical times per round in milliseconds: ${meds.map((m,i)=>`round ${i+1}${i===4?' (mixed order)':''} ${Math.round(m)}`).join(', ')}.</p>`}
+ const d=ok?Math.round(meds[4]-(meds[3]+meds[5])/2):null;
+ $('srPhase').textContent='Your results';
+ if(!ok){$('srTitle').textContent='Not enough clean answers';$('srText').textContent='Some rounds had too many slips to measure. Try again, aiming for the right key each time.'}
+ else if(d>=25){$('srTitle').textContent=`${d} ms slower when the order changed`;$('srText').textContent=`Round 5 used the same lights in a mixed-up order, and you slowed down. Rounds 1 to 4 and 6 repeated a hidden 10-step pattern. Your speed shows you had learned it.`}
+ else{$('srTitle').textContent='Little change when the order changed';$('srText').textContent=`Round 5 used the same lights in a mixed-up order, and your speed barely changed (${d} ms). Rounds 1 to 4 and 6 repeated a hidden 10-step pattern. Learning it usually takes more practice than six short rounds; try again and see if the gap grows.`}
+ html+=`<p class="prog" style="margin:0 0 10px">Times are the typical (median) time per light, in milliseconds. Slips: ${errs.reduce((a,b)=>a+b,0)}.</p><p class="mtext" id="srQ"><b>Did you notice a repeating pattern?</b></p><div class="aware"><button class="gbtn" data-a="yes">Yes</button><button class="gbtn" data-a="no">No</button></div>`;
+ $('srRes').innerHTML=html;$('srRes').querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const yes=b.dataset.a==='yes';
+  $('srRes').querySelector('.aware').remove();const p=document.createElement('p');p.className='mtext';p.setAttribute('aria-live','polite');
+  p.textContent=`The pattern was ${SEQ.map(i=>KEYS[i].toUpperCase()).join(', ')}, over and over. ${yes?'You noticed it; many people don’t.':'You are not alone: many people don’t notice it.'} In studies with this task, people often speed up on the pattern without being able to describe it. That is learning by repetition, the kind of learning the striatum supports.`;$('srRes').appendChild(p)});
+ $('srGo').textContent='Try again';$('srGo').disabled=false;sr=null}
+$('srGo').addEventListener('click',()=>{const stim=[];for(let b=0;b<NB;b++)stim.push(...(b===4?shuffledBlock():[...SEQ,...SEQ]));
+ sr={stim,t:0,rts:Array.from({length:NB},()=>[]),live:false,pausedAt:-1};btns.forEach(b=>b.disabled=false);$('srRes').innerHTML='';$('srGo').disabled=true;$('srPhase').textContent='Running';$('srTitle').textContent='Hit the lit circle';$('srText').textContent='Keep going through all six rounds.';$('srPad').focus();srNext()});
+$('srPad').addEventListener('keydown',e=>{const k=KEYS.indexOf(e.key.toLowerCase());if(k<0||!sr)return;e.preventDefault();srPress(k)});
+btns.forEach((b,k)=>b.addEventListener('pointerdown',e=>{if(!sr)return;e.preventDefault();srPress(k)}));
+
+/* ---------- how long does a habit take? ---------- */
+const dyPos=d=>Math.min(100,Math.max(0,(d-0)/260*100));
+$('dyIn').addEventListener('input',()=>{$('dyVal').innerHTML=`${$('dyIn').value} <small>days</small>`});
+$('dyGo').addEventListener('click',()=>{const g=+$('dyIn').value;$('dyRes').hidden=false;
+ const mk=(d,lab,col,top=18)=>`<div class="mk" style="left:${dyPos(d)}%;top:${top}px;color:${col}"><span>${lab}</span><i style="background:${col}"></i></div>`;
+ $('dyLine').innerHTML=`<div class="axis"></div><div class="rng" style="left:${dyPos(18)}%;width:${dyPos(254)-dyPos(18)}%"></div>${[0,50,100,150,200,250].map(d=>`<span class="tk" style="left:${dyPos(d)}%">${d}</span>`).join('')}${mk(21,'21 (myth)','#8A1C4A',-8)}${mk(66,'66 typical','#B84300',18)}<div class="mk below" style="left:${dyPos(g)}%;color:#13294B"><span>You: ${g}</span><i style="background:#13294B;height:36px"></i></div>`;
+ let msg;const off=g-66;
+ if(Math.abs(off)<=10)msg=`Close. The typical time was 66 days.`;
+ else if(g<=30)msg=`Shorter than the study found. The popular 21-day figure traces back to a 1960 self-help book about adjusting to a new face after plastic surgery, not to habit research. The typical time was 66 days.`;
+ else if(off<0)msg=`A little short. The typical time was 66 days.`;else msg=`Longer than typical, though not impossible: the typical time was 66 days, and some people took far longer.`;
+ $('dyMsg').textContent=`${msg} The shaded bar shows the range, from 18 to 254 days, among the 39 people whose data fitted a clear habit curve.`});
+
+/* ---------- in popular culture ---------- */
+renderPop([
+ {id:'karate',title:'The Karate Kid',sub:'Film, 1984',kind:'Drama',films:[['The Karate Kid (1984)','https://www.imdb.com/title/tt0087538/']],verdict:['mixed','Right method, movie speed'],
+  desc:'Daniel, a teenager bullied at his new school, asks the handyman Mr. Miyagi to teach him karate. Instead, Miyagi has him wax cars and paint fences. Daniel is furious, until Miyagi shows him the motions were karate blocks all along.',
+  right:['Thousands of identical repetitions really do make a movement automatic. It is the slow, repetition-driven learning the basal ganglia support.','Miyagi corrects Daniel’s form as he goes. Repetition locks in whatever you practise, so feedback early matters.'],
+  wrong:['Daniel’s chores turn into reliable reflexes in days. Real automaticity takes much longer: even a simple daily habit took a typical 66 days in a 2010 study.'],
+  src:'Lally et al. (2010).'},
+ {id:'awake',title:'Awakenings',sub:'Film, 1990',kind:'Drama based on a true story',films:[['Awakenings (1990)','https://www.imdb.com/title/tt0099077/']],verdict:['good','Grounded in real events'],
+  desc:'In 1969, Dr. Malcolm Sayer (Robin Williams), a fictional version of neurologist Oliver Sacks, gives the drug L-DOPA to patients who have been frozen for decades after a 1920s epidemic of brain inflammation. One of them, Leonard (Robert De Niro), wakes up.',
+  right:['The patients’ frozen state resembles severe parkinsonism. L-DOPA is turned into dopamine in the brain, and drugs based on it are still a mainstay of Parkinson’s treatment.','In the film, frozen patients can still catch a thrown ball, though they cannot start a movement on their own.','The film shows the improvement fading, rather than a miracle cure.'],
+  wrong:['The doctor is a fictional character, and the story is compressed and dramatised.','L-DOPA replaces the missing chemical. It does not bring the lost cells back.'],
+  src:'Oliver Sacks, Awakenings (1973); NINDS.'},
+ {id:'21',title:'“21 days to a habit”',sub:'Popular advice',kind:'Self-help claim',films:[],verdict:['bad','Too short and too neat'],
+  desc:'Countless apps and articles promise that a new habit takes 21 days.',
+  right:['Repeating a behavior in the same setting every day really does make it more automatic, with the biggest gains early on.'],
+  wrong:['The number traces back to a 1960 self-help book by a plastic surgeon, about how long patients took to get used to a new face.','In the 2010 study, the typical time was 66 days, ranging from 18 to 254, and more than half of the people who finished did not show a clear habit curve.'],
+  src:'Lally et al. (2010); The Behavioral Scientist.'}],'popTabs','popPanels');
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'In the 1996 weather game, what happened to people with Parkinson’s disease?',o:['They learned the game but forgot the training','They remembered the training but did not learn the game','They did both normally'],a:1,f:'People with amnesia showed the opposite pattern.'},
+ {q:'Once a maze route became a habit, when did striatal cells mostly fire?',o:['Throughout the run','At the start and the end','Only at the reward'],a:1,f:'The whole run was handled as one chunk, bracketed at its start and end.'},
+ {q:'In the 2010 habit study, what was the typical time for a daily behavior to become automatic?',o:['21 days','66 days','One year'],a:1,f:'66 days was typical, with a range from 18 to 254.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','bg');
+})();
+</script>
+</body>
+</html>

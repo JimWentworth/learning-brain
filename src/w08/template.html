@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lectures in a Second Language: Coverage, Load and Captions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+
+.ptabs{display:flex;gap:6px;margin:18px 0 0;border-bottom:2px solid var(--night-line);flex-wrap:wrap}
+.ptabs button{appearance:none;background:transparent;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;color:#C9D3E3;font:700 18px var(--body);padding:10px 16px 8px;cursor:pointer;min-height:48px}
+.ptabs button[aria-selected="true"]{color:#fff;border-bottom-color:var(--orange)}
+.ptabs button:hover{color:#fff}
+.ptabs button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.ppanel{padding-top:6px}
+.ppanel:focus-visible{outline:3px solid #FCB316;outline-offset:4px}
+.ppanel[hidden]{display:none}
+.iguide{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;margin-top:22px}
+@media (max-width:760px){.iguide{grid-template-columns:minmax(0,1fr)}}
+.iguide h3{font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin:0 0 8px}
+.iguide ol,.iguide ul{margin:0 0 18px;padding-left:1.3em;color:#E9EEF6;font-size:17px;line-height:1.5}
+.iguide li{margin:0 0 8px}
+.iguide p{color:#E9EEF6;font-size:17px;line-height:1.5;margin:0 0 16px}
+.iguide .itime{display:inline-block;background:#1B2E50;border:1px solid var(--night-line);border-radius:16px;padding:3px 12px;font-weight:700;color:#fff;margin:0 0 14px}
+.icard{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:18px 20px}
+.pscreen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.pscreen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.pchoices{display:flex;gap:10px;flex-wrap:wrap}
+.pchoices[hidden]{display:none}
+.pchoices button{appearance:none;min-height:48px;padding:6px 18px;text-align:left;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer}
+.pchoices button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.pchoices button.ok{border-color:#7DD3A8;background:#173B33}.pchoices button.no{border-color:#FFB38A;background:#3B2420}
+.pchoices button:disabled{cursor:default}
+.mtext b.ok{color:#7DD3A8}.mtext b.no{color:#FFB38A}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.res .row{display:grid;grid-template-columns:150px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6;margin:6px 0}
+@media (max-width:520px){.res .row{grid-template-columns:100px minmax(0,1fr) 76px}}
+.res .bar{height:14px;background:#1B2E50;border-radius:7px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:7px}
+.res b{text-align:right;font-variant-numeric:tabular-nums}
+
+__COLLCSS__
+</style>
+<style>.xvnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Language and Learning · Topic 8</div>
+      <h1 id="title">Lectures in <em>a second language</em></h1>
+      <p class="dek">Following a lecture in a second language is a different task from following it in your first. A few unknown words per hundred can make the difference between understanding and losing the thread.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#tryT">Try it first</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the temporal lobe, which processes speech, and the prefrontal cortex, which holds the thread of an argument, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<main id="main">
+<article>
+  <section class="night" aria-labelledby="tryT" style="margin-top:0">
+    <div class="col">
+      <h2 class="sec" id="tryT"><span class="n">Try it first</span>Read with gaps</h2>
+      <p>What it feels like to know 98% of the words, and then 90%. Read, then answer from memory.</p>
+    </div>
+    <div class="wide">
+      <div class="ptabs" role="tablist" aria-label="Versions of this activity">
+        <button type="button" role="tab" id="tabS" aria-controls="panS" aria-selected="true">For students</button>
+        <button type="button" role="tab" id="tabI" aria-controls="panI" aria-selected="false" tabindex="-1">For instructors</button>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panS" aria-labelledby="tabS" tabindex="0">
+        <div class="lab">
+          <div class="pscreen" id="sScreen">
+            <div id="cvT" style="background:#fff;color:#13294B;border-radius:6px;padding:18px 20px;font:17px/1.6 var(--body);max-width:540px;width:100%" aria-live="polite">The passage appears when you press Start.</div>
+            <p class="prog" id="cvP">&nbsp;</p>
+          </div>
+          <div>
+            <p class="phase" id="sPhase">Ready</p>
+            <p class="mtitle" id="sTitle">Read with gaps</p>
+            <p class="mtext" id="sText" aria-live="polite">Two short passages. In one, 2 words in every 100 are unknown to you. In the other, 10 in every 100. Read each once, then answer two questions without looking back.</p>
+            <div class="pchoices" id="sCh" role="group" aria-label="Your answer" hidden></div>
+            <div id="sRes"></div>
+            <div class="mrow"><button class="nbtn" id="sGo" type="button">Start</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panI" aria-labelledby="tabI" tabindex="0" hidden>
+        <div class="iguide">
+          <div>
+            <span class="itime">About 10 minutes</span>
+            <h3>Run it in class</h3>
+            <ol><li>Students read each passage once, at their normal pace, then answer the questions without scrolling back.</li><li>Ask how the second passage felt. What did students do when they hit an unknown word?</li><li>Explain that a lecture moves at the speaker’s pace: listeners can’t reread.</li><li>Look at one of your own slides or a passage of your notes. Which words might be unknown to some students?</li></ol>
+          </div>
+          <div class="icard">
+            <h3>Ask the room</h3>
+            <ul><li>What did the unknown words cost you, beyond the words themselves?</li><li>How would this feel at lecture speed, with no chance to reread?</li><li>Which words in your course are likely unknown to students learning in a second language?</li></ul>
+            <h3>Connect it to your course</h3>
+            <p>Give students the key terms before class, post slides or notes in advance, caption your recordings, and speak at a steady pace with pauses after key points. Each of these lets students prepare or recover the words they missed.</p>
+            <h3>Good to know</h3><p>Reading lets you pause and reread; listening doesn’t. If anything, this activity understates how hard a lecture with unknown words can be.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col lede">
+    <p>Researchers call the share of words in a text that a reader or listener knows <i>lexical coverage</i>. Most research suggests that coverage of 95–98% is needed for adequate comprehension, in other words, that only 2–5% of words can be unknown.</p>
+    <p>That sounds generous until you translate it. At 95% coverage, one word in every 20 is unknown; at 98%, one in every 50.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>98%</strong><span>coverage needed for adequate unassisted reading, in a widely cited study</span></div>
+      <div role="listitem"><strong>95%</strong><span>may be enough for informal listening</span></div>
+      <div role="listitem"><strong>1 in 20</strong><span>words unknown at 95% coverage; 1 in 50 at 98%</span></div>
+      <div role="listitem"><strong>Large</strong><span>effect of captions on second-language listening comprehension</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Reading</span>The 98% figure</h2>
+    <p>In a widely cited study, Marcella Hu and Paul Nation found that about 98% coverage was needed for adequate, unassisted reading comprehension of a relatively easy fiction text. Later work suggested two thresholds: 95% for minimal comprehension and 98% for good comprehension.</p>
+    <h2 class="sec"><span class="n">Listening</span>Informal talk versus lectures</h2>
+    <p>Hilde van Zeeland and Norbert Schmitt found that 95% coverage may be enough to follow informal spoken narratives, which can be reached with 2,000–3,000 word families. Academic listening is a different matter: one study found that 98% coverage was needed for academic listening.</p>
+    <h2 class="sec"><span class="n">Captions</span>Seeing the words helps</h2>
+    <p>A 2013 meta-analysis by Maribel Montero Perez, Wim Van den Noortgate and Piet Desmet pooled studies of second-language learners watching video with captions in the same language. Captions had a large effect on listening comprehension (15 studies) and on vocabulary learning (10 studies).</p>
+    <h2 class="sec"><span class="n">For learning</span>Give students a way to catch up</h2>
+    <p>A lecture runs at the speaker’s pace. A reader can stop on an unknown word; a listener loses it, and often the next sentence too. Key terms in advance, slides and notes to review, and captioned recordings give students learning in a second language the chance to recover what they missed.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Check your intuition</span>Predict the findings</h2>
+      <p>For each study on this page, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Let students meet the words before they meet the lecture.</h2>
+    <ol class="tips">
+      <li><b>Key terms first</b><span>Post a short list of terms and definitions before class.</span></li>
+      <li><b>Slides and notes ahead</b><span>So students can preview and review.</span></li>
+      <li><b>Caption everything</b><span>A large benefit for second-language listeners.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li>Hu, M., &amp; Nation, I. S. P. (2000). Unknown vocabulary density and reading comprehension. <i>Reading in a Foreign Language, 13</i>(1), 403–430.</li>
+        <li>van Zeeland, H., &amp; Schmitt, N. (2013). Lexical coverage in L1 and L2 listening comprehension: The same or different from reading comprehension? <i>Applied Linguistics, 34</i>(4), 457–479.</li>
+        <li>Schmitt, N., Cobb, T., Horst, M., &amp; Schmitt, D. (2015). How much vocabulary is needed to use English? Replication of van Zeeland &amp; Schmitt (2012), Nation (2006) and Cobb (2007). <i>Language Teaching</i>.</li>
+        <li><a href="https://doi.org/10.1016/j.system.2013.07.013">Montero Perez, M., Van Den Noortgate, W., &amp; Desmet, P. (2013). Captioned video for L2 listening and vocabulary learning: A meta-analysis. <i>System, 41</i>(3), 720–739.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The two passages and their unknown words are made up for this activity. The brain drawing is a simplified illustration.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.tem.lab=[300,770];BR.R.tem.al='left';BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['tem','pfc'],labels:['tem','pfc'],labelT:{tem:0.8,pfc:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+
+
+
+/* ---------- tabs ---------- */
+(function(){const tl=document.querySelector('.ptabs');if(!tl)return;const tabs=[...tl.querySelectorAll('[role=tab]')];
+ function sel(t,focus){tabs.forEach(b=>{const on=b===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;$(b.getAttribute('aria-controls')).hidden=!on});if(focus)t.focus()}
+ tabs.forEach((b,i)=>{b.addEventListener('click',()=>sel(b));b.addEventListener('keydown',e=>{let j=null;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;if(j!==null){e.preventDefault();sel(tabs[j],true)}})})})();
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?Math.min(100,val/mx*100):0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+let RUN=null;
+function ask(opts,lab){return new Promise(res=>{const c=$('sCh');c.setAttribute('aria-label',lab||'Your answer');c.innerHTML=opts.map((t,j)=>`<button type="button" data-v="${j}">${t}</button>`).join('');c.hidden=false;RUN.res=res;c.querySelector('button').focus()})}
+$('sCh').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!RUN||!RUN.res||b.disabled)return;const r=RUN.res;RUN.res=null;$('sCh').querySelectorAll('button').forEach(x=>x.disabled=true);r(+b.dataset.v)});
+function mark(right,chosen){$('sCh').querySelectorAll('button').forEach((b,j)=>{if(j===right)b.classList.add('ok');else if(j===chosen)b.classList.add('no')})}
+function hideCh(){$('sCh').hidden=true;$('sCh').innerHTML=''}
+function nextBtn(label){return new Promise(res=>{const g=$('sGo');g.textContent=label;g.hidden=false;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.hidden=true;res()}})}
+function say(phase,title,text){if(phase!=null)$('sPhase').textContent=phase;if(title!=null)$('sTitle').textContent=title;if(text!=null)$('sText').innerHTML=text}
+function startRun(fn){$('sGo').addEventListener('click',async()=>{if(RUN)return;RUN={};const g=$('sGo');g.hidden=true;$('sRes').innerHTML='';try{await fn()}finally{hideCh();g.onclick=null;g.textContent='Try again';g.hidden=false;g.disabled=false;RUN=null}})}
+
+/* ---------- coverage ---------- */
+const PASS=[
+ {cov:'98%',t:'Most cities clean their drinking water in several steps. First, water from a river or lake passes through screens that remove leaves and fish. Then chemicals are added that make tiny particles stick together into larger <u>vorbels</u>, which sink to the bottom of large tanks. The clearer water on top flows through beds of sand and <u>plinter</u> that trap smaller particles. Finally, a small amount of chlorine is added to kill bacteria, and the water is pumped through pipes to homes. Engineers test samples throughout the day to make sure the water stays safe.',
+  q:[['What makes the tiny particles sink?',['Chemicals that make them stick together','Screens that catch them','Chlorine that dissolves them'],0],['Why is chlorine added?',['To kill bacteria','To remove leaves','To make particles clump']]].map(x=>x.length===2?[...x,0]:x)},
+ {cov:'90%',t:'Honeybees tell each other where to find food by dancing. A <u>trelp</u> that has found a <u>brannish</u> <u>skeld</u> of flowers returns to the hive and performs a waggle dance on the <u>opple</u> surface of the <u>dorrow</u>. The <u>flinch</u> of the dance, relative to straight up, shows the <u>meskwith</u> of the food relative to the sun. The <u>durrow</u> of the waggle run shows how far away the food is. Other bees <u>vasken</u> the dancer, smell the flowers on her body, and then fly out to search. Bees can even <u>pondle</u> for the movement of the sun during the day.',
+  q:[['What does the dance’s angle relative to straight up tell other bees?',['Which way to fly, relative to the sun','How far away the food is','How much food there is'],0],['What else does the waggle run tell them?',['How far away the food is','What colour the flowers are','When the flowers open'],0]]}];
+startRun(async()=>{const res=[];
+ for(let p=0;p<2;p++){const P_=PASS[p];$('cvT').innerHTML=P_.t;$('cvP').textContent=`Passage ${p+1} of 2 · ${P_.cov} of words known`;
+  say(`Passage ${p+1} of 2`,'Read it once','Read at your normal pace. Underlined words are unknown to you. Press the button when you’re done; you won’t be able to look back.');
+  await nextBtn('Done reading');if(!RUN)return;$('cvT').innerHTML='<i>Passage hidden.</i>';let r=0;
+  for(let k=0;k<2;k++){const [qq,os,ai]=P_.q[k];say('Questions',qq,'');const sh=shuf(os.map((x,j)=>[x,j]));const a=await ask(sh.map(x=>x[0]),qq);if(!RUN)return;const ok=sh[a][1]===ai;if(ok)r++;mark(sh.findIndex(x=>x[1]===ai),a);
+   say(null,null,ok?'<b class="ok">Right.</b>':`<b class="no">Not quite.</b> ${os[ai]}.`);await nextBtn(k?'Continue':'Next question');if(!RUN)return;hideCh()}
+  const h=await ask(['Easy','A bit hard','Hard','Very hard'],'How hard was that passage to follow?');if(!RUN)return;hideCh();res.push([P_.cov,r,h])}
+ $('cvT').innerHTML='<i>Done.</i>';$('cvP').textContent=' ';const lab=['easy','a bit hard','hard','very hard'];
+ $('sRes').innerHTML='<div class="res">'+res.map(([c,r])=>barRow(c+' known',r,2,`${r} of 2`,c==='98%'?'#7DD3A8':'#FCB316')).join('')+'</div>';
+ say('What happened','Ten in a hundred is a lot',`You rated the 98% passage ${lab[res[0][2]]} and the 90% passage ${lab[res[1][2]]}. At 90% coverage, unknown words land in almost every sentence, and they often hit the words that carry the meaning. In a lecture, there is no going back to reread. That is why research suggests 95–98% coverage is needed, and why key terms in advance and captions help so much.`)});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Most research suggests adequate comprehension needs what lexical coverage?',['95–98%','80–85%','100%'],0,'Only 2–5% of words unknown.'],
+ ['In Hu and Nation’s widely cited study, what coverage was needed for adequate unassisted reading?',['About 98%','About 90%','About 80%'],0,'Of a relatively easy fiction text.'],
+ ['For informal spoken narratives, van Zeeland and Schmitt found what coverage may be enough?',['95%','80%','99%'],0,'Reached with 2,000–3,000 word families.'],
+ ['Did captions help second-language learners’ listening comprehension?',['Yes, a large effect','No effect','They hurt it'],0,'Across 15 studies.'],
+ ['And vocabulary learning from video?',['Yes, a large effect','No effect','Only for beginners'],0,'Across 10 studies.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: a few unknown words per hundred decide whether a lecture can be followed.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Adequate comprehension usually needs about what share of words to be known?',o:['95–98%','70%','50%'],a:0,f:'Lexical coverage.'},
+ {q:'At 95% coverage, how often is a word unknown?',o:['About 1 in 20','About 1 in 200','About 1 in 5'],a:0,f:'At 98%, about 1 in 50.'},
+ {q:'For second-language learners, same-language captions had…',o:['A large effect on listening comprehension','No effect','A negative effect'],a:0,f:'Montero Perez and colleagues, 2013.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','w08');
+})();
+</script>
+</body>
+</html>

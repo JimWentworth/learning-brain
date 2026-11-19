@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make It, Don’t Take It: The Generation Effect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}
+.pair{font:700 34px/1.2 var(--body);color:#fff;text-align:center;min-height:48px}
+.pair small{display:block;font:800 15px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;margin-bottom:6px}
+.pair .gap{color:#FCB316;letter-spacing:.12em}
+.gin{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.gin[hidden]{display:none}
+.gin input{width:200px;min-height:50px;font:700 22px var(--body);text-align:center;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff}
+.gin input:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.gfb{font:600 17px var(--body);color:#E9EEF6;min-height:1.5em;margin:0;text-align:center}
+.gfb b.ok{color:#7DD3A8}.gfb b.no{color:#FFB38A}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Memory · Topic 4</div>
+      <h1 id="title">Make it, don’t take it <em>What students make, they keep</em></h1>
+      <p class="dek">Producing an answer, even an easy one, leaves a stronger memory than reading it. The same idea scales up to explaining, and even to guessing before you learn, as long as the right answer follows.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#gT">Read it or make it</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the prefrontal cortex, at the front, and the hippocampus, deep inside, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Make it, don’t take it</b> · The Learning Brain, Memory, episode 4</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Two ways to meet the same word. Read it: <i>rapid – fast</i>. Or make it: <i>rapid – f _ _ _</i>. The second takes a moment of effort, and in study after study, words people generated were remembered better than words they simply read.</p>
+    <p>This is the generation effect. Producing an answer, even an easy one, leaves a stronger trace than receiving it.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>86</strong><span>studies in a 2007 review of the generation effect</span></div>
+      <div role="listitem"><strong>0.40</strong><span>its average size: almost half a standard deviation, generating over reading</span></div>
+      <div role="listitem"><strong>64</strong><span>reports, with nearly 6,000 learners, in a 2018 review of prompted self-explanation</span></div>
+      <div role="listitem"><strong>Wrong guesses</strong><span>made before reading still helped, once the right answer followed</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The generation effect</span>Producing beats receiving</h2>
+    <p>Sharon Bertsch and colleagues combined 86 studies in 2007. Generating beat reading by 0.40 of a standard deviation, almost half. It held for synonyms, opposites, categories and rhymes, and on both recognition and recall tests.</p>
+    <p>Generating is a kind of <a href="@@LB:m03@@">deep processing</a>: to produce the word, you have to search what you know and check that the answer fits.</p>
+  </div>
+
+  <section class="night" aria-labelledby="gT">
+    <div class="col">
+      <h2 class="sec" id="gT"><span class="n">Try it</span>Read it or make it</h2>
+      <p>20 pairs, each a category and one of its members. You’ll read half of them and complete the other half from the first letters. After a 30-second break, you’ll see each category and try to recall its member. About 3 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="gScreen">
+          <div class="pair" id="gP" aria-live="polite"></div>
+          <form class="gin" id="gGen" hidden><label class="sr-only" for="gGi">Your answer</label><input id="gGi" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="nbtn" type="submit">OK</button></form>
+          <p class="gfb" id="gFb" aria-live="polite"></p>
+          <div class="fw" id="gW" aria-live="polite"></div>
+          <form class="fin" id="gForm" hidden><label class="sr-only" for="gIn">Type the words you remember</label><textarea id="gIn" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea><button class="nbtn" type="submit">Done</button></form>
+          <button class="brk" id="gBrk" hidden aria-label="Tap when the circle is orange"></button>
+          <div class="tbar" aria-hidden="true"><i id="gTb" style="width:0"></i></div>
+          <p class="prog" id="gProg" aria-live="polite">Press Start.</p>
+        </div>
+        <div>
+          <p class="phase" id="gPhase">Ready</p>
+          <p class="mtitle" id="gTitle">Does making it make it stick?</p>
+          <p class="mtext" id="gText" aria-live="polite">Read pairs stay on screen for 4 seconds. For the others, type the whole word and press OK; you’ll see the answer either way.</p>
+          <div id="gRes"></div>
+          <div class="mrow"><button class="nbtn" id="gGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Self-explanation</span>The same idea, scaled up</h2>
+    <p>Self-explanation means pausing to explain why a step works, or how one idea connects to another. A 2018 review by Kiran Bisra and colleagues combined 64 research reports with nearly 6,000 learners. Prompting students to explain to themselves improved learning by about half a standard deviation, across many subjects.</p>
+    <h2 class="sec"><span class="n">Before learning</span>A wrong guess can prepare the mind</h2>
+    <p>Generation even helps before learning. In 2009, Lindsey Richland, Nate Kornell and Liche Kao had students answer questions about an essay before reading it. Most guesses were wrong. Yet those items were learned better than items given the same extra time to study, even counting only the questions students had got wrong.</p>
+    <h2 class="sec"><span class="n">One caution</span>Close the loop</h2>
+    <p>In these studies, the correct answer always followed. A wrong guess left uncorrected is just a wrong guess. Generation works when students can make something meaningful and get the right answer soon after, which is also the lesson of <a href="@@LB:lb12@@">the errors and feedback page</a>.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each study in the video, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Let them make it first</h3>
+      <p>Before a lecture, pose two or three questions students can’t yet answer, then teach. Leave gaps in notes for students to fill. Pause after a worked step and ask: why does this follow? Have students predict a result before you show it. And always close the loop with the correct answer.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>What students make, they keep</h2>
+    <ol class="tips">
+      <li><b>Questions before teaching</b><span>Two or three they can’t yet answer.</span></li>
+      <li><b>Gaps to fill, steps to explain</b><span>“Why does this follow?”</span></li>
+      <li><b>Always close the loop</b><span>Give the right answer soon after.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/17645161/">Bertsch, S., Pesta, B. J., Wiscott, R., &amp; McDaniel, M. A. (2007). The generation effect: A meta-analytic review. <i>Memory &amp; Cognition</i>.</a></li>
+        <li><a href="https://doi.org/10.1007/s10648-018-9434-x">Bisra, K., Liu, Q., Nesbit, J. C., Salimi, F., &amp; Winne, P. H. (2018). Inducing self-explanation: A meta-analysis. <i>Educational Psychology Review</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/19751074/">Richland, L. E., Kornell, N., &amp; Kao, L. S. (2009). The pretesting effect: Do unsuccessful retrieval attempts enhance learning? <i>Journal of Experimental Psychology: Applied</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.hip.lab=[640,770];BR.R.hip.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['pfc','hip'],labels:['pfc','hip'],labelT:{pfc:0.8,hip:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+function gTimer(sec,me){const t0=performance.now();const tick=()=>{if(!gr||gr.tok!==me)return;const f=Math.min(1,(performance.now()-t0)/(sec*1000));$('gTb').style.width=(100-f*100)+'%';if(f<1)requestAnimationFrame(tick)};tick()}
+async function gHold(sec){const me=Symbol();gr.tok=me;gTimer(sec,me);await sw(sec*1000);if(!gr)return false;gr.tok=null;$('gTb').style.width='0';return true}
+function gRecall(ph){return new Promise(res=>{gr.rres=res;$('gForm').hidden=false;$('gIn').value='';$('gIn').placeholder=ph||'Type the words, in any order';$('gIn').focus()})}
+$('gForm').addEventListener('submit',e=>{e.preventDefault();if(!gr||!gr.rres)return;const r=gr.rres;gr.rres=null;$('gForm').hidden=true;r($('gIn').value)});
+async function gBreak(sec,msg){sec=sec||30;$('gW').textContent=msg?'':'Easy break';$('gBrk').hidden=false;$('gBrk').focus();let on=false;const me=Symbol();gr.tok=me;
+ $('gProg').textContent=msg||`For ${sec} seconds, tap the circle (or press Space) whenever it turns orange.`;
+ const brk=$('gBrk');brk.onclick=()=>{if(on){on=false;brk.classList.remove('on')}};const t0=performance.now();gTimer(sec,me);
+ while(performance.now()-t0<sec*1000){await sw(1000+Math.random()*1800);if(!gr)return;on=true;brk.classList.add('on');await sw(900);on=false;brk.classList.remove('on')}
+ brk.hidden=true;gr.tok=null;$('gTb').style.width='0';$('gProg').textContent='';$('gW').textContent=''}
+$('gBrk').addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();$('gBrk').click()}});
+
+/* ---------- read it or make it ----------
+   20 category: member pairs; 10 read (4 s), 10 generated from the first two letters (self-paced, answer shown 1.5 s).
+   Random order. 30 s break. Cued recall: category shown, type member, one at a time. Compare read vs generated. */
+const PAIRS=[['fruit','plum'],['bird','crow'],['tree','maple'],['metal','copper'],['flower','tulip'],['fish','trout'],['tool','chisel'],['dance','tango'],['vegetable','radish'],['insect','beetle'],['colour','violet'],['drink','cider'],['weather','sleet'],['boat','kayak'],['fabric','denim'],['spice','ginger'],['dog breed','poodle'],['board game','chess'],['sport','rugby'],['bread','bagel']];
+const frag=w=>w.slice(0,2)+' _'.repeat(w.length-2);
+let gr=null;
+function gen(){return new Promise(res=>{gr.gres=res;$('gGen').hidden=false;$('gGi').value='';$('gGi').focus()})}
+$('gGen').addEventListener('submit',e=>{e.preventDefault();if(!gr||!gr.gres)return;const r=gr.gres;gr.gres=null;$('gGen').hidden=true;r($('gGi').value.trim().toLowerCase())});
+$('gGo').addEventListener('click',async()=>{if(gr)return;gr={};const g=$('gGo');g.disabled=true;g.textContent='In progress';$('gRes').innerHTML='';$('gFb').textContent='';
+ const kinds=shuf([...Array(10).fill('r'),...Array(10).fill('g')]);const items=shuf(PAIRS.map(([c,w],i)=>({c,w,k:kinds[i],made:null,got:false})));
+ $('gPhase').textContent='Step 1 of 3 · Study';
+ for(let i=0;i<items.length;i++){const it=items[i];$('gProg').textContent=`Pair ${i+1} of 20`;
+  if(it.k==='r'){$('gTitle').textContent='Read it';$('gP').innerHTML=`<small>${it.c}</small>${it.w}`;if(!await gHold(4))return}
+  else{$('gTitle').textContent='Make it';$('gP').innerHTML=`<small>${it.c}</small><span class="gap">${frag(it.w)}</span>`;const v=await gen();if(!gr)return;it.made=match(v,it.w);
+   $('gFb').innerHTML=(it.made?'<b class="ok">Yes:</b> ':'<b class="no">The answer:</b> ')+it.w;$('gP').innerHTML=`<small>${it.c}</small>${it.w}`;if(!await gHold(1.5))return;$('gFb').textContent=''}
+  $('gP').textContent=''}
+ $('gPhase').textContent='Step 2 of 3 · Break';$('gTitle').textContent='Step away';$('gText').textContent='An easy, 30-second task.';await gBreak();if(!gr)return;
+ $('gPhase').textContent='Step 3 of 3 · Recall';$('gTitle').textContent='Recall each member';$('gText').textContent='For each category, type the member you saw. Leave it blank if you can’t remember.';
+ const test=shuf([...items]);
+ for(let i=0;i<test.length;i++){const it=test[i];$('gProg').textContent=`Category ${i+1} of 20`;$('gP').innerHTML=`<small>${it.c}</small>?`;const v=await gen();if(!gr)return;it.got=!!v&&match(v,it.w)}
+ $('gP').textContent='Done';$('gProg').textContent='';$('gPhase').textContent='Your results';
+ const R=items.filter(x=>x.k==='r'&&x.got).length,G=items.filter(x=>x.k==='g'&&x.got).length,tot=R+G,d=G-R,miss=items.filter(x=>x.k==='g'&&!x.made).length;
+ $('gRes').innerHTML=`<div class="res wl2"><p class="gh">Recalled, out of 10</p>${barRow('Read',R,10,R+' of 10','#C9D3E3')}${barRow('Made',G,10,G+' of 10','#FCB316')}</div>`;
+ const mt=miss?` You couldn’t complete ${miss} of the 10 yourself; you saw the answer right after, which is what makes a miss useful.`:'';
+ let title,text;
+ if(tot<3){title='Too few to compare';text=`You recalled ${tot} of 20, too few to compare reading with making. Try again; the pairs will be split differently.`}
+ else if(d>=2){title='Making it made it stick';text=`You recalled ${G} of the 10 pairs you completed, and ${R} of the 10 you read. A few seconds of effort left a stronger trace.`+mt}
+ else if(d>=-1){title='About the same this time';text=`You recalled ${G} pairs you completed and ${R} you read. With 10 of each, chance plays a big part. Reading pairs for 4 seconds also leaves time to think about them, which is a form of making. Across 86 studies, the generation advantage was reliable but moderate.`+mt}
+ else{title='Reading did better this time';text=`You recalled ${R} pairs you read and ${G} you completed, the reverse of the usual result. With 10 of each, chance plays a big part, and 4 seconds to read is long enough to rehearse.`+mt+' Try again; the pairs will be split differently.'}
+ $('gTitle').textContent=title;$('gText').textContent=text;g.textContent='Try again';g.disabled=false;g.focus();gr=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Across 86 studies, words people generated compared with words they read',['Remembered better','Remembered the same','Remembered worse'],0,'By about 0.40 of a standard deviation.'],
+ ['Did the generation effect hold on both recognition and recall tests?',['Yes, both','Only recognition','Only recall'],0,'It also held for synonyms, opposites, categories and rhymes.'],
+ ['Students prompted to explain steps to themselves, in 64 research reports',['Learned more, by about half a standard deviation','Learned the same','Learned less, from the extra effort'],0,'Across many subjects.'],
+ ['Before reading an essay, students guessed answers to questions about it. How many guesses were right?',['Most were wrong','Most were right','About half'],0,'They didn’t know the material yet.'],
+ ['Those wrongly guessed items, compared with items given the same extra study time',['Learned better','Learned worse','No difference'],0,'A failed attempt prepared the mind for the answer.'],
+ ['What did these studies always include?',['The correct answer, soon after','No feedback','A reward for guessing right'],0,'An uncorrected wrong guess is just a wrong guess.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: producing an answer beats receiving it, as long as the right answer follows.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Across 86 studies, how did generating a word compare with reading it?',o:['Generating was remembered better, by almost half a standard deviation','No difference','Reading was better'],a:0,f:'The 2007 review found an average effect of 0.40.'},
+ {q:'Students guessed answers about an essay before reading it, mostly wrongly. What happened?',o:['Those items were learned better than with extra study time','The wrong guesses stuck','No effect'],a:0,f:'A failed attempt prepared them for the answer.'},
+ {q:'What must follow a guess for generation to help?',o:['The correct answer, soon after','Nothing','A second guess'],a:0,f:'An uncorrected wrong guess is just a wrong guess.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','m04');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Reward System: Learning from Surprise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+/* payout game */
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:22px;text-align:center}
+.lamp{width:110px;height:110px;border-radius:50%;border:4px solid #8FA3C2;background:#1B2E50;display:flex;align-items:center;justify-content:center;font:800 18px var(--body);color:#13294B}
+.lamp.off{color:#C9D3E3}
+.gq{font-size:19px;font-weight:700;color:#fff;margin:0;min-height:1.4em}
+.coins{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;width:100%;max-width:420px}
+.coins[hidden]{display:none}
+.coins button{appearance:none;min-height:56px;border-radius:10px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 24px var(--body);cursor:pointer}
+.coins button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.outc{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;width:100%;max-width:440px;text-align:left}
+.outc[hidden]{display:none}
+.meter{position:relative;width:46px;height:150px;background:#1B2E50;border-radius:8px}
+.meter::after{content:"";position:absolute;left:-6px;right:-6px;top:74px;height:2px;background:#C9D3E3}
+.meter i{position:absolute;left:6px;right:6px;border-radius:4px}
+.outc p{margin:0;font-size:17px;line-height:1.45;color:#E9EEF6}
+.outc b{font-size:20px}
+.res{display:grid;gap:10px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:118px minmax(0,1fr) 54px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:14px;background:#1B2E50;border-radius:7px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:7px}
+.res b{font-variant-numeric:tabular-nums;text-align:right}
+.res .grp{font-weight:800;color:#fff;margin-top:6px;font-size:16px}
+.prog{font-size:16px;color:var(--night-muted);margin:0}
+/* curiosity */
+.cbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.ctq{font-family:var(--display);font-size:clamp(22px,2.6vw,30px);font-weight:800;line-height:1.25;margin:0 0 12px;color:var(--ink)}
+.cans{font-size:22px;font-weight:700;margin:12px 0 0;color:#1F5C3F}
+.cans[hidden]{display:none}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 0}
+.qrow[hidden]{display:none}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+.pmsg b{display:block;font-size:19px;margin-bottom:4px}
+.small{font-size:16px;color:var(--ink-2);margin:10px 0 0}
+.recall{display:grid;gap:14px;margin:12px 0 0}
+.recall label{display:block;font-weight:700;font-size:17px;margin-bottom:6px}
+.recall input{width:100%;max-width:420px;min-height:46px;padding:0 12px;font:400 18px var(--body);border:2px solid #5A6B82;border-radius:8px;color:var(--ink);background:#fff}
+.recall input:focus-visible{outline:3px solid #13294B;outline-offset:2px}
+.recall .mk{font-size:16px;font-weight:700;margin-left:8px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:560px}
+.lres .row{display:grid;grid-template-columns:150px minmax(0,1fr) 70px;gap:10px;align-items:center;font-size:16px}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+__POPCSS__
+__COLLCSS__
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Brain regions</div>
+      <h1 id="title">The Reward System <em>Learning from surprise</em></h1>
+      <p class="dek">Deep in the brain, a small group of dopamine neurons reacts not to rewards themselves, but to how much better or worse they are than expected. That surprise signal is one of the brain’s main teachers.</p>
+      <div class="byline"><span>About 9 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#payT">Predict the payout</a></span><span><a href="#curT">Curious minds</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the brain, with two deep areas glowing orange: the midbrain dopamine area at the base, and the striatum, a curved structure above it."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2.5 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>The reward system: learning from surprise</b> · The Learning Brain</span><span>Captions are on; turn them off in the player.</span></div>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>In the 1990s, Wolfram Schultz and his colleagues recorded the activity of single dopamine neurons in monkeys. When a squirt of fruit juice arrived out of the blue, the neurons fired in a burst. Then the monkeys learned that a light or a tone came just before the juice.</p>
+    <p>Once they had learned it, the burst moved. The neurons now fired at the light, and barely responded to the juice itself. And when the light came on but the juice didn’t, their firing dipped below its normal level at the exact moment the juice should have arrived. The neurons weren’t signalling reward. They were signalling surprise.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>1954</strong><span>the year rats were first shown pressing a lever for brain stimulation</span></div>
+      <div role="listitem"><strong>~99%</strong><span>of dopamine removed in rats that still enjoyed sugar</span></div>
+      <div role="listitem"><strong>19</strong><span>people in a scanner study of curiosity and memory</span></div>
+      <div role="listitem"><strong>7,422</strong><span>gamers surveyed about loot boxes and gambling</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Where it is</span>A small group with a long reach</h2>
+    <p>The dopamine neurons Schultz recorded sit in the midbrain, in two neighbouring areas called the ventral tegmental area and the substantia nigra. Their fibres reach forward to the striatum, including a part called the nucleus accumbens, and to the frontal lobes. Together these areas are often called the reward system.</p>
+    <p>The idea of a reward system goes back to 1954, when James Olds and Peter Milner at McGill University found that rats would keep pressing a lever when each press delivered a brief pulse of electricity to a particular spot in their brains. Pathways linked to dopamine neurons later turned out to be among the best places for this kind of self-stimulation.</p>
+
+    <h2 class="sec"><span class="n">Prediction error</span>A teaching signal</h2>
+    <p>Dopamine neurons respond to the gap between what happened and what was expected. A reward that is better than expected produces a burst. One that arrives exactly as predicted produces almost no change. A reward that is worse than expected, or missing, produces a dip. Researchers call this gap a reward prediction error.</p>
+    <p>In 1998, Jeffrey Hollerman and Schultz followed this signal while monkeys learned new tasks. Early on, when rewards were unpredictable, the neurons fired strongly to them. As the monkeys got better and the rewards became predictable, the response faded. The signal matched a learning rule that computer scientists had already been using to train machines: change your predictions in proportion to how wrong they were.</p>
+  </div>
+
+  <section class="night" aria-labelledby="payT">
+    <div class="col">
+      <h2 class="sec" id="payT"><span class="n">Try it</span>Predict the payout</h2>
+      <p>Three lights each pay out coins in their own way. Before each round, predict how many coins the light will pay, from 0 to 4. Watch your surprise as you learn. 24 rounds.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="gScreen" tabindex="0" role="group" aria-label="Payout game. Predict with the number keys 0 to 4, or tap a number." aria-describedby="gProg">
+          <div class="lamp off" id="gLamp" aria-hidden="true">?</div>
+          <p class="gq" id="gQ">Press Start.</p>
+          <div class="coins" id="gCoins" hidden></div>
+          <div class="outc" id="gOut" hidden><div class="meter" aria-hidden="true"><i id="gBar"></i></div><p id="gOutT"></p></div>
+          <button class="nbtn" id="gNext" hidden>Next round</button>
+          <p class="prog" id="gProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="gPhase">Ready</p>
+          <p class="mtitle" id="gTitle">How surprised will you be?</p>
+          <p class="mtext" id="gText" aria-live="polite">Your surprise is the payout minus your prediction: positive when it pays more than you expected, negative when it pays less.</p>
+          <div id="gRes"></div>
+          <div class="mrow"><button class="nbtn" id="gGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <p>In this game, surprise fades for lights that always behave the same way, because your predictions catch up. That is learning, and it is exactly what happened to the dopamine response in Schultz’s monkeys. A light that pays half the time is different: no prediction can stop it surprising you. In 2003, Christopher Fiorillo, Philippe Tobler and Schultz found that when a cue predicted reward with a 50:50 chance, dopamine neurons also showed a slow rise in activity while the monkey waited, strongest at exactly that 50:50 point.</p>
+
+    <h2 class="sec"><span class="n">Wanting and liking</span>Not the pleasure chemical</h2>
+    <p>Dopamine is often called the brain’s pleasure chemical, but the evidence points elsewhere. Kent Berridge and Terry Robinson removed up to 99% of the dopamine in parts of rats’ brains. The rats still made the normal facial reactions to sweet sugar that show enjoyment, even in human babies. What they lost was the motivation to go and get food. Dopamine seems to be needed for wanting rewards, and for learning about them, more than for liking them.</p>
+
+    <h2 class="sec"><span class="n">Curiosity</span>Wanting to know</h2>
+    <p>Curiosity, the wish to know something, uses the same circuits. In 2014, Matthias Gruber, Bernard Gelman and Charan Ranganath asked 19 people to rate their curiosity about the answers to more than 100 trivia questions. In the scanner, each question was followed by a wait before its answer appeared, and during the wait an unrelated face was shown.</p>
+    <p>The more curious people were, the more the midbrain and nucleus accumbens became active while they waited. People remembered more answers to questions they were curious about. They also remembered the unrelated faces better, as if curiosity had put the hippocampus, the brain’s memory hub, into a state ready to learn.</p>
+  </div>
+
+  <section aria-labelledby="curT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="curT"><span class="n">Try it</span>Curious minds remember</h2>
+      <p>Eight trivia questions. Rate how curious you are about each answer, then see the answer. Further down the page, you’ll be asked to recall them.</p>
+    </div>
+    <div class="wide">
+      <div class="cbox" id="cBox">
+        <p class="small" id="cProg" aria-live="polite">Press Start to see the first question.</p>
+        <p class="ctq" id="cQ"></p>
+        <div class="qrow" id="cRate" role="group" aria-label="How curious are you about the answer?" hidden>
+          <button class="pbtn sec" data-r="1">Not very curious</button><button class="pbtn sec" data-r="2">Somewhat curious</button><button class="pbtn sec" data-r="3">Very curious</button><button class="pbtn sec" data-r="0">I already know it</button>
+        </div>
+        <p class="cans" id="cA" aria-live="polite" hidden></p>
+        <div class="qrow"><button class="pbtn" id="cGo">Start</button><button class="pbtn" id="cNext" hidden>Next question</button></div>
+        <p class="pmsg" id="cMsg" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Rewards</span>When rewards backfire</h2>
+    <p>If surprise and wanting drive learning, should teachers hand out rewards? It depends. In 1973, Mark Lepper, David Greene and Richard Nisbett picked out preschoolers who already liked drawing with felt-tip markers. One group was promised a “Good Player” certificate for drawing. A second group got the same certificate as a surprise afterwards. A third got nothing.</p>
+    <p>About two weeks later, the markers came back out during free play. Children who had been promised the certificate spent less time drawing than the other two groups. The children who had been surprised by it drew as much as those who got nothing. The promise seems to have turned drawing from something they enjoyed into something they did for a prize.</p>
+    <p>That doesn’t mean rewards always backfire. The effect was for an activity children already enjoyed, with a reward promised in advance. For tasks with little interest to begin with, some studies have found rewards can help.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Predict first</h3>
+      <p>A prediction error needs a prediction. Asking learners to guess the answer, or predict the result of an experiment, before they find out sets up exactly the kind of surprise that drives learning, even when the guess is wrong.</p>
+    </aside>
+  </div>
+
+  <section class="pop wide" aria-labelledby="popT">
+    <div style="max-width:700px;margin:0 auto">
+      <h2 class="sec" id="popT"><span class="n">In popular culture</span>Likes, loot and gold stars</h2>
+      <p>Social media, video games and classrooms all run on rewards. Here is what the science says about three of them.</p>
+    </div>
+    <div class="poptabs" role="tablist" aria-label="Rewards in popular culture" id="popTabs"></div>
+    <div id="popPanels"></div>
+  </section>
+
+  <section aria-labelledby="recT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="recT"><span class="n">Try it, part 2</span>What do you remember?</h2>
+      <p>Without scrolling back, type the answers to the trivia questions from earlier. Spelling doesn’t need to be perfect.</p>
+    </div>
+    <div class="wide">
+      <div class="cbox">
+        <p class="small" id="rNote">Do the “Curious minds remember” activity first, then come back here.</p>
+        <form class="recall" id="rForm" hidden></form>
+        <div class="qrow"><button class="pbtn" id="rCheck" hidden>Check my answers</button></div>
+        <div id="rRes" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Learning happens when predictions are wrong</h2>
+    <ol class="tips">
+      <li><b>Ask for predictions</b><span>Have learners guess before they find out. A wrong guess sets up a useful surprise.</span></li>
+      <li><b>Spark curiosity first</b><span>Pose the question and let people wonder before giving the answer.</span></li>
+      <li><b>Use rewards with care</b><span>A promised prize can crowd out interest in something learners already enjoy.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://www.its.caltech.edu/~jkenny/nb250c/papers/Schultz-1997.pdf">Schultz, W., Dayan, P., &amp; Montague, P. R. (1997). A neural substrate of prediction and reward. <i>Science</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/10195164/">Hollerman, J. R., &amp; Schultz, W. (1998). Dopamine neurons report an error in the temporal prediction of reward during learning. <i>Nature Neuroscience</i>.</a></li>
+        <li><a href="https://www.cogneurosociety.org/series1predictionreward">Cognitive Neuroscience Society: prediction and reward, on Montague, Dayan &amp; Sejnowski (1996) and Schultz et al. (1997).</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/12649484/">Fiorillo, C. D., Tobler, P. N., &amp; Schultz, W. (2003). Discrete coding of reward probability and uncertainty by dopamine neurons. <i>Science</i>.</a></li>
+        <li><a href="https://neuwritewest.squarespace.com/blog/3733">NeuWrite West: Olds &amp; Milner (1954) and “reward centers” in the brain.</a></li>
+        <li><a href="https://lecerveau.mcgill.ca/flash/capsules/articles_pdf/dopamine.pdf">Berridge, K. C., &amp; Robinson, T. E. (1998). What is the role of dopamine in reward? <i>Brain Research Reviews</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4252494">Gruber, M. J., Gelman, B. D., &amp; Ranganath, C. (2014). States of curiosity modulate hippocampus-dependent learning via the dopaminergic circuit. <i>Neuron</i>.</a></li>
+        <li><a href="https://scientificamerican.com/article/curiosity-prepares-the-brain-for-better-learning/">Scientific American (2014). Curiosity prepares the brain for better learning.</a></li>
+        <li><a href="https://typeset.io/pdf/undermining-children-s-intrinsic-interest-with-extrinsic-3qn44yqiou.pdf">Lepper, M. R., Greene, D., &amp; Nisbett, R. E. (1973). Undermining children’s intrinsic interest with extrinsic reward. <i>Journal of Personality and Social Psychology</i>.</a></li>
+        <li><a href="https://www.structural-learning.com/post/overjustification-effect">Structural Learning: the overjustification effect and its limits.</a></li>
+        <li><a href="https://www.psychologicalscience.org/news/releases/social-media-likes-impact-teens-brains-and-behavior.html">Association for Psychological Science (2016), on Sherman et al., The power of the like in adolescence, <i>Psychological Science</i>.</a></li>
+        <li><a href="https://eprints.whiterose.ac.uk/139116">Zendle, D., &amp; Cairns, P. (2018). Video game loot boxes are linked to problem gambling. <i>PLOS ONE</i>.</a></li>
+        <li><a href="https://igamingbusiness.com/casino-games/belgium-rules-video-game-loot-boxes-breach-gambling-laws/">iGaming Business (2018). Belgium rules video game loot boxes breach gambling laws.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawings and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__POPJS__
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+BR.R.str.lab=[330,640];BR.R.str.al='right';BR.R.vta.lab=[860,730];BR.R.vta.al='right';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.45,s:fitS(W,H,1.32),t,active:['vta','str'],labels:['vta','str'],labelT:{vta:0.8,str:1.1},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560)),deep:0.5})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(1).join(' ')})();
+
+/* ---------- predict the payout ----------
+   Green always pays 4. Red always pays 0. Blue pays 4 in exactly 4 of its 8 rounds and 0 in the other 4 (shuffled).
+   24 rounds in random order. Surprise = payout - prediction (from -4 to +4).
+   Results compare average size of surprise in each light's first 3 and last 3 rounds.
+   Because blue pays 4 in exactly half its rounds, its average surprise over all 8 rounds is exactly 2 for any prediction from 0 to 4. */
+const LIGHTS={green:{name:'Green',col:'#5FD3A8'},red:{name:'Red',col:'#FF8A9A'},blue:{name:'Blue',col:'#7DB8FF'}};
+let g=null;
+$('gCoins').innerHTML=[0,1,2,3,4].map(k=>`<button data-k="${k}" aria-label="Predict ${k} coin${k===1?'':'s'}">${k}<small>coin${k===1?'':'s'}</small></button>`).join('');
+function gShow(){const tr=g.trials[g.i],L=LIGHTS[tr.c];const lamp=$('gLamp');lamp.className='lamp';lamp.style.background=L.col;lamp.style.borderColor=L.col;lamp.textContent=L.name;
+ $('gQ').textContent=`${L.name} light. How many coins will it pay?`;$('gCoins').hidden=false;$('gOut').hidden=true;$('gNext').hidden=true;g.live=true;
+ $('gProg').textContent=`Round ${g.i+1} of ${g.trials.length}`}
+function gPredict(k){if(!g||!g.live)return;g.live=false;const tr=g.trials[g.i];tr.pred=k;tr.err=tr.pay-k;
+ $('gCoins').hidden=true;$('gOut').hidden=false;const e=tr.err,bar=$('gBar');
+ const h=Math.abs(e)/4*70;bar.style.height=h+'px';bar.style.top=(e>=0?75-h:76)+'px';bar.style.background=e>0?'#5FD3A8':'#FF8A9A';
+ const word=e>0?'better than expected':e<0?'worse than expected':'exactly as expected';
+ $('gOutT').innerHTML=`It paid <b>${tr.pay} coin${tr.pay===1?'':'s'}</b>. You predicted ${k}.<br>Surprise: <b>${e>0?'+':e<0?'−':''}${Math.abs(e)}</b>, ${word}.`;
+ $('gQ').textContent='';$('gProg').textContent=`Round ${g.i+1} of ${g.trials.length}: surprise ${e>0?'plus':e<0?'minus':''} ${Math.abs(e)}, ${word}.`;
+ g.i++;if(g.i>=g.trials.length){setTimeout(()=>{if(g)gEnd()},RM?0:900);return}
+ $('gNext').hidden=false;$('gNext').focus()}
+function gEnd(){const T=g.trials;const by=c=>T.filter(t=>t.c===c);const avg=a=>a.reduce((s,t)=>s+Math.abs(t.err),0)/a.length;
+ const R={};['green','red','blue'].forEach(c=>{const a=by(c);R[c]={early:avg(a.slice(0,3)),late:avg(a.slice(-3)),all:avg(a)}});
+ $('gLamp').className='lamp off';$('gLamp').style.background='';$('gLamp').style.borderColor='';$('gLamp').textContent='?';$('gQ').textContent='';$('gOut').hidden=true;$('gNext').hidden=true;$('gProg').textContent='Done.';
+ $('gPhase').textContent='Your results';
+ const fmt=v=>v.toFixed(1);const row=(lab,v,col)=>`<div class="row"><span>${lab}</span><div class="bar"><i style="width:${v/4*100}%;background:${col}"></i></div><b>${fmt(v)}</b></div>`;
+ $('gRes').innerHTML=`<p class="prog" style="margin:0 0 6px">Average size of your surprise, in coins (0 = no surprise)</p><div class="res">${['green','red','blue'].map(c=>`<div class="grp">${LIGHTS[c].name} light</div>${row('First 3 rounds',R[c].early,LIGHTS[c].col)}${row('Last 3 rounds',R[c].late,LIGHTS[c].col)}`).join('')}</div>`;
+ const learned=R.green.late<=0.67&&R.red.late<=0.67;let title,text;
+ if(learned){title='Surprise faded, except for blue';text=`By the end, green and red hardly surprised you: your predictions had caught up. That is learning, and it’s what happened to the monkeys’ dopamine response. Blue kept surprising you. Over its 8 rounds your average surprise was exactly 2 coins, and it would have been 2 whatever you predicted, because it paid half the time.`}
+ else{title='Still being surprised';text=`Green or red was still surprising you in the last rounds, even though each always paid the same. Try again and let each surprise update your next prediction. Blue is different: it pays half the time, so its average surprise over 8 rounds is always exactly 2, whatever you predict.`}
+ $('gTitle').textContent=title;$('gText').textContent=text;$('gGo').textContent='Play again';$('gGo').disabled=false;$('gGo').focus();g=null}
+$('gGo').addEventListener('click',()=>{const blue=shuffle([4,4,4,4,0,0,0,0]);const trials=[];for(let k=0;k<8;k++){trials.push({c:'green',pay:4},{c:'red',pay:0},{c:'blue',pay:blue[k]})}
+ shuffle(trials);const bq=blue.slice();trials.forEach(t=>{if(t.c==='blue')t.pay=bq.shift()});
+ g={trials,i:0,live:false};$('gRes').innerHTML='';$('gGo').disabled=true;$('gPhase').textContent='Playing';$('gTitle').textContent='Predict, then see';$('gText').textContent='Each light has its own rule. Try to learn them.';$('gScreen').focus();gShow()});
+$('gCoins').addEventListener('click',e=>{const b=e.target.closest('button');if(b)gPredict(+b.dataset.k)});
+$('gNext').addEventListener('click',()=>{if(g){gShow();$('gScreen').focus()}});
+$('gScreen').addEventListener('keydown',e=>{if(/^[0-4]$/.test(e.key)&&g&&g.live){e.preventDefault();gPredict(+e.key)}});
+
+/* ---------- curious minds remember ----------
+   Part 1: rate curiosity (1-3, or "already know") for 8 questions, then see each answer.
+   Part 2 (further down): type the answers. Recall is compared between the questions rated most curious and least curious,
+   leaving out the ones marked "already know". If all the remaining ratings are the same, there is nothing to compare. */
+const TQ=[
+ ['Which letter of the alphabet does not appear in the name of any U.S. state?','Q',['q']],
+ ['How many hearts does an octopus have?','Three',['3','three']],
+ ['What colour is a polar bear’s skin, under its fur?','Black',['black']],
+ ['Which country covers the most time zones, counting its overseas territories?','France',['france']],
+ ['What is the national animal of Scotland?','The unicorn',['unicorn','unicorns']],
+ ['How many bones are in the adult human body?','206',['206']],
+ ['Which is the only mammal capable of true flight?','The bat',['bat','bats']],
+ ['Which metal is liquid at room temperature?','Mercury',['mercury','quicksilver','hg']]];
+let cu=null,cuDone=null;
+function cuShow(){const [q]=cu.order[cu.i];$('cQ').textContent=q;$('cA').hidden=true;$('cRate').hidden=false;$('cNext').hidden=true;
+ document.querySelectorAll('#cRate button').forEach(b=>b.disabled=false);$('cProg').textContent=`Question ${cu.i+1} of 8: how curious are you about the answer?`;document.querySelector('#cRate button').focus()}
+document.querySelectorAll('#cRate button').forEach(b=>b.addEventListener('click',()=>{if(!cu||cu.rated)return;cu.rated=true;const it=cu.order[cu.i];it.r=+b.dataset.r;
+ document.querySelectorAll('#cRate button').forEach(x=>x.disabled=true);$('cRate').hidden=true;$('cA').hidden=false;$('cA').textContent=`Answer: ${it[1]}`;
+ $('cNext').hidden=false;$('cNext').textContent=cu.i===7?'Finish':'Next question';$('cNext').focus()}));
+$('cNext').addEventListener('click',()=>{if(!cu)return;cu.i++;cu.rated=false;if(cu.i<8){cuShow();return}
+ cuDone=cu.order;cu=null;$('cQ').textContent='';$('cA').hidden=true;$('cNext').hidden=true;$('cProg').textContent='All 8 done.';
+ $('cMsg').innerHTML='<b>Part 1 done</b>Keep reading. Part 2, the recall test, is further down the page, after the popular culture section.';$('cGo').textContent='Start over';$('cGo').hidden=false;rSetup()});
+$('cGo').addEventListener('click',()=>{cu={order:shuffle(TQ.map(q=>Object.assign([...q],{r:null}))),i:0,rated:false};$('cMsg').innerHTML='';$('cGo').hidden=true;$('rRes').innerHTML='';rReset();cuShow()});
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\b(the|a|an)\b/g,' ').replace(/\s+/g,' ').trim();
+function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+function match(inp,acc){const v=norm(inp);if(!v)return false;return acc.some(a=>v===a||v.split(' ').includes(a)||(a.length>=5&&lev(v,a)<=1))}
+function rReset(){$('rForm').hidden=true;$('rForm').innerHTML='';$('rCheck').hidden=true;$('rNote').hidden=false;$('rNote').textContent='Do the “Curious minds remember” activity first, then come back here.'}
+function rSetup(){const f=$('rForm');f.innerHTML=cuDone.map((it,i)=>`<div><label for="r${i}">${i+1}. ${it[0]}</label><input id="r${i}" autocomplete="off" spellcheck="false"><span class="mk" id="rm${i}"></span></div>`).join('');
+ f.hidden=false;$('rCheck').hidden=false;$('rCheck').disabled=false;$('rNote').textContent='Your 8 questions are below.'}
+$('rForm').addEventListener('submit',e=>{e.preventDefault();$('rCheck').click()});
+$('rCheck').addEventListener('click',()=>{if(!cuDone)return;const res=cuDone.map((it,i)=>{const ok=match($('r'+i).value,it[2]);const m=$('rm'+i);m.textContent=ok?'✓ Right':`✗ ${it[1]}`;m.style.color=ok?'#1F5C3F':'#A3262F';$('r'+i).disabled=true;return{r:it.r,ok}});
+ $('rCheck').disabled=true;const used=res.filter(x=>x.r>0);const names={1:'Not very curious',2:'Somewhat curious',3:'Very curious'};
+ const groups=[1,2,3].map(r=>({r,n:used.filter(x=>x.r===r).length,k:used.filter(x=>x.r===r&&x.ok).length})).filter(gp=>gp.n>0);
+ let html=`<div class="lres">${groups.map(gp=>`<div class="row"><span>${names[gp.r]}</span><div class="bar"><i style="width:${gp.k/gp.n*100}%;background:${gp.r===3?'#B84300':gp.r===2?'#5A6B82':'#13294B'}"></i></div><b>${gp.k} of ${gp.n}</b></div>`).join('')}</div>`;
+ const known=res.filter(x=>x.r===0).length;let head,body;
+ if(groups.length<2){head='Nothing to compare';body=`You gave ${used.length?'every new question the same rating':'every question “I already know it”'}, so this time there’s no way to compare curious and less curious questions.`}
+ else{const hi=groups[groups.length-1],lo=groups[0],ph=hi.k/hi.n,pl=lo.k/lo.n;
+  if(ph>pl){head='Curiosity helped';body=`You recalled ${Math.round(ph*100)}% of the answers you were most curious about, and ${Math.round(pl*100)}% of the ones you were least curious about. That matches the studies.`}
+  else if(ph===pl){head='A tie';body=`You recalled ${Math.round(ph*100)}% in both your most and least curious groups. With only 8 questions, a tie is common. In larger studies, curiosity gives a reliable boost.`}
+  else{head='The other way round this time';body=`You recalled ${Math.round(pl*100)}% of your least curious answers but ${Math.round(ph*100)}% of your most curious ones. With only 8 questions, chance plays a big part. In larger studies, curiosity gives a reliable boost.`}}
+ if(known)body+=` ${known} question${known>1?'s':''} you already knew ${known>1?'were':'was'} left out.`;
+ $('rRes').innerHTML=html+`<p class="pmsg"><b>${head}</b>${body}</p>`});
+
+/* ---------- in popular culture ---------- */
+renderPop([
+ {id:'likes',title:'Likes and “dopamine hits”',sub:'The Social Dilemma (2020) and social media',kind:'Documentary and everyday life',films:[['The Social Dilemma (2020)','https://www.imdb.com/title/tt11464826/']],verdict:['mixed','Real reward, shaky shorthand'],
+  desc:'In this Netflix documentary, former tech insiders argue that social media is designed to keep us hooked, and it describes the little “hits” of dopamine we supposedly get from likes and notifications.',
+  right:['Likes do engage the reward system. In a 2016 study, 32 teenagers saw their own photos in a mock Instagram feed. Photos shown with many likes produced more activity in the nucleus accumbens, part of the striatum.','Likes also changed behaviour: the teens were more likely to like a photo when it already had many likes.'],
+  wrong:['Dopamine is not a squirt of pleasure. It is more about wanting and learning what to want, which is arguably more worrying for habits like checking a phone.','A brain response to likes doesn’t on its own show addiction. Chocolate and money activate the same circuits.'],
+  src:'Sherman et al. (2016), Psychological Science; Berridge & Robinson (1998).'},
+ {id:'loot',title:'Loot boxes',sub:'Video games',kind:'Games',films:[],verdict:['mixed','Fun, but gambling-like'],
+  desc:'Loot boxes are virtual prize packs in video games, often bought with real money, whose contents are random. You don’t know what you’ll get until you open one.',
+  right:['Uncertain rewards grab the reward system. In monkeys, dopamine neurons showed the most sustained activity when a reward was a 50:50 chance.','In a 2018 survey of 7,422 gamers, the more people spent on loot boxes, the more severe their problem gambling tended to be. Spending on other in-game items showed a much weaker link.','In 2018, Belgium’s Gaming Commission ruled that paid loot boxes in FIFA 18, Overwatch and Counter-Strike: Global Offensive broke its gambling laws.'],
+  wrong:['The survey can’t say which causes which. Loot boxes might lead to problem gambling, or people who already gamble may spend more on them.','Countries disagree: in 2018, the UK Gambling Commission said it did not consider loot boxes gambling.'],
+  src:'Fiorillo et al. (2003); Zendle & Cairns (2018), PLOS ONE; Belgian Gaming Commission (2018).'},
+ {id:'stars',title:'Gold stars and sticker charts',sub:'Classrooms and homes',kind:'School tradition',films:[],verdict:['mixed','Depends how they’re used'],
+  desc:'Stickers, stars and certificates are among the most common rewards for children, at school and at home.',
+  right:['A promised reward can undermine interest. In the 1973 marker study, preschoolers promised a certificate for drawing later drew less in free play than children who got no award or a surprise one.'],
+  wrong:['“Rewards always kill motivation” goes too far. The effect was for an activity the children already enjoyed, with the reward promised in advance. For tasks with little interest to begin with, some studies have found rewards can help.'],
+  src:'Lepper, Greene & Nisbett (1973); Cameron et al. (2001).'}],'popTabs','popPanels');
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'After the monkeys learned that a light meant juice, when did their dopamine neurons burst?',o:['At the light','When the juice arrived','At both, equally'],a:0,f:'The burst moved to the earliest sign that juice was coming. The juice itself was no longer a surprise.'},
+ {q:'What happened when the light came on but no juice followed?',o:['A bigger burst','Firing dipped below normal','No change'],a:1,f:'A worse-than-expected outcome produces a dip: a negative prediction error.'},
+ {q:'Rats with almost no dopamine…',o:['stopped enjoying sugar','still enjoyed sugar but lost the drive to get it','ate more than before'],a:1,f:'Dopamine is more about wanting than liking.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','rew');
+})();
+</script>
+</body>
+</html>

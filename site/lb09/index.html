@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memory Systems and Automaticity: How Skills Run on Their Own</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+
+:root{
+  /* Layout idea: a magazine spread. Light reading pages, dark "night" spreads for the brain and the video.
+     Contrast (WCAG AA): ink 13.4:1 and ink-2 8.0:1 on paper; accent-ink 5.1:1 on paper; on night, text 11.3:1, muted 8.6:1, orange 5.6:1. */
+  --paper:#F4F6F9; --ink:#13294B; --ink-2:#3D4C66; --rule:#C9D2DF;
+  --accent-ink:#B84300;   /* orange for text/marks on light backgrounds */
+  --orange:#FF5F05;       /* bright orange only on dark backgrounds */
+  --night:#0D1C35; --night-2:#0A172C; --night-ink:#E9EEF6; --night-muted:#AEB9CC; --night-line:#2A426B;
+  --ok:#1C7A55; --no:#B42A4A;
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --body:'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.6}
+a{color:var(--ink);text-decoration-color:var(--accent-ink);text-underline-offset:3px}
+.night a,.hero a{color:var(--night-ink);text-decoration-color:var(--orange)}
+:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px;border-radius:4px}
+.night :focus-visible{outline-color:var(--orange)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.label{font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink)}
+.night .label,.hero .label,.watch .label{color:var(--orange)}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:var(--ink);padding:8px 14px;z-index:10}
+.skip:focus{left:8px}
+
+/* Hero */
+.hero{position:relative;background:var(--night);color:var(--night-ink);overflow:hidden}
+.hero-inner{position:relative;max-width:1180px;margin:0 auto;padding:56px 24px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;align-items:end}
+@media (max-width:900px){.hero-inner{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(44px,8.4vw,118px);overflow-wrap:break-word;line-height:.9;font-weight:900;letter-spacing:-.035em;margin:16px 0 22px}
+.hero h1 em{display:block;font-weight:300;font-style:italic;color:var(--orange)}
+.dek{font-family:var(--display);font-weight:300;font-size:clamp(21px,2.3vw,27px);line-height:1.35;max-width:28ch;margin:0;color:var(--night-ink)}
+.byline{margin-top:24px;font-size:16px;color:var(--night-muted);display:flex;gap:18px;flex-wrap:wrap}
+.byline b{color:var(--night-ink);font-weight:600}
+.hero-brain{position:relative;aspect-ratio:1.35/1}
+.hero-brain canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Watch */
+.watch{background:var(--night);color:var(--night-ink);padding:8px 0 64px}
+.frame{border-radius:6px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 1px var(--night-line);background:#000}
+.frame video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.watch .meta{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:16px;color:var(--night-muted)}
+.watch .meta b{color:var(--night-ink);font-family:var(--display);font-weight:600;font-size:21px}
+details.transcript{margin-top:14px;border-top:1px solid var(--night-line);padding-top:12px}
+details.transcript summary{cursor:pointer;font-weight:600;color:var(--night-ink)}
+details.transcript p{color:#C9D3E3;max-width:70ch}
+
+/* Article */
+.col{max-width:700px;margin:0 auto;padding:0 24px}
+.wide{max-width:1140px;margin:0 auto;padding:0 24px}
+article p{margin:0 0 1.15em}
+.lede{padding-top:64px}
+.lede p:first-child::first-letter{font-family:var(--display);font-weight:900;float:left;font-size:92px;line-height:.82;padding:8px 12px 0 0;color:var(--accent-ink)}
+h2.sec{font-size:clamp(34px,4.6vw,52px);font-weight:800;letter-spacing:-.02em;line-height:1.04;margin:84px 0 20px}
+h2.sec .n{display:block;font-family:var(--body);font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:12px}
+.night h2.sec{color:#fff}.night h2.sec .n{color:var(--orange)}
+.pull{font-family:var(--display);font-weight:800;font-size:clamp(38px,6vw,78px);line-height:1;letter-spacing:-.03em;margin:84px auto;max-width:1120px;padding:0 24px;color:var(--ink)}
+.pull em{font-style:italic;font-weight:300;color:var(--accent-ink)}
+.note{font-size:16px;color:var(--ink-2);border-left:3px solid var(--accent-ink);padding-left:12px;margin:0 0 1.2em}
+.night .note{color:var(--night-muted);border-color:var(--orange)}
+figure{margin:40px auto 56px}
+figcaption{font-size:16px;color:var(--ink-2);line-height:1.5;margin-top:12px;max-width:70ch}
+.night figcaption{color:var(--night-muted)}
+
+/* Night spread + explorer */
+.night{background:var(--night);color:var(--night-ink);padding:76px 0 68px;margin:84px 0}
+.night p{color:#C9D3E3}
+.explorer{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:28px;align-items:start;margin-top:28px}
+@media (max-width:900px){.explorer{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;aspect-ratio:1.45/1}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{appearance:none;font:600 16px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:999px;padding:8px 14px;cursor:pointer;min-height:40px}
+.chip:hover{border-color:#8FA3C2}
+.chip[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:#13294B}
+.panel{background:var(--night-2);border:1px solid var(--night-line);border-radius:6px;padding:24px;min-height:300px}
+.panel h3{font-size:34px;font-weight:800;color:var(--orange);margin:6px 0 10px;line-height:1.1}
+.panel .where{font-size:16px;color:var(--night-muted);margin:0 0 14px}
+.panel p{color:#E9EEF6;margin:0 0 12px}
+.panel .ep{font-size:16px;color:var(--night-muted);border-top:1px solid var(--night-line);padding-top:12px;margin-top:14px}
+
+/* Big number + link lab */
+.num-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:32px;align-items:center}
+@media (max-width:820px){.num-row{grid-template-columns:minmax(0,1fr)}}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(110px,16vw,210px);line-height:.85;letter-spacing:-.05em;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.big-sub{font-family:var(--display);font-size:clamp(26px,3vw,36px);font-weight:600;margin-top:8px}
+.linklab{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:20px}
+.linklab canvas{width:100%;aspect-ratio:2/1;display:block}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.btn{appearance:none;font:600 16px var(--body);border-radius:999px;padding:10px 18px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:#fff;min-height:44px}
+.btn.sec{background:transparent;color:var(--ink)}
+.night .btn{background:var(--orange);border-color:var(--orange);color:#13294B}
+.night .btn.sec{background:transparent;color:var(--night-ink);border-color:#8FA3C2}
+.meter{font-size:16px;color:var(--ink-2)}
+.meter b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* Memory composer */
+.composer{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:28px;align-items:center;margin-top:24px}
+@media (max-width:900px){.composer{grid-template-columns:minmax(0,1fr)}}
+.composer .stage{aspect-ratio:1.4/1}
+.parts{display:grid;gap:10px}
+.part{display:flex;justify-content:space-between;gap:12px;align-items:center;text-align:left;font:600 18px var(--body);color:var(--night-ink);background:transparent;border:1.5px solid var(--night-line);border-radius:8px;padding:12px 14px;cursor:pointer;min-height:48px}
+.part span{font-weight:400;color:var(--night-muted);font-size:16px}
+.part[aria-pressed="true"]{border-color:var(--orange);background:rgba(255,95,5,.12)}
+.status{min-height:3em;font-size:17px;color:#E9EEF6;margin:10px 0 0}
+
+/* Case box */
+.box{border-top:6px solid var(--ink);background:#fff;padding:26px 28px;margin:40px 0;border-radius:0 0 6px 6px;box-shadow:0 1px 0 var(--rule)}
+.box h3{font-size:28px;font-weight:800;margin-bottom:10px}
+.timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);margin:20px 0 6px}
+@media (max-width:640px){.timeline{grid-template-columns:minmax(0,1fr)}}
+.timeline div{padding:14px 14px 10px 0}
+.timeline strong{display:block;font-family:var(--display);font-size:40px;font-weight:900;color:var(--accent-ink);line-height:1}
+.timeline span{font-size:16px;color:var(--ink-2)}
+.dd{width:100%;border-collapse:collapse;margin:16px 0 8px;font-size:17px}
+.dd th,.dd td{border-bottom:1px solid var(--rule);padding:10px 8px;text-align:left;vertical-align:top}
+.dd thead th{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.dd tbody th{font-weight:600;color:var(--ink)}
+.yes{color:var(--ok);font-weight:700}.no{color:var(--no);font-weight:700}
+
+/* Why */
+.why{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center}
+@media (max-width:820px){.why{grid-template-columns:minmax(0,1fr)}}
+.ways{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.ways button{width:100%;text-align:left;font:300 italic clamp(30px,4vw,46px)/1.15 var(--display);color:var(--ink);background:none;border:none;border-bottom:1px solid var(--rule);padding:8px 0;cursor:pointer;display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ways button span{font:400 16px var(--body);color:var(--ink-2)}
+.ways button[aria-pressed="true"]{color:var(--accent-ink);font-weight:600}
+.why .mini{background:var(--night);border-radius:6px;aspect-ratio:1.35/1;position:relative}
+.why .mini canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* Quiz */
+.quiz{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:26px}
+.q{border-top:1px solid var(--rule);padding:18px 0 6px}
+.q:first-child{border-top:0;padding-top:0}
+.q .qt{font-family:var(--display);font-size:22px;font-weight:600;line-height:1.25;margin:0 0 12px}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;font:400 17px var(--body);color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:6px;padding:11px 14px;cursor:pointer;min-height:44px}
+.opt:hover{border-color:var(--ink-2)}
+.opt.right{border-color:var(--ok);background:#E7F4EE}
+.opt.wrong{border-color:var(--no);background:#FBEAEE}
+.fb{font-size:16.5px;color:var(--ink-2);min-height:1.4em;margin:10px 0 0}
+.score{font-family:var(--display);font-size:21px;margin-top:14px}
+
+/* Collection */
+.coll{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:20px}
+.card{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:14px 16px}
+.card b{display:block;font-family:var(--display);font-size:20px;line-height:1.2;margin-bottom:4px}
+.card span{font-size:15px;color:var(--ink-2)}
+.card.here{background:var(--ink);border-color:var(--ink)}
+.card.here b{color:#fff}.card.here span{color:#C9D3E3}
+
+footer.sources{margin:84px 0 0;padding:36px 0 60px;border-top:2px solid var(--ink)}
+footer.sources ol{padding-left:20px;font-size:16px;color:var(--ink-2)}
+footer.sources li{margin:6px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:560px){body{font-size:18px}.panel,.quiz,.box{padding:18px}}
+
+.hero h1{font-size:clamp(44px,6vw,84px)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);margin:24px 0}
+@media (max-width:760px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.facts div{padding:16px 16px 14px 0}
+.facts strong{display:block;font-family:var(--display);font-weight:900;font-size:clamp(34px,4.4vw,54px);line-height:1;color:var(--accent-ink);letter-spacing:-.02em}
+.facts span{font-size:16px;color:var(--ink-2)}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);padding:0;margin:0}
+@media (max-width:760px){.tips{grid-template-columns:minmax(0,1fr)}}
+.tips li{list-style:none;padding:20px 20px 20px 0;border-right:1px solid var(--rule)}
+.tips li:last-child{border-right:0}
+.tips b{display:block;font-family:var(--display);font-size:26px;line-height:1.15;margin-bottom:6px}
+.tips span{font-size:17px;color:var(--ink-2)}
+/* read the map */
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.mapgrid{grid-template-columns:minmax(0,1fr)}}
+.arena{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;aspect-ratio:1.25/1;touch-action:manipulation}
+.arena canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:8px}
+.arena canvas:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.cells{list-style:none;padding:0;margin:0 0 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cells li{display:flex;align-items:center;gap:10px;font-size:17px;color:var(--night-muted);padding:6px 10px;border:1.5px solid var(--night-line);border-radius:8px}
+.cells li i{width:18px;height:18px;border-radius:50%;border:3px solid currentColor;flex:none}
+.cells li.on{color:#fff;border-color:#C9D3E3;font-weight:700}
+.cells li.on i{background:currentColor}
+.mapgrid .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.mapgrid .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.mapgrid .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.mapgrid .mtext b.ok{color:#3CC9B8}.mapgrid .mtext b.no{color:#F08CBE}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.gbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:transparent;color:#fff;border:2px solid #8FA3C2}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscore{font-size:16px;color:var(--night-muted);margin-top:12px}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.wcards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;width:100%;max-width:460px}
+.wcard{aspect-ratio:3/4;border-radius:10px;border:2px dashed #3A4E72;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.wcard.on{border:3px solid #fff;background:#1B2E50}
+.wcard b{font-size:clamp(34px,6vw,52px);line-height:1;color:#fff}
+.wcard small{font-size:15px;color:#E9EEF6}
+.wfb{font:800 clamp(22px,3vw,28px)/1.3 var(--body);color:#fff;text-align:center;min-height:1.3em}
+.wfb .ok{color:#7DD3A8}.wfb .no{color:#FFB38A}
+.wq{display:grid;gap:12px;margin:6px 0 14px}
+.wq[hidden]{display:none}
+.wq fieldset{border:1px solid var(--night-line);border-radius:8px;padding:8px 12px;margin:0;display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:#fff}
+.wq legend{font-size:17px;font-weight:700;padding:0 4px}
+.wq label{display:flex;align-items:center;gap:6px;font-size:17px;min-height:36px}
+.res.wl2 .row{grid-template-columns:150px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 70px}}
+.sp{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:30px 10px;border-radius:10px;background:#F3F6FA;min-height:180px}
+.sp:focus-visible{outline:3px solid #13294B;outline-offset:3px}
+.sp .bx{min-height:120px;border:4px solid #13294B;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font:800 clamp(26px,5vw,40px)/1 var(--body);color:#13294B;letter-spacing:.04em}
+.sp .fx{grid-column:1/-1;text-align:center;font:800 32px/1 var(--body);color:#13294B;min-height:1em}
+.smsg{text-align:center;font-size:17px;margin:12px 0 0;min-height:1.5em}
+.coll{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.card{display:flex;flex-direction:column}
+.card a{color:inherit;text-decoration:none;display:flex;flex-direction:column;height:100%}
+.card a::after{content:none}
+.card p{font-size:16px;line-height:1.4;color:var(--ink-2);margin:2px 0 8px}
+.card i{font-style:normal;font-size:15px;color:var(--ink-2);margin-bottom:8px}
+.card .st{margin-top:auto;font-size:15px;font-weight:700;color:var(--ink-2)}
+.card.live{border-color:var(--ink)}
+.card.live .st{color:var(--accent-ink)}.card.live .st::after{content:' →'}
+.card.live:hover{box-shadow:0 4px 14px rgba(19,41,75,.15)}
+.card.here p,.card.here i,.card.here .st{color:#C9D3E3}
+
+.collsub{grid-column:1/-1;font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin:14px 0 0}
+.collsub:first-child{margin-top:0}
+
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+<script src="../assets/nav.js" data-page="lb09"></script>
+
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Topic 9</div>
+      <h1 id="title">Memory systems and automaticity <em>How skills run on their own</em></h1>
+      <p class="dek">Knowing that and knowing how are handled by different brain systems. Practice moves a skill from slow and effortful to fast and automatic, which frees the mind for what comes next. But automatic skills hide their own steps, even from experts.</p>
+      <div class="byline"><span>About 9 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#wT">Predict the weather</a></span><span><a href="#sT">Can you stop reading?</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with three structures glowing orange and labelled: the hippocampus, needed for memories of facts and events, and the striatum, part of the basal ganglia, and the cerebellum, which support skills and habits."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2½ minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Memory systems and automaticity</b> · The Learning Brain, episode 9</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>After brain surgery in 1953 to stop his seizures, a man known as H.M. could no longer form new memories of facts or events. The psychologist Brenda Milner gave him a hard task: trace a star while watching only its reflection in a mirror. Over three days, he got steadily better. Yet each day, he had no memory of ever doing it before.</p>
+    <p>H.M. showed that memory is not one system. He could learn a skill without being able to remember learning it.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>3 days</strong><span>of mirror tracing: H.M. improved, but never remembered practising</span></div>
+      <div role="listitem"><strong>50 → 65%</strong><span>roughly, the rise from chance in the weather task over 50 trials, for amnesic patients and healthy people alike</span></div>
+      <div role="listitem"><strong>2002</strong><span>expert golfers putted worse when told to attend to each step of the stroke</span></div>
+      <div role="listitem"><strong>76%</strong><span>of 67 high-school maths teachers wrongly expected equations to be easiest for algebra students</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Two systems</span>Knowing that, knowing how</h2>
+    <p>Declarative memory holds facts and events: things you can put into words. It depends on the hippocampus, which is what H.M. had lost. Procedural memory holds skills and habits. It runs without awareness and leans on the basal ganglia, including the striatum, and the cerebellum.</p>
+    <p>In 1996, Barbara Knowlton, Jennifer Mangels and Larry Squire pulled the two apart. People learned to predict the weather from patterns of cards, where each card was linked to rain or sun only some of the time. Amnesic patients learned the task as well as anyone, yet could hardly answer questions about the training session. Patients with Parkinson’s disease, which affects the basal ganglia, showed the reverse: they remembered the session but failed to learn the task.</p>
+  </div>
+
+  <section class="night" aria-labelledby="wT">
+    <div class="col">
+      <h2 class="sec" id="wT"><span class="n">Try it</span>Predict the weather</h2>
+      <p>Each round, one to three cards appear. Guess rain or sun, and you’ll be told what happened. No card is a sure sign, so you’ll often be “wrong” even with a good guess. 60 rounds, then four quick questions. About 4 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="wScreen">
+          <div class="wcards" id="wCards" aria-live="polite"></div>
+          <div class="keys" id="wKeys" hidden><button type="button" id="wRain">Rain<small>key R</small></button><button type="button" id="wSun">Sun<small>key S</small></button></div>
+          <div class="wfb" id="wFb" aria-live="polite"></div>
+          <p class="prog" id="wProg" aria-live="polite">Press Start.</p>
+        </div>
+        <div>
+          <p class="phase" id="wPhase">Ready</p>
+          <p class="mtitle" id="wTitle">Can you learn the pattern?</p>
+          <p class="mtext" id="wText" aria-live="polite">Just go with your gut. You’ll get a score for each block of 20 rounds: how often you picked the more likely weather.</p>
+          <form id="wQ" class="wq" hidden></form>
+          <div id="wRes"></div>
+          <div class="mrow"><button class="nbtn" id="wGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Practice</span>From slow to automatic</h2>
+    <p>With practice, a skill shifts from slow and effortful to fast and automatic. That frees working memory for the next layer. A beginning reader sounds out each letter; a fluent reader stops noticing letters and starts thinking about the argument. Once reading is automatic, though, it is hard to switch off, as the next task shows.</p>
+  </div>
+
+  <section aria-labelledby="sT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="sT"><span class="n">Try it</span>Can you stop reading?</h2>
+      <p>A word appears in the left or the right box. Press the side it is on: the F key or left arrow for left, the J key or right arrow for right, or tap the box. Ignore what the word says. 36 rounds, about 1 minute.</p>
+    </div>
+    <div class="wide">
+      <div class="lbox">
+        <div class="sp" id="sBox" tabindex="0" role="group" aria-label="Side task. Press F or left arrow for left, J or right arrow for right." aria-describedby="sMsg"><div class="fx" id="sFx" aria-hidden="true"></div><div class="bx" id="sL"></div><div class="bx" id="sR"></div></div>
+        <p class="smsg" id="sMsg" aria-live="polite">Press Start.</p>
+        <div class="qrow" style="justify-content:center"><button class="pbtn" id="sGo">Start</button></div>
+        <div id="sRes" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The cost</span>Automatic hides the steps</h2>
+    <p>In 2002, Sian Beilock and colleagues asked golfers to putt while either attending to each step of the stroke or doing a distracting second task. Experienced golfers putted better when distracted and worse when attending to their stroke. Novices showed the opposite pattern.</p>
+    <p>Experts also lose sight of what was once hard. Mitchell Nathan and Kenneth Koedinger asked high-school maths teachers to rank algebra problems by difficulty. Most expected bare equations to be easiest. For students, equations were the hardest: fewer than 30% solved them, while more than half solved matching word problems. In 2003, Nathan and Anthony Petrosino found that future teachers with more advanced maths training were more likely to make this mistake. They called it the expert blind spot.</p>
+    <h2 class="sec"><span class="n">Some caution</span>Fluency is not understanding</h2>
+    <p>A student can run a procedure automatically and still not know why it works, or when to use it. Speed is worth building, but only for the right pieces, and only tied to meaning.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Choose what to make automatic</h3>
+      <p>Decide which pieces students should make automatic, such as notation, core facts or routine steps, and drill those deliberately, spaced over time. Keep the reasoning in view, so fast steps stay tied to meaning. And when you explain, slow down and unpack the steps you no longer notice yourself.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Practice moves a skill out of the spotlight</h2>
+    <ol class="tips">
+      <li><b>Choose what to automate</b><span>Notation, core facts, routine steps.</span></li>
+      <li><b>Drill it, spaced</b><span>Short, deliberate practice across days and weeks.</span></li>
+      <li><b>Unpack your own steps</b><span>The steps you no longer notice are the ones students need to see.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC33639">Squire, L. R., &amp; Zola, S. M. (1996). Structure and function of declarative and nondeclarative memory systems. <i>PNAS</i>. (Weather task: about 50% to 65% over 50 trials.)</a></li>
+        <li><a href="https://synapsesocial.com/papers/W1979455727">Knowlton, B. J., Mangels, J. A., &amp; Squire, L. R. (1996). A neostriatal habit learning system in humans. <i>Science</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/12009178/">Beilock, S. L., Carr, T. H., MacMahon, C., &amp; Starkes, J. L. (2002). When paying attention becomes counterproductive. <i>Journal of Experimental Psychology: Applied</i>.</a></li>
+        <li><a href="https://website.education.wisc.edu/~mnathan/Publications_files/2004_Nathan_PME2004_TPDforBeliefChange.pdf">Nathan, M. J. (2004), summarizing Nathan &amp; Koedinger (2000): 76% of 67 high-school teachers expected equations to be easiest.</a></li>
+        <li><a href="https://website.education.wisc.edu/~mnathan/Publications_files/2001_NathanEtAl_ICCS_EBS.pdf">Nathan, M. J., Koedinger, K. R., &amp; Alibali, M. W. (2001). Expert blind spot: When content knowledge eclipses pedagogical content knowledge.</a></li>
+        <li><a href="https://core.ac.uk/display/79899049">Nathan, M. J., &amp; Petrosino, A. (2003). Expert blind spot among preservice teachers. <i>American Educational Research Journal</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = "1\n00:00:00,500 --> 00:00:01,928\nThe Learning Brain\n\n2\n00:00:06,100 --> 00:00:07,314\nEpisode 9\n\n3\n00:00:07,394 --> 00:00:10,662\nMemory systems and automaticity\n\n4\n00:00:13,462 --> 00:00:15,670\nAfter surgery to stop his seizures,\n\n5\n00:00:15,801 --> 00:00:17,554\na man known as H.M.\n\n6\n00:00:17,859 --> 00:00:21,100\ncould no longer form new memories of facts or events.\n\n7\n00:00:21,574 --> 00:00:27,325\nBrenda Milner gave him a hard task: trace a star while watching only its mirror image.\n\n8\n00:00:27,640 --> 00:00:30,106\nOver three days, he got steadily better.\n\n9\n00:00:30,467 --> 00:00:33,873\nYet each day, he had no memory of ever doing it before.\n\n10\n00:00:34,043 --> 00:00:35,883\nMemory is not one system.\n\n11\n00:00:36,229 --> 00:00:39,008\nDeclarative memory holds facts and events.\n\n12\n00:00:39,363 --> 00:00:40,697\nYou can say what you know,\n\n13\n00:00:40,717 --> 00:00:42,596\nand it depends on the hippocampus.\n\n14\n00:00:42,986 --> 00:00:45,979\nProcedural memory holds skills and habits.\n\n15\n00:00:46,248 --> 00:00:47,902\nIt runs without awareness,\n\n16\n00:00:47,992 --> 00:00:51,065\nand leans on the basal ganglia and cerebellum.\n\n17\n00:00:51,235 --> 00:00:53,597\nA classic study pulled the two apart.\n\n18\n00:00:54,069 --> 00:00:57,452\nPeople learned to predict the weather from patterns on cards.\n\n19\n00:00:57,791 --> 00:01:00,443\nAmnesic patients learned the task normally,\n\n20\n00:01:00,520 --> 00:01:02,438\nbut barely remembered the training.\n\n21\n00:01:02,958 --> 00:01:04,832\nPatients with Parkinson's disease,\n\n22\n00:01:04,852 --> 00:01:06,869\nwhich affects the basal ganglia,\n\n23\n00:01:06,967 --> 00:01:08,236\nshowed the reverse.\n\n24\n00:01:08,595 --> 00:01:10,040\nThey remembered the session,\n\n25\n00:01:10,096 --> 00:01:11,632\nbut didn't learn the task.\n\n26\n00:01:11,802 --> 00:01:16,962\nWith practice, a skill shifts from slow and effortful to fast and automatic.\n\n27\n00:01:17,464 --> 00:01:20,000\nThat frees working memory for the next layer.\n\n28\n00:01:20,430 --> 00:01:22,941\nA fluent reader stops sounding out letters,\n\n29\n00:01:23,069 --> 00:01:25,148\nand starts thinking about the argument.\n\n30\n00:01:25,318 --> 00:01:27,022\nBut automatic has a cost.\n\n31\n00:01:27,388 --> 00:01:31,793\nExpert golfers putted worse when told to attend to each step of the stroke,\n\n32\n00:01:31,993 --> 00:01:33,616\nwhile novices putted better.\n\n33\n00:01:33,988 --> 00:01:36,558\nAnd experts lose sight of what was once hard.\n\n34\n00:01:37,095 --> 00:01:43,701\nFuture teachers with more advanced math training misjudged which algebra problems students would find difficult.\n\n35\n00:01:44,169 --> 00:01:46,889\nMany expected equations to be easiest.\n\n36\n00:01:47,257 --> 00:01:49,814\nFor students, they were often the hardest.\n\n37\n00:01:49,984 --> 00:01:50,992\nOne caution.\n\n38\n00:01:51,367 --> 00:01:53,408\nFluency is not understanding.\n\n39\n00:01:53,804 --> 00:01:56,326\nA student can run a procedure automatically,\n\n40\n00:01:56,346 --> 00:01:58,395\nand still not know why it works,\n\n41\n00:01:58,490 --> 00:01:59,895\nor when to use it.\n\n42\n00:02:00,065 --> 00:02:00,836\nFor teaching.\n\n43\n00:02:01,283 --> 00:02:04,406\nDecide which pieces students should make automatic,\n\n44\n00:02:04,426 --> 00:02:05,963\nlike notation, core facts,\n\n45\n00:02:05,983 --> 00:02:07,200\nor routine steps.\n\n46\n00:02:07,592 --> 00:02:10,274\nDrill those deliberately, spaced over time.\n\n47\n00:02:10,770 --> 00:02:12,318\nKeep the reasoning in view,\n\n48\n00:02:12,338 --> 00:02:14,535\nso fast steps stay tied to meaning.\n\n49\n00:02:14,985 --> 00:02:16,208\nAnd when you explain,\n\n50\n00:02:16,228 --> 00:02:19,460\nslow down and unpack the steps you no longer notice.\n\n51\n00:02:19,630 --> 00:02:22,054\nPractice moves a skill out of the spotlight.\n\n52\n00:02:22,468 --> 00:02:24,919\nThat frees the mind for what comes next.\n\n"
+;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+// ===== Labelled "glass brain": lateral view facing left, local box 1000 x 680
+function crPath(pts,closed){const p=new Path2D();const n=pts.length;const P=i=>closed?pts[(i+n)%n]:pts[Math.max(0,Math.min(n-1,i))];
+ p.moveTo(pts[0][0],pts[0][1]);const last=closed?n:n-1;
+ for(let i=0;i<last;i++){const p0=P(i-1),p1=P(i),p2=P(i+1),p3=P(i+2);p.bezierCurveTo(p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6,p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6,p2[0],p2[1])}
+ if(closed)p.closePath();return p}
+function polyPath(pts){const p=new Path2D();p.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(q=>p.lineTo(q[0],q[1]));p.closePath();return p}
+const BR=(()=>{
+ const OUT=[[90,330],[98,245],[150,165],[250,102],[375,64],[500,50],[625,56],[735,88],[805,128],[872,188],[920,268],[936,350],[908,418],[852,452],[762,470],[640,484],[500,482],[385,472],[305,452],[272,416],[225,424],[165,428],[112,398]];
+ const CS=[[500,50],[482,128],[458,212],[440,300],[436,338]];
+ const SF=[[272,416],[360,372],[440,338],[520,312],[600,298],[662,306]];
+ const PO=[[805,128],[788,228],[772,330],[766,470]];
+ const TP=[[662,306],[715,316],[772,330]];
+ const fro=[[272,416],[225,424],[165,428],[112,398],[90,330],[98,245],[150,165],[250,102],[375,64],[500,50],...CS.slice(1),[360,372]];
+ const par=[[500,50],[625,56],[735,88],[805,128],...PO.slice(1,3),...TP.slice().reverse().slice(1),...SF.slice(2,5).reverse(),...CS.slice(1).reverse()];
+ const occ=[[805,128],[872,188],[920,268],[936,350],[908,418],[852,452],[766,470],[772,330],[788,228]];
+ const tem=[[272,416],...SF.slice(1),...TP.slice(1),[766,470],[640,484],[500,482],[385,472],[305,452]];
+ const pfc=[[272,416],[225,424],[165,428],[112,398],[90,330],[98,245],[150,165],[250,102],[330,76],[300,190],[290,300],[300,400]];
+ const cer=[[760,440],[830,420],[900,418],[946,450],[956,505],[922,556],[850,580],[786,570],[748,536],[744,480]];
+ const stem=[[650,430],[730,440],[744,520],[736,630],[700,632],[686,540]];
+ const hip=[[505,398],[545,384],[590,372],[640,364],[690,360],[718,352],[728,334],[716,322]];
+ const amy=[[452,392],[478,378],[502,386],[504,408],[482,420],[458,414]];
+ const ent=[[500,428],[560,414],[620,410],[640,428],[600,446],[530,450]];
+ const caud=[[330,250],[372,212],[430,196],[500,198],[560,214],[600,244],[612,282],[600,318],[580,340]];
+ const put=[[380,268],[430,252],[478,262],[490,300],[458,330],[404,326],[376,300]];
+ const tha=[[520,262],[566,250],[606,268],[608,300],[570,316],[526,304]];
+ const vta=[[664,404],[694,398],[706,418],[684,432],[662,424]];
+ const ffa=[[590,452],[650,446],[712,448],[722,462],[652,470],[592,468]];
+ const ips=[[560,128],[620,150],[690,184],[748,226]];
+ const v1=[[880,250],[922,282],[936,350],[912,410],[870,420],[858,340]];
+ const GYRI=[[[160,200],[220,170],[260,210],[300,170]],[[130,300],[190,280],[230,320],[280,300]],[[300,130],[340,160],[380,120],[420,150]],[[340,240],[380,270],[400,230]],
+  [[560,90],[600,120],[650,100],[700,130]],[[540,230],[590,250],[640,230],[690,270]],[[400,420],[460,400],[520,430],[580,410],[650,420],[720,400]],[[820,220],[860,260],[880,320]],[[820,380],[860,400],[890,380]]];
+ const P={OUT:crPath(OUT,true),fro:polyPath(fro),par:polyPath(par),occ:polyPath(occ),tem:polyPath(tem),pfc:polyPath(pfc),cer:crPath(cer,true),stem:crPath(stem,true),
+  hip:crPath(hip,false),amy:crPath(amy,true),ent:crPath(ent,true),caud:crPath(caud,false),put:crPath(put,true),tha:crPath(tha,true),vta:crPath(vta,true),ffa:crPath(ffa,true),ips:crPath(ips,false),v1:crPath(v1,true),
+  CS:crPath(CS,false),SF:crPath(SF,false),PO:crPath(PO,false),GY:GYRI.map(g=>crPath(g,false))};
+ // region specs: path keys, label anchor (local), label position (local), kind (fill|line|deep)
+ const R={
+  fro:{name:'frontal lobe',k:['fro'],pt:[250,170],lab:[150,-40],al:'right'},
+  pfc:{name:'prefrontal cortex',k:['pfc'],pt:[175,300],lab:[-30,260],al:'right'},
+  par:{name:'parietal lobe',k:['par'],pt:[650,140],lab:[720,-40],al:'left'},
+  tem:{name:'temporal lobe',k:['tem'],pt:[420,440],lab:[260,560],al:'right'},
+  occ:{name:'occipital lobe',k:['occ'],pt:[870,300],lab:[1040,250],al:'left'},
+  cer:{name:'cerebellum',k:['cer'],pt:[870,520],lab:[1040,560],al:'left'},
+  stem:{name:'brainstem',k:['stem'],pt:[716,590],lab:[640,680],al:'right'},
+  hip:{name:'hippocampus',k:['hip'],pt:[640,366],lab:[600,660],al:'left',deep:1,line:1},
+  amy:{name:'amygdala',k:['amy'],pt:[478,400],lab:[300,610],al:'right',deep:1},
+  ent:{name:'entorhinal cortex',k:['ent'],pt:[580,432],lab:[480,680],al:'right',deep:1},
+  str:{name:'striatum',k:['caud','put'],pt:[440,290],lab:[330,-40],al:'right',deep:1},
+  tha:{name:'thalamus',k:['tha'],pt:[566,284],lab:[560,-40],al:'left',deep:1},
+  vta:{name:'midbrain dopamine area',k:['vta'],pt:[684,414],lab:[1040,660],al:'left',deep:1},
+  ffa:{name:'fusiform face area',k:['ffa'],pt:[680,458],lab:[1040,470],al:'left',deep:1},
+  ips:{name:'intraparietal sulcus',k:['ips'],pt:[690,184],lab:[1040,120],al:'left',line:1},
+  v1:{name:'visual cortex',k:['v1'],pt:[905,330],lab:[1040,360],al:'left'}};
+ const GYR=[];{let sd=7;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};for(let i=0;i<46;i++){const x0=80+rnd()*860,y0=60+rnd()*420,ang=rnd()*Math.PI,len=50+rnd()*90;const pts=[];for(let k=0;k<6;k++){const u=k/5-0.5;pts.push([x0+Math.cos(ang)*len*u+Math.sin(ang)*Math.sin(k*2.1+i)*14,y0+Math.sin(ang)*len*u-Math.cos(ang)*Math.sin(k*2.1+i)*14])}GYR.push(crPath(pts,false))}}
+ return{P,R,GYR}})();
+// draw the brain. o: {cx,cy,s,t,active:[keys],labels:[keys],alpha,draw(0..1),glow(0..1),dim,labelAlpha}
+function brainDraw(o){const{cx=960,cy=560,s=0.9,sy=1.16,t=0,active=[],labels=[],alpha=1,draw=1,glow=1,deep=0.55,labelT={},la=1,labSize=32,lobeTint=1,gmap={}}=o;const GL=k=>glow*(gmap[k]??1);if(alpha<=0)return;
+ const{P,R}=BR;const L=([x,y])=>[cx+(x-500)*s,cy+(y-300)*s*sy];
+ ctx.save();ctx.translate(cx,cy);ctx.scale(s,s*sy);ctx.translate(-500,-300);
+ ctx.lineJoin='round';ctx.lineCap='round';
+ // cerebellum + stem first, so the cortex overlaps them
+ [['stem','#18304F'],['cer','#1A3459']].forEach(([k,c])=>{ga(alpha*sat(draw*1.5-0.3));ctx.fillStyle=c;ctx.fill(P[k])});
+ active.forEach(k=>{if(k==='cer'||k==='stem'){ga(alpha*0.9*GL(k));ctx.fillStyle='rgba(255,95,5,0.5)';ctx.fill(P[k])}});
+ ctx.save();ctx.clip(P.cer);ctx.strokeStyle='rgba(200,215,235,0.18)';ctx.lineWidth=2;ga(alpha*sat(draw*1.6-0.5));for(let k=0;k<7;k++){ctx.beginPath();ctx.ellipse(852,500,120-k*15,70-k*8,-0.12,Math.PI*0.02,Math.PI*0.98);ctx.stroke()}ctx.restore();
+ ctx.strokeStyle='#E9EEF6';ctx.lineWidth=4;ga(alpha);if(draw<1){ctx.setLineDash([900*draw,900])}ctx.stroke(P.cer);ctx.stroke(P.stem);ctx.setLineDash([]);
+ // cortex base fill (hides what lies under it)
+ ga(alpha*sat(draw*2));ctx.fillStyle='#16305A';ctx.fill(P.OUT);
+ // lobe tints
+ const tints={fro:'#1E3B66',par:'#1B3760',tem:'#1A3459',occ:'#1D3964'};
+ ctx.save();ctx.clip(P.OUT);for(const k in tints){ga(alpha*0.9*lobeTint*sat(draw*1.5-0.3));ctx.fillStyle=tints[k];ctx.fill(P[k])}
+ // gyri texture
+ ctx.strokeStyle='rgba(200,215,235,0.11)';ctx.lineWidth=2.4;ctx.lineCap='round';ga(alpha*sat(draw*1.6-0.5));BR.GYR.forEach(g=>ctx.stroke(g));
+ // active glows inside clip (cortical)
+ active.forEach((k,i)=>{const r=R[k];if(!r||r.deep||r.line||k==='cer'||k==='stem')return;const g=GL(k)*(0.85+0.15*Math.sin(t*2.4+i));const gr=ctx.createRadialGradient(r.pt[0],r.pt[1],0,r.pt[0],r.pt[1],260);gr.addColorStop(0,'rgba(255,110,30,0.85)');gr.addColorStop(1,'rgba(255,95,5,0.32)');ga(alpha*g);ctx.fillStyle=gr;r.k.forEach(q=>ctx.fill(P[q]));ctx.strokeStyle='rgba(255,140,70,0.9)';ctx.lineWidth=3;r.k.forEach(q=>ctx.stroke(P[q]))});
+ ctx.restore();
+ // sulci
+ ctx.strokeStyle='rgba(233,238,246,0.55)';ctx.lineWidth=3;ga(alpha*sat(draw*1.6-0.6));[P.CS,P.SF,P.PO].forEach(q=>ctx.stroke(q));
+ // outline (draw-on)
+ ctx.strokeStyle='#E9EEF6';ctx.lineWidth=4;ga(alpha);if(draw<1){ctx.setLineDash([2600*draw,2600])}ctx.stroke(P.OUT);ctx.setLineDash([]);
+ // deep structures (glass view)
+ const dk=['hip','amy','ent','str','tha','vta','ffa'];
+ dk.forEach(k=>{const r=R[k],on=active.includes(k);const a=alpha*(on?1:deep)*sat(draw*1.5-0.5);if(a<=0)return;
+  r.k.forEach(q=>{if(on){ctx.save();ga(a*GL(k));ctx.shadowColor=ORANGE;ctx.shadowBlur=24;ctx.fillStyle='rgba(255,95,5,0.75)';ctx.strokeStyle=ORANGE;ctx.lineWidth=(q==='caud'||q==='hip')?16:4;
+    if(q==='caud'||q==='hip'){ctx.stroke(P[q])}else{ctx.fill(P[q]);ctx.stroke(P[q])}ctx.restore()}
+   else{ga(a*0.8);ctx.setLineDash([7,7]);ctx.strokeStyle='rgba(201,211,227,0.7)';ctx.lineWidth=(q==='caud'||q==='hip')?5:2.5;ctx.stroke(P[q]);ctx.setLineDash([])}})});
+ // IPS line
+ {const on=active.includes('ips');ga(alpha*(on?Math.max(0.6,GL('ips')):0.6)*sat(draw*1.6-0.6));ctx.strokeStyle=on?ORANGE:'rgba(233,238,246,0.5)';ctx.lineWidth=on?7:3;if(on){ctx.shadowColor=ORANGE;ctx.shadowBlur=18}ctx.stroke(P.ips);ctx.shadowBlur=0}
+ // v1 glow
+ if(active.includes('v1')){ctx.save();ctx.clip(P.OUT);ga(alpha*GL('v1')*0.9);ctx.fillStyle='rgba(255,95,5,0.6)';ctx.fill(P.v1);ctx.restore()}
+ ctx.restore();
+ // labels
+ labels.forEach((k,i)=>{const r=R[k];if(!r)return;const t0=labelT[k]??0,p=sat((t-t0)/0.45);if(p<=0)return;const on=active.includes(k);
+  const a=L(r.pt),b=L(r.lab);const ex=r.al==='right'?b[0]+12:r.al==='left'?b[0]-12:b[0];
+  ctx.save();ga(alpha*la);ctx.strokeStyle=on?ORANGE:'rgba(201,211,227,0.85)';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(lerp(a[0],ex,ez(p)),lerp(a[1],b[1],ez(p)));ctx.stroke();
+  ctx.fillStyle=on?ORANGE:'#E9EEF6';ctx.beginPath();ctx.arc(a[0],a[1],on?7:5,0,7);ctx.fill();ctx.restore();
+  const q=sat((t-t0-0.25)/0.35);if(q>0){ctx.save();ga(alpha*la*q);ctx.font=`${on?700:600} ${labSize}px ${BODY}`;ctx.textAlign=r.al==='right'?'right':r.al==='left'?'left':'center';ctx.textBaseline='middle';ctx.fillStyle=on?ORANGE:'#E9EEF6';ctx.fillText(r.name,b[0],b[1]);ctx.restore()}})}
+
+</script>
+<script>
+/* renderColl() is defined by assets/nav.js */
+
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.hip.lab=[700,740];BR.R.hip.al='left';BR.R.str.lab=[300,-70];BR.R.str.al='right';BR.R.cer.lab=[1000,-70];BR.R.cer.al='right';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.44,s:fitS(W,H,1.32),t,active:['hip','str','cer'],labels:['hip','str','cer'],labelT:{hip:0.8,str:1.0,cer:1.2},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+const med=a=>{const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length?(s.length%2?s[m]:(s[m-1]+s[m])/2):0};
+/* ---------- weather prediction ----------
+   4 cards; chance of rain given each card = 0.8, 0.6, 0.4, 0.2, assigned to the symbols at random.
+   Each round shows 1-3 cards; chance of rain = mean of the shown cards' values; outcome drawn from it.
+   Best guess = the outcome with chance > 0.5 (rounds at exactly 0.5 are not scored).
+   60 rounds in 3 blocks of 20; then 4 questions: does each card mostly mean rain or sun? */
+const CARDS=[['●','circle'],['■','square'],['◆','diamond'],['▲','triangle']];
+let wr=null;
+function wDraw(set){$('wCards').innerHTML=CARDS.map((c,i)=>set&&set.includes(i)?`<div class="wcard on"><b aria-hidden="true">${c[0]}</b><small>${c[1]}</small></div>`:`<div class="wcard" aria-hidden="true"></div>`).join('');
+ $('wCards').setAttribute('aria-label',set?'Cards: '+set.map(i=>CARDS[i][1]).join(', '):'')}
+wDraw(null);
+function wChoose(){return new Promise(res=>{wr.res=res;$('wKeys').hidden=false;if(wr.kb)$('wRain').focus()})}
+const wPick=v=>{if(!wr||!wr.res)return;const r=wr.res;wr.res=null;r(v)};
+$('wRain').addEventListener('click',()=>wPick(1));$('wSun').addEventListener('click',()=>wPick(0));
+addEventListener('keydown',e=>{if(!wr||!wr.res||e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;const k=e.key.toLowerCase();if(k==='r'){e.preventDefault();wPick(1)}else if(k==='s'){e.preventDefault();wPick(0)}});
+function wWait(label){return new Promise(res=>{const b=$('wGo');b.textContent=label;b.disabled=false;b.focus();b.onclick=()=>{b.onclick=null;b.disabled=true;b.textContent='In progress';res()}})}
+$('wGo').addEventListener('click',async e=>{if(wr||$('wGo').onclick)return;wr={kb:e.detail===0};const g=$('wGo');g.disabled=true;g.textContent='In progress';$('wRes').innerHTML='';$('wQ').hidden=true;
+ const P=shuf([0.8,0.6,0.4,0.2]);const best=[[],[],[]];let lastRain=0;
+ const sets=[];for(let m=1;m<15;m++){const s=[0,1,2,3].filter(i=>m>>i&1);if(s.length<4)sets.push(s)}
+ for(let t=0;t<60;t++){const blk=Math.floor(t/20);$('wPhase').textContent=`Block ${blk+1} of 3`;$('wTitle').textContent='Rain or sun?';$('wText').textContent='Go with your gut. You’ll learn from the outcome.';
+  const s=sets[Math.floor(Math.random()*sets.length)];const p=s.reduce((x,i)=>x+P[i],0)/s.length;
+  wDraw(s);$('wFb').textContent='';$('wProg').textContent=`Round ${t+1} of 60`;
+  const c=await wChoose();if(!wr)return;$('wKeys').hidden=true;
+  const rain=Math.random()<p;if(blk===2&&c===1)lastRain++;if(Math.abs(p-0.5)>1e-9)best[blk].push(c===(p>0.5?1:0));
+  $('wFb').innerHTML=`${rain?'Rain':'Sun'}. <span class="${c===(rain?1:0)?'ok':'no'}">${c===(rain?1:0)?'You were right.':'You guessed '+(c?'rain':'sun')+'.'}</span>`;
+  await sw(1100);if(!wr)return}
+ wDraw(null);$('wFb').textContent='';$('wProg').textContent='Done.';
+ $('wPhase').textContent='Four questions';$('wTitle').textContent='What did each card mean?';$('wText').textContent='For each card on its own, was the weather mostly rain or mostly sun?';
+ $('wQ').innerHTML=CARDS.map((c,i)=>`<fieldset><legend>${c[0]} ${c[1]}</legend><label><input type="radio" name="wq${i}" value="1">Mostly rain</label><label><input type="radio" name="wq${i}" value="0">Mostly sun</label></fieldset>`).join('');
+ $('wQ').hidden=false;$('wQ').querySelector('input').focus();
+ await wWait('Check my answers');if(!wr)return;
+ let ex=0,ans=0;CARDS.forEach((c,i)=>{const s=document.querySelector(`input[name="wq${i}"]:checked`);if(s){ans++;if(+s.value===(P[i]>0.5?1:0))ex++}});
+ $('wQ').hidden=true;$('wPhase').textContent='Your results';
+ const pc=a=>a.length?Math.round(100*a.filter(Boolean).length/a.length):0;const b=best.map(pc);
+ const row=(l,n,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${n}%;background:${c}"></i></div><b>${n}%</b></div>`;
+ const key=CARDS.map((c,i)=>`${c[1]}, ${P[i]>0.5?'rain':'sun'} ${Math.round((P[i]>0.5?P[i]:1-P[i])*100)}% of the time`).join('; ');
+ $('wRes').innerHTML=`<div class="res wl2">${row('Rounds 1–20',b[0],'#C9D3E3')}${row('Rounds 21–40',b[1],'#7DB8FF')}${row('Rounds 41–60',b[2],'#FCB316')}${row('Card questions',ex*25,'#FF8A3D')}</div><p class="mtext">On its own, each card meant: ${key}.</p>`;
+ const exTxt=`You answered ${ex} of 4 card questions correctly${ans<4?` (${4-ans} left blank)`:''}.`;
+ let title,text;
+ const one=Math.max(lastRain,20-lastRain);
+ if(one>=18){title='Mostly one answer';text=`In the last block you chose ${lastRain>=10?'rain':'sun'} in ${one} of 20 rounds. Always giving the same answer scores whatever share of rounds happened to favour it, so these numbers can’t show learning. ${exTxt} Try again, and let each set of cards guide your guess.`}
+ else if(b[2]>=70&&ex===4){title='You learned it, and you can say why';text=`Your best-guess rate was ${b[2]}% in the last block. ${exTxt} Many people find that their choices improve before they can explain the rule. In the 1996 study, amnesic patients learned the task normally while barely remembering the training.`}
+ else if(b[2]>=70){title='You learned more than you can say';text=`Your best-guess rate was ${b[2]}% in the last block, but you got only ${ex} of 4 card questions right${ans<4?` (${4-ans} left blank)`:''}. Your choices picked up the pattern before you could put it into words: habit-like learning, built up slowly from feedback.`}
+ else if(b[2]>=60){title='Starting to learn';text=`Your best-guess rate was ${b[0]}%, ${b[1]}% and ${b[2]}% across the three blocks. ${exTxt} In studies, people rise from about 50% to about 65% over 50 rounds. This kind of learning is gradual.`}
+ else{title='Still close to chance';text=`Your best-guess rate was ${b[0]}%, ${b[1]}% and ${b[2]}% across the three blocks; 50% is guessing. ${exTxt} This task is hard and slow: in studies, people reach only about 65% after 50 rounds, and chance outcomes can hide a good strategy.`}
+ $('wTitle').textContent=title;$('wText').textContent=text;g.onclick=null;g.textContent='Try again';g.disabled=false;g.focus();wr=null});
+
+/* ---------- can you stop reading? (spatial Stroop) ----------
+   36 rounds: 12 matching (LEFT on left / RIGHT on right), 12 clashing, 12 neutral (####), random order.
+   Fixation 500-900 ms, then the word in one box. Response: side. Median correct-response time per kind. */
+let sr=null;
+function sResp(side){if(!sr||!sr.wait)return;const r=sr.wait;sr.wait=null;r(side)}
+$('sBox').addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='f'||e.key==='ArrowLeft'){e.preventDefault();sResp(0)}else if(k==='j'||e.key==='ArrowRight'){e.preventDefault();sResp(1)}});
+$('sL').addEventListener('pointerdown',()=>sResp(0));$('sR').addEventListener('pointerdown',()=>sResp(1));
+$('sGo').addEventListener('click',async()=>{sr={};$('sGo').hidden=true;$('sRes').innerHTML='';$('sBox').focus();
+ const T=shuf([...Array(12).fill('C'),...Array(12).fill('I'),...Array(12).fill('N')]);const R={C:[],I:[],N:[]},E={C:0,I:0,N:0};
+ $('sMsg').textContent='Get ready…';await sw(1200);if(!sr)return;
+ for(let i=0;i<36;i++){const k=T[i],side=Math.random()<0.5?0:1;const word=k==='N'?'####':(k==='C'?(side?'RIGHT':'LEFT'):(side?'LEFT':'RIGHT'));
+  $('sL').textContent='';$('sR').textContent='';$('sFx').textContent='+';$('sMsg').textContent=`Round ${i+1} of 36`;
+  await sw(500+Math.random()*400);if(!sr)return;$('sFx').textContent='';
+  $(side?'sR':'sL').textContent=word;const t0=performance.now();
+  const r=await new Promise(res=>{sr.wait=res;sr.to=setTimeout(()=>{if(sr&&sr.wait){sr.wait=null;res(-1)}},2500)});if(!sr)return;clearTimeout(sr.to);
+  const rt=performance.now()-t0;
+  if(r===side)R[k].push(rt);else{E[k]++;$('sMsg').textContent=r<0?'Too slow. Next one.':'Other side. Next one.';await sw(600);if(!sr)return}}
+ $('sL').textContent='';$('sR').textContent='';$('sFx').textContent='';$('sMsg').textContent='Done.';
+ const mN=med(R.N),mC=med(R.C),mI=med(R.I),mx=Math.max(mN,mC,mI)||1,f=x=>Math.round(x);
+ const row=(l,m,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${m/mx*100}%;background:${c}"></i></div><b>${f(m)} ms</b></div>`;
+ const d=mI-mC;const errs=E.C+E.I+E.N?` Mistakes or misses: ${E.C} when the word matched its side, ${E.I} when it clashed, ${E.N} with ####.`:'';
+ let head,body;
+ if(R.C.length<4||R.I.length<4){head='Too few correct answers to compare';body=`Most rounds were missed or went to the wrong side.${errs} Try again, pressing the side the word is on, as quickly as you can.`}
+ else if(d>=30){head='Reading got in the way';body=`You took about ${f(mC)} ms when the word matched its side and ${f(mI)} ms when it clashed: ${f(d)} ms slower.${errs} You were told to ignore the word, but you read it anyway. That is what automatic means: fast, effortless, and hard to switch off. A child just learning to read wouldn’t show this.`}
+ else if(d>-30){head='Little interference this time';body=`You took about ${f(mC)} ms when the word matched its side and ${f(mI)} ms when it clashed.${errs} Some people learn to look only at the position, and with 12 rounds of each, small effects can hide in the noise. The classic version, naming the ink colour of colour words, usually shows a clear slowdown.`}
+ else{head='The clashing words were faster this time';body=`You took about ${f(mC)} ms when the word matched its side and ${f(mI)} ms when it clashed.${errs} With only 12 rounds of each, chance plays a part. In studies, clashing words usually slow people down, because reading runs on its own.`}
+ $('sRes').innerHTML=`${R.C.length<4||R.I.length<4?'':`<div class="lres">${row('#### (no word)',mN,'#8FA3C2')}${row('Word matches side',mC,'#13294B')}${row('Word clashes',mI,'#B84300')}</div>`}<p class="pmsg"><b class="h">${head}</b>${body}</p>`;
+ $('sGo').hidden=false;$('sGo').textContent='Try again';$('sGo').focus();sr=null});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'What did H.M. show by improving at mirror tracing?',o:['A skill can be learned without remembering the learning','Practice doesn’t help people with amnesia','The hippocampus stores skills'],a:0,f:'He got better over three days but never remembered practising.'},
+ {q:'Patients with Parkinson’s disease, in the weather task:',o:['Remembered the session but didn’t learn the task','Learned the task but forgot the session','Did both normally'],a:0,f:'Amnesic patients showed the reverse pattern.'},
+ {q:'What is the expert blind spot?',o:['Experts misjudge what novices will find hard','Experts can’t see their own mistakes','Experts learn more slowly'],a:0,f:'Teachers with more maths training expected equations to be easiest; for students they were hardest.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','lb09');
+})();
+</script>
+</body>
+</html>

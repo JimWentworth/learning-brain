@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Entorhinal Cortex: The Brain’s Grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.mods{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.mods button{appearance:none;min-height:44px;padding:0 16px;border-radius:22px;font:700 16px var(--body);cursor:pointer;background:transparent;color:#fff;border:2px solid currentColor}
+.mods button[aria-pressed="true"]{background:rgba(255,255,255,0.12)}
+.mods button:disabled{opacity:.45;cursor:default}
+.cand{font-family:var(--display);font-weight:900;font-size:44px;line-height:1;color:#fff;margin:4px 0 8px}
+.cand small{font-size:18px;font-weight:600;color:var(--night-muted)}
+.home{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.homegrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(250px,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.homegrid{grid-template-columns:minmax(0,1fr)}}
+.field{position:relative;background:#0D1C35;border-radius:8px;aspect-ratio:1.3/1}
+.field canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:8px}
+.field canvas:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.home .step{font:800 14px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 6px}
+.home h3{font-family:var(--display);font-size:clamp(22px,2.4vw,28px);line-height:1.2;margin:0 0 10px}
+.home p{font-size:17px;line-height:1.5;margin:0 0 12px}
+.home .pbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.home .pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.home .prow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.legs{list-style:none;padding:0;margin:0 0 12px;font-size:16px;color:var(--ink-2);display:grid;gap:4px}
+.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:6px 0 12px}
+.cmp div{border-top:3px solid var(--ink);padding-top:8px}
+.cmp b{display:block;font-family:var(--display);font-size:19px;margin-bottom:4px}
+.cmp .big{font-family:var(--display);font-weight:900;font-size:44px;line-height:1;color:var(--ink)}
+.cmp .big small{font-size:18px;color:var(--ink-2);font-weight:600}
+__POPCSS__
+__COLLCSS__
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Brain regions</div>
+      <h1 id="title">The Entorhinal Cortex <em>The brain’s grid</em></h1>
+      <p class="dek">Next to the hippocampus, cells fire in a repeating pattern of triangles as you move. They help you keep track of where you are, and they may help organize ideas too.</p>
+      <div class="byline"><span>About 9 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#gridT">Find the grid</a></span><span><a href="#homeT">Find your way home</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the brain from the side, with the entorhinal cortex glowing orange beside the hippocampus."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2½ minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>The entorhinal cortex: the brain’s grid</b> · The Learning Brain</span><span>Captions are on; turn them off in the player.</span></div>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Place cells in the hippocampus each fire in one spot. In 2005, May-Britt and Edvard Moser and their team recorded from the entorhinal cortex, the region that feeds information into the hippocampus, and found something stranger. As a rat explored, one cell fired in many spots, and the spots formed a grid of triangles covering the whole floor.</p>
+    <p>Nothing on the floor was marked that way. The brain makes the grid itself. In 2014, the Mosers shared the Nobel Prize with John O’Keefe, who discovered place cells.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>2005</strong><span>grid cells first described</span></div>
+      <div role="listitem"><strong>60°</strong><span>the angle at which a grid’s pattern repeats</span></div>
+      <div role="listitem"><strong>2010</strong><span>first evidence of grid-like signals in people</span></div>
+      <div role="listitem"><strong>Early</strong><span>one of the first regions affected by Alzheimer’s disease</span></div>
+    </div>
+  </div>
+
+  <section class="night" aria-labelledby="gridT">
+    <div class="col">
+      <h2 class="sec" id="gridT"><span class="n">Try it</span>Find the grid</h2>
+      <p>Record one grid cell while a rat explores only the left side of a box. Then predict where the cell will fire on the right side, where the rat hasn’t been yet.</p>
+    </div>
+    <div class="wide">
+      <div class="mapgrid">
+        <div class="arena"><canvas id="garena" tabindex="0" role="application" aria-label="Box seen from above. When asked, tap or click where you predict the cell will fire, or use the arrow keys to move the marker and Enter to choose." aria-describedby="gtext"></canvas></div>
+        <div>
+          <p class="phase" id="gphase">Step 1 of 3 · Record</p>
+          <p class="mtitle" id="gtitle">Watch one cell fire</p>
+          <div id="gmods"></div>
+          <p class="mtext" id="gtext" aria-live="polite">Press Record. The rat explores the left side for about 12 seconds.</p>
+          <div class="mrow" id="grow"><button class="nbtn" id="ggo">Record</button></div>
+          <p class="mscore" id="gscore"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The team</span>A compass, an edge detector and a grid</h2>
+    <p>Grid cells share the entorhinal cortex with other navigation cells. <b>Head direction cells</b> fire when your head points one way, like a compass needle. <b>Border cells</b> fire near walls and edges. Grid cells come in sets of different sizes, from fine to coarse, and in rats the grids get wider along the region.</p>
+    <p>Together these cells can keep track of where you are from your own movements: which way you turned and how far you went. This is called path integration, or dead reckoning. Its errors build up over time, and landmarks such as walls help correct them.</p>
+  </div>
+
+  <section aria-labelledby="homeT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="homeT"><span class="n">Try it</span>Find your way home in the dark</h2>
+      <p>A walker leaves home and takes four turns. Home disappears once the walk begins. Keep track, then point to home. Do it once in the dark and once with a landmark in view.</p>
+    </div>
+    <div class="wide">
+      <div class="home">
+        <div class="homegrid">
+          <div class="field"><canvas id="field" tabindex="0" role="application" aria-label="Dark field seen from above. When asked, tap or click where you think home is, or use the arrow keys to move the marker and Enter to choose." aria-describedby="htext"></canvas></div>
+          <div id="hpanel">
+            <p class="step" id="hstep">Round 1 of 2 · In the dark</p>
+            <h3 id="htitle">Watch where home is</h3>
+            <p id="htext" aria-live="polite">The white ring is home. When you press Start, it disappears and the walker sets off.</p>
+            <ol class="legs" id="hlegs" aria-label="Directions walked"></ol>
+            <div class="prow" id="hrow"><button class="pbtn" id="hgo">Start walking</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">In people</span>A grid in the human brain</h2>
+    <p>In 2010, Christian Doeller, Caswell Barry and Neil Burgess scanned people as they moved through a virtual world. Activity in the entorhinal cortex rose and fell with the direction of travel, peaking every 60 degrees: the six-fold pattern grid cells produce. People with the clearest pattern were best at remembering where objects were.</p>
+    <p>The entorhinal cortex is also one of the first regions affected by Alzheimer’s disease. Getting lost in a familiar place can be an early sign, and researchers are testing navigation tasks as early warning tools.</p>
+  </div>
+
+  <p class="pull">The brain lays a grid over space, <em>and maybe over ideas too.</em></p>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Beyond space</span>A map for concepts</h2>
+    <p>In 2016, Alexandra Constantinescu, Jill O’Reilly and Timothy Behrens asked people to learn about cartoon birds whose necks and legs varied in length. As people thought about changes in the birds, their brains showed the same six-fold pattern seen during navigation. The researchers suggest the grid code may help organize knowledge laid out along two dimensions, though this idea is still being tested.</p>
+  </div>
+
+  <section class="pop wide" aria-labelledby="popT">
+    <div style="max-width:700px;margin:0 auto">
+      <h2 class="sec" id="popT"><span class="n">In popular culture</span>Finding your way, and losing it</h2>
+      <p>Two very different films turn on the sense of place: one about losing it, one about mastering it.</p>
+    </div>
+    <div class="poptabs" role="tablist" aria-label="Navigation in popular culture" id="popTabs"></div>
+    <div id="popPanels"></div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Map your ideas</h2>
+    <ol class="tips">
+      <li><b>Lay ideas out</b><span>Place related ideas on two dimensions, such as cost and benefit, or time and place, so you can see how they relate.</span></li>
+      <li><b>Use landmarks</b><span>Anchor a topic with a few key examples. Like landmarks on a walk, they correct errors that creep into what you remember.</span></li>
+      <li><b>Travel between ideas</b><span>Practise moving from one idea to another and explaining the route. Knowing the links is what makes a map useful.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/15965463/">Hafting, T., Fyhn, M., Molden, S., Moser, M.-B., &amp; Moser, E. I. (2005). Microstructure of a spatial map in the entorhinal cortex. <i>Nature</i>.</a></li>
+        <li><a href="https://www.nobelprize.org/prizes/medicine/2014/press-release/">Nobel Assembly at Karolinska Institutet (2014). The Nobel Prize in Physiology or Medicine 2014: press release.</a></li>
+        <li><a href="https://www.nature.com/articles/nature11649">Stensola, H., et al. (2012). The entorhinal grid map is discretized. <i>Nature</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3173857">Doeller, C. F., Barry, C., &amp; Burgess, N. (2010). Evidence for grid cells in a human memory network. <i>Nature</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5248972">Constantinescu, A. O., O’Reilly, J. X., &amp; Behrens, T. E. J. (2016). Organizing conceptual knowledge in humans with a gridlike code. <i>Science</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6536917">Howett, D., et al. (2019). Differentiation of mild cognitive impairment using an entorhinal cortex-based test of virtual reality navigation. <i>Brain</i>.</a></li>
+        <li><a href="https://www.sciencedaily.com/releases/2017/01/170119134606.htm">Columbia University Medical Center (2017). In Alzheimer’s, excess tau protein damages brain’s GPS (on Fu et al., <i>Neuron</i>).</a></li>
+        <li><a href="https://alzforum.org/node/387561">Alzforum. ‘Still Alice’ gives voice to patients with early onset Alzheimer’s.</a></li>
+        <li><a href="https://www.unsw.edu.au/newsroom/news/2017/02/how-far-they_ll-go--moana-shows-the-power-of-polynesian-celestia">Hamacher, D. W., &amp; Bento Guedes, C. (2017). How far they’ll go: Moana shows the power of Polynesian celestial navigation.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawings, grid patterns and the walking task are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__POPJS__
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+
+/* hero */
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.47,s:fitS(W,H,1.32),t,active:['ent'],labels:['ent','hip'],labelT:{ent:0.8,hip:1.2},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560)),deep:0.45})});
+
+/* video captions + transcript */
+(function(){const v=document.getElementById('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ document.getElementById('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(1).join(' ')})();
+
+/* ---------- find the grid ----------
+   Coordinates: x in [0,1] of width; y in [0,1] of height; distances measured in pixels.
+   One grid cell: triangular lattice of firing fields (spacing D of width, radius RF of spacing).
+   Step 1 records spikes only while the rat is in the left 55% of the box. Step 2: three predictions in the right side;
+   each is scored by the distance to the nearest field centre (hit if within one field radius). Step 3: three grid sizes;
+   the reader adds them one at a time and sees how many spots fit all the active ones. */
+const ga_=document.getElementById('garena'),gtext=document.getElementById('gtext'),gtitle=document.getElementById('gtitle'),gphase=document.getElementById('gphase'),grow=document.getElementById('grow'),gscore=document.getElementById('gscore'),gmods=document.getElementById('gmods');
+let gW=0,gH=0,gph='record',gspk=[],grecT=-1,GREC=12,preds=[],gcur=[0.78,0.5],hits=0,mods=[false,false,false];
+const D=0.2,RF=0.33,OFF=[0.13,0.22],SPLIT=0.55;
+let rs=11;const rnd=()=>{rs=(rs*16807)%2147483647;return rs/2147483647};
+function verts(d,off,rot=0){const px=d*gW,r=px*Math.sqrt(3)/2,c=Math.cos(rot),s=Math.sin(rot),V=[];for(let j=-30;j<=30;j++)for(let i=-30;i<=30;i++){const lx=(i+(Math.abs(j)%2)*0.5)*px,ly=j*r,x=off[0]*gW+c*lx-s*ly,y=off[1]*gH+s*lx+c*ly;if(x>-px&&x<gW+px&&y>-px&&y<gH+px)V.push([x,y])}return V}
+function nearest(V,p){let b=1e9;V.forEach(v=>{b=Math.min(b,Math.hypot(v[0]-p[0],v[1]-p[1]))});return b}
+function ratPath(u){return[0.03+SPLIT*0.94*(0.5+0.48*Math.sin(u*0.62+0.35*Math.sin(u*0.23))),0.5+0.45*Math.sin(u*0.87+1.1+0.3*Math.cos(u*0.19))]}
+const SPEED=11;function addSpikes(fromK,toK){const V=verts(D,OFF),R=RF*D*gW;for(let k=fromK;k<=toK;k++)for(let s=0;s<4;s++){const p=ratPath((k+s/4)/30*SPEED),q=[p[0]*gW,p[1]*gH];if(nearest(V,q)<R&&rnd()<0.3)gspk.push(p)}}
+// modules for step 3: three sizes, all aligned so the true position is a vertex of each
+const MD=[0.12,0.12*1.42,0.12*1.42*1.42],MROT=[0,0.3,0.6],RFM=0.18,MC=['#FF5F05','#58C4E8','#FCB316'];let TRUEP=[0.62,0.46]; // sizes step by about 1.42, as measured in rats; modules also differ in orientation
+const gst=stage('garena',({W,H,t,x})=>{gW=W;gH=H;const V=verts(D,OFF),R=RF*D*W;
+ if(gph==='record'||gph==='predict'||gph==='reveal'){
+  if(gph==='record'&&grecT>=0){const el=RM?GREC:Math.min(GREC,(performance.now()-grecT)/1000),n=Math.floor(el*30);if((gspk._n??-1)<n){addSpikes((gspk._n??-1)+1,n);gspk._n=n}
+   const p=ratPath(el*SPEED);x.fillStyle='#E9EEF6';x.strokeStyle='#0D1C35';x.lineWidth=3;x.beginPath();x.arc(p[0]*W,p[1]*H,Math.max(8,W/52),0,7);x.fill();x.stroke();if(el>=GREC&&!gspk.done){gspk.done=1;setTimeout(endGRec,0)}}
+  x.fillStyle='rgba(0,0,0,0.35)';x.fillRect(SPLIT*W,0,W-SPLIT*W,H);x.strokeStyle='rgba(233,238,246,0.5)';x.setLineDash([6,6]);x.beginPath();x.moveTo(SPLIT*W,0);x.lineTo(SPLIT*W,H);x.stroke();x.setLineDash([]);
+  x.fillStyle='#AEB9CC';x.font=`600 ${Math.max(15,Math.round(W/44))}px ${BODY}`;x.textBaseline='top';x.fillText('Explored',12,10);x.fillText('Not explored yet',SPLIT*W+12,10);
+  gspk.forEach(p=>{x.fillStyle='#FF5F05';x.globalAlpha=0.85;x.beginPath();x.arc(p[0]*W,p[1]*H,Math.max(2.5,W/210),0,7);x.fill()});x.globalAlpha=1;
+  if(gph==='reveal'){x.strokeStyle='rgba(252,179,22,0.55)';x.lineWidth=1.5;V.forEach(a=>V.forEach(b=>{const d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(d>D*W*0.9&&d<D*W*1.1&&a[0]<b[0]+0.01){x.beginPath();x.moveTo(...a);x.lineTo(...b);x.stroke()}}));
+   V.forEach(v=>{x.strokeStyle='#FCB316';x.lineWidth=2;x.beginPath();x.arc(v[0],v[1],R,0,7);x.stroke()})}
+  preds.forEach(([p,hit])=>{x.strokeStyle=gph==='reveal'?(hit?'#3CC9B8':'#F08CBE'):'#FFFFFF';x.lineWidth=4;x.beginPath();x.arc(p[0]*W,p[1]*H,11,0,7);x.stroke();x.fillStyle=x.strokeStyle;x.beginPath();x.arc(p[0]*W,p[1]*H,3,0,7);x.fill()});
+  if(gph==='predict'){const q=[gcur[0]*W,gcur[1]*H];x.strokeStyle='#FCB316';x.lineWidth=3;x.beginPath();x.arc(q[0],q[1],12,0,7);x.moveTo(q[0]-20,q[1]);x.lineTo(q[0]+20,q[1]);x.moveTo(q[0],q[1]-20);x.lineTo(q[0],q[1]+20);x.stroke()}}
+ if(gph==='combine'){const on=mods.map((m,i)=>m?i:-1).filter(i=>i>=0),TP=[TRUEP[0]*W,TRUEP[1]*H];
+  // each active module: draw its fields
+  on.forEach(i=>{const d=MD[i],r=RFM*d*W,Vi=verts(d,TRUEP,MROT[i]);x.strokeStyle=MC[i];x.lineWidth=2.5;Vi.forEach(v=>{x.globalAlpha=0.9;x.beginPath();x.arc(v[0],v[1],r,0,7);x.stroke()})});x.globalAlpha=1;
+  // candidate spots: sample grid; a spot fits if it lies in a field of every active module
+  const st=Math.max(4,W/110);x.fillStyle='rgba(60,201,184,0.55)';
+  if(on.length){const Vs=on.map(i=>verts(MD[i],TRUEP,MROT[i]));for(let gx=st/2;gx<W;gx+=st)for(let gy=st/2;gy<H;gy+=st){if(on.every((i,k)=>nearest(Vs[k],[gx,gy])<RFM*MD[i]*W))x.fillRect(gx-st/2,gy-st/2,st,st)}}
+  x.fillStyle='#AEB9CC';x.font=`600 ${Math.max(15,Math.round(W/44))}px ${BODY}`;x.textBaseline='top';x.fillText(on.length?'Green: spots that fit every grid you added':'Add a grid',12,10)}},{animate:true});
+// cache vertex lists per frame size to keep the candidate count cheap
+function candidates(){const on=mods.map((m,i)=>m?i:-1).filter(i=>i>=0);if(!on.length)return 0;const Vs=on.map(i=>verts(MD[i],TRUEP,MROT[i]));
+ // count separate patches: sample, then cluster by distance
+ const st=Math.max(4,gW/110),pts=[];for(let gx=st/2;gx<gW;gx+=st)for(let gy=st/2;gy<gH;gy+=st){if(on.every((i,k)=>nearest(Vs[k],[gx,gy])<RFM*MD[i]*gW))pts.push([gx,gy])}
+ const lab=new Array(pts.length).fill(-1);let n=0;for(let i=0;i<pts.length;i++){if(lab[i]>=0)continue;lab[i]=n;const q=[i];while(q.length){const a=q.pop();for(let j=0;j<pts.length;j++){if(lab[j]<0&&Math.abs(pts[j][0]-pts[a][0])<=st*1.01&&Math.abs(pts[j][1]-pts[a][1])<=st*1.01){lab[j]=n;q.push(j)}}}n++}return n}
+function gbtn(h){grow.innerHTML=h}
+function startGRec(){gph='record';gspk=[];gspk._n=-1;rs=11;preds=[];hits=0;grecT=performance.now();gmods.innerHTML='';gphase.textContent='Step 1 of 3 · Record';gtitle.textContent='Watch one cell fire';
+ gtext.textContent='Recording, sped up. Each orange dot marks where the rat was when this one cell fired.';gbtn('<button class="nbtn" disabled>Recording…</button>');gscore.textContent='';gst.kick()}
+function endGRec(){grecT=-1;gph='predict';gphase.textContent='Step 2 of 3 · Predict';gtitle.textContent='Where else will it fire?';
+ gtext.textContent='Look at the pattern the clusters make. Then tap three spots on the right, unexplored side where you predict this cell will fire.';gbtn('');gscore.textContent='Predictions: 0 of 3';gst.kick();ga_.focus({preventScroll:true})}
+function predict(p){if(gph!=='predict')return;if(p[0]<SPLIT){gtext.textContent='Predict on the right side, where the rat hasn’t been. That is the real test of the pattern.';return}
+ const V=verts(D,OFF),q=[p[0]*gW,p[1]*gH],hit=nearest(V,q)<RF*D*gW;preds.push([p,hit]);if(hit)hits++;gscore.textContent=`Predictions: ${preds.length} of 3`;
+ if(preds.length===3){gph='reveal';gtitle.textContent=`${hits} of 3 predictions landed on a firing spot`;
+  gtext.innerHTML=(hits>=2?'<b class="ok">You found the grid.</b> ':'<b class="no">Close, but the grid is regular.</b> ')+'The yellow circles show where this cell fires. They sit at the corners of equal triangles that repeat across the whole box, including where the rat had never been. A place cell fires in one spot; a grid cell fires in a pattern.';
+  gbtn('<button class="nbtn" id="gnext">Next: combine grids</button><button class="gbtn" id="gagain">Record again</button>');document.getElementById('gnext').onclick=startCombine;document.getElementById('gagain').onclick=startGRec}
+ gst.kick()}
+function startCombine(){gph='combine';gscore.textContent='';mods=[false,false,false];gphase.textContent='Step 3 of 3 · Combine';gtitle.textContent='One grid isn’t enough';
+ gmods.innerHTML=`<div class="mods" role="group" aria-label="Grid sizes">${['Fine grid','Medium grid','Coarse grid'].map((n,i)=>`<button data-i="${i}" aria-pressed="false" style="color:${['#FF9A66','#58C4E8','#FCB316'][i]}">+ ${n}</button>`).join('')}</div><p class="cand" id="gcand">–</p>`;
+ gmods.querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;mods[i]=!mods[i];b.setAttribute('aria-pressed',mods[i]);b.textContent=(mods[i]?'− ':'+ ')+['Fine grid','Medium grid','Coarse grid'][i];updCombine()});
+ gtext.textContent='The rat is somewhere in the box, and cells from three grid sizes are firing. Add the grids one at a time and watch how many spots could be the rat’s position. As in real brains, each size is also tilted at a different angle.';
+ gbtn('<button class="gbtn" id="gagain2">Start again</button>');document.getElementById('gagain2').onclick=startGRec;updCombine()}
+function updCombine(){const n=candidates(),k=mods.filter(Boolean).length;document.getElementById('gcand').innerHTML=k?`${n} <small>possible spot${n===1?'':'s'}</small>`:'– <small>add a grid</small>';
+ gtext.textContent=!k?'The rat is somewhere in the box, and cells from three grid sizes are firing. Add the grids one at a time and watch how many spots could be the rat’s position.':
+  n===1?`Only one spot fits ${k===1?'this grid':'all '+k+' grids'}. Because each grid repeats at a different size, together they pin down the position, much like digits in a number.`:
+  `${n} spots fit. Each grid repeats, so ${k===1?'one grid alone':'these grids'} can’t say which spot is the right one.${k<3?' Add another size.':''}`;gst.kick()}
+ga_.addEventListener('click',e=>{if(gph!=='predict')return;const r=ga_.getBoundingClientRect();predict([(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height])});
+ga_.addEventListener('keydown',e=>{if(gph!=='predict')return;const d=0.03,k={ArrowLeft:[-d,0],ArrowRight:[d,0],ArrowUp:[0,-d],ArrowDown:[0,d]}[e.key];if(k){e.preventDefault();gcur=[sat(gcur[0]+k[0]),sat(gcur[1]+k[1])];gst.kick()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();predict(gcur.slice())}});
+document.getElementById('ggo').onclick=startGRec;
+
+/* ---------- find your way home ----------
+   Four legs, each 0.16–0.28 of the width, with turns of 60–150 degrees, kept inside the field. Home is hidden while walking;
+   only a short fading tail is visible. Round 2 adds a landmark visible throughout. Error is the distance from the guess to home,
+   in "steps" (one step = 1/20 of the field width). Directions are also announced as clock directions for screen-reader users. */
+const fc=document.getElementById('field'),htext=document.getElementById('htext'),htitle=document.getElementById('htitle'),hstep=document.getElementById('hstep'),hrow=document.getElementById('hrow'),hlegs=document.getElementById('hlegs');
+let fW=0,fH=0,hround=1,hph='ready',HOME=[0.3,0.65],LEGS=[],walkT=-1,hguess=null,hcur=[0.5,0.5],herr=[],LM=[0.82,0.2];let hs=5;const hr=()=>{hs=(hs*16807)%2147483647;return hs/2147483647};
+const ASPECT=1.3;const P=(p)=>[p[0]*fW,p[1]*fH];
+function makePath(){for(let tries=0;tries<500;tries++){let p=[0.2+hr()*0.6,0.25+hr()*0.5],ang=hr()*Math.PI*2;const pts=[p.slice()];let ok=true;
+  for(let i=0;i<4;i++){if(i>0)ang+=(hr()<0.5?-1:1)*(Math.PI/3+hr()*Math.PI/2);const L=0.16+hr()*0.12;p=[p[0]+Math.cos(ang)*L,p[1]+Math.sin(ang)*L*ASPECT];if(p[0]<0.06||p[0]>0.94||p[1]<0.08||p[1]>0.92){ok=false;break}pts.push(p.slice())}
+  const end=pts[4];if(ok&&Math.hypot(end[0]-pts[0][0],(end[1]-pts[0][1])/ASPECT)>0.18)return pts}return[[0.3,0.6],[0.5,0.4],[0.7,0.6],[0.55,0.8],[0.75,0.3]]}
+function clock(a,b){const dx=b[0]-a[0],dy=(b[1]-a[1])/ASPECT;let ang=Math.atan2(dx,-dy);let h=Math.round(((ang*180/Math.PI)+360)%360/30)%12;if(h===0)h=12;return h}
+function steps(a,b){return Math.round(Math.hypot(b[0]-a[0],(b[1]-a[1])/ASPECT)*20)}
+const LEGDUR=1.6;
+const fst=stage('field',({W,H,t,x})=>{fW=W;fH=H;const s=Math.max(10,W/48);
+ x.fillStyle='rgba(255,255,255,0.03)';for(let i=1;i<10;i++){/* no grid: it is dark */}
+ if(hround===2){const L=P(LM);x.fillStyle='#FCB316';x.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,r=k%2?s*0.5:s*1.2;x.lineTo(L[0]+Math.cos(a)*r,L[1]+Math.sin(a)*r)}x.closePath();x.fill();x.fillStyle='#FCB316';x.font=`700 ${Math.max(15,Math.round(W/42))}px ${BODY}`;x.textAlign='center';x.fillText('Landmark',L[0],L[1]+s*2.3);x.textAlign='left'}
+ const showHome=hph==='ready'||hph==='done';if(showHome){const h=P(HOME);x.strokeStyle='#FFFFFF';x.lineWidth=4;x.beginPath();x.arc(h[0],h[1],s,0,7);x.stroke();x.fillStyle='#fff';x.font=`700 ${Math.max(15,Math.round(W/42))}px ${BODY}`;x.textAlign='center';x.fillText('Home',h[0],h[1]-s-8);x.textAlign='left'}
+ if(hph==='walk'||hph==='guess'||hph==='done'){const el=hph==='walk'?(performance.now()-walkT)/1000:99,seg=Math.min(4,RM?Math.floor(el/LEGDUR)+(el>=4*LEGDUR?0:0):el/LEGDUR);
+  const k=Math.min(3,Math.floor(seg)),u=RM?1:seg-k,cur=seg>=4?LEGS[4]:[lerp(LEGS[k][0],LEGS[k+1][0],u),lerp(LEGS[k][1],LEGS[k+1][1],u)];
+  if(hph==='done'){x.strokeStyle='rgba(233,238,246,0.6)';x.lineWidth=3;x.setLineDash([8,8]);x.beginPath();LEGS.forEach((p,i)=>{const q=P(p);i?x.lineTo(...q):x.moveTo(...q)});x.stroke();x.setLineDash([])}
+  else if(!RM){// short fading tail
+   for(let j=0;j<14;j++){const ss=Math.max(0,seg-j*0.03),kk=Math.min(3,Math.floor(ss)),uu=ss-kk,pp=ss>=4?LEGS[4]:[lerp(LEGS[kk][0],LEGS[kk+1][0],uu),lerp(LEGS[kk][1],LEGS[kk+1][1],uu)];const q=P(pp);x.fillStyle=`rgba(233,238,246,${0.35*(1-j/14)})`;x.beginPath();x.arc(q[0],q[1],s*0.35,0,7);x.fill()}}
+  const q=P(cur);x.fillStyle='#E9EEF6';x.beginPath();x.arc(q[0],q[1],s*0.6,0,7);x.fill();
+  if(hph==='walk'){const done=Math.floor(Math.min(4,el/LEGDUR));while(hlegs.children.length<Math.min(4,done+1)){const i=hlegs.children.length,li=document.createElement('li');li.textContent=`Leg ${i+1}: ${steps(LEGS[i],LEGS[i+1])} steps toward ${clock(LEGS[i],LEGS[i+1])} o’clock`;hlegs.appendChild(li)}
+   if(el>=4*LEGDUR+0.2){hph='guess';setTimeout(askGuess,0)}}}
+ if(hph==='guess'){const q=P(hcur);x.strokeStyle='#FCB316';x.lineWidth=3;x.beginPath();x.arc(q[0],q[1],12,0,7);x.moveTo(q[0]-20,q[1]);x.lineTo(q[0]+20,q[1]);x.moveTo(q[0],q[1]-20);x.lineTo(q[0],q[1]+20);x.stroke()}
+ if(hph==='done'&&hguess){const g=P(hguess),h=P(HOME);x.strokeStyle='#FCB316';x.lineWidth=3;x.beginPath();x.arc(g[0],g[1],12,0,7);x.stroke();x.strokeStyle='rgba(252,179,22,0.7)';x.setLineDash([5,5]);x.beginPath();x.moveTo(...g);x.lineTo(...h);x.stroke();x.setLineDash([])}},{animate:true});
+function hbtns(h){hrow.innerHTML=h}
+function setupRound(){hs=hround===1?5:23;LEGS=makePath();HOME=LEGS[0];hph='ready';hguess=null;hlegs.innerHTML='';hcur=[0.5,0.5];
+ hstep.textContent=`Round ${hround} of 2 · ${hround===1?'In the dark':'With a landmark'}`;htitle.textContent='Watch where home is';
+ htext.textContent=hround===1?'The white ring is home. When you press Start, it disappears and the walker sets off. Nothing else is visible.':'Same task, but now a landmark stays in view the whole time. Note where home is compared with the landmark.';
+ hbtns('<button class="pbtn" id="hgo">Start walking</button>');document.getElementById('hgo').onclick=startWalk;fst.kick()}
+function startWalk(){hph='walk';walkT=performance.now();if(RM){const iv=setInterval(()=>{if(hph!=='walk'){clearInterval(iv);return}fst.kick()},400)}htitle.textContent='Keep track of the way back';htext.textContent='Follow the walker’s turns and distances. The directions are listed as they happen.';hbtns('');fst.kick()}
+function askGuess(){htitle.textContent='Where is home?';htext.textContent='Tap where you think home is, or move the marker with the arrow keys and press Enter.';fst.kick();fc.focus({preventScroll:true})}
+function guessHome(p){if(hph!=='guess')return;hguess=p;hph='done';const e=steps(p,HOME);herr[hround-1]=e;
+ htitle.textContent=`You were ${e} step${e===1?'':'s'} from home`;
+ if(hround===1){htext.textContent='The dashed line shows the full walk. Without landmarks, small errors in judging each turn and distance add up. Now try with a landmark.';hbtns('<button class="pbtn" id="hn">Round 2: with a landmark</button>');document.getElementById('hn').onclick=()=>{hround=2;setupRound()}}
+ else{const a=herr[0],b=herr[1];document.getElementById('hpanel').querySelector('#htext').innerHTML=`<span class="cmp" style="display:grid"><span style="display:block;border-top:3px solid var(--ink);padding-top:8px"><b style="display:block;font-family:var(--display);font-size:19px">In the dark</b><span class="big" style="display:block;font-family:var(--display);font-weight:900;font-size:44px;line-height:1">${a}<small style="font-size:18px;color:var(--ink-2)">&nbsp;steps off</small></span></span><span style="display:block;border-top:3px solid var(--ink);padding-top:8px"><b style="display:block;font-family:var(--display);font-size:19px">With a landmark</b><span class="big" style="display:block;font-family:var(--display);font-weight:900;font-size:44px;line-height:1">${b}<small style="font-size:18px;color:var(--ink-2)">&nbsp;steps off</small></span></span></span>`+
+  (b<a?'The landmark helped. ':b===a?'Same either way this time. ':'This time the dark round went better. ')+'Your brain tracks position from your own movement, and errors creep in. Landmarks let it reset. Grid, head direction and border cells are thought to do this job together.';
+  hbtns('<button class="pbtn sec" id="hr2">Try again</button>');document.getElementById('hr2').onclick=()=>{hround=1;herr=[];setupRound()}}
+ fst.kick()}
+fc.addEventListener('click',e=>{if(hph!=='guess')return;const r=fc.getBoundingClientRect();guessHome([(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height])});
+fc.addEventListener('keydown',e=>{if(hph!=='guess')return;const d=0.03,k={ArrowLeft:[-d,0],ArrowRight:[d,0],ArrowUp:[0,-d],ArrowDown:[0,d]}[e.key];if(k){e.preventDefault();hcur=[sat(hcur[0]+k[0]),sat(hcur[1]+k[1])];fst.kick()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();guessHome(hcur.slice())}});
+setupRound();
+
+/* ---------- in popular culture ---------- */
+renderPop([
+ {id:'alice',title:'Still Alice',sub:'Film, 2014',kind:'Drama',films:[['Still Alice (2014)','https://www.imdb.com/title/tt3316960/']],verdict:['good','A realistic early sign'],
+  desc:'Alice Howland, a linguistics professor at Columbia University, starts forgetting words. Then, on her usual run across campus, she suddenly doesn’t know where she is. She is diagnosed with early-onset Alzheimer’s disease.',
+  right:['Getting lost on a familiar route can be an early sign of Alzheimer’s. The entorhinal cortex, central to navigation, is one of the first regions affected.','Specialists have praised Julianne Moore’s portrayal of the disease’s progression as accurate.'],
+  wrong:['Little about the symptoms. Keep in mind that Alice has a rare inherited form that starts at 50; most people with Alzheimer’s develop it much later in life.'],
+  src:'Alzforum review; Nobel Assembly (2014).'},
+ {id:'moana',title:'Moana',sub:'Film, 2016',kind:'Animated adventure',films:[['Moana (2016)','https://www.imdb.com/title/tt3521164/']],verdict:['mixed','Real skill, magic help'],
+  desc:'Moana sails beyond her island’s reef and learns wayfinding: crossing the open ocean without instruments by reading the stars, the swells and the birds.',
+  right:['Polynesian wayfinding is real. In 1976 the voyaging canoe Hōkūleʻa sailed about 2,500 miles from Hawaiʻi to Tahiti without instruments.','Disney consulted Pacific experts, including master navigator Nainoa Thompson, on how wayfinders read the stars.'],
+  wrong:['Moana learns in a few days with help from the ocean and a demigod. Real wayfinders train for years, often from childhood.'],
+  note:['The brain connection','Like any navigator, a wayfinder keeps a running sense of heading and distance travelled, then corrects it with cues such as stars and swells. In the brain, head direction, grid and border cells are thought to support this kind of tracking.'],
+  src:'Hamacher & Bento Guedes (2017), UNSW; Polynesian Voyaging Society.'}],'popTabs','popPanels');
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Where does a grid cell fire?',o:['In one spot only','At the corners of a repeating pattern of triangles','Only near the walls'],a:1,f:'One grid cell fires at many spots that form a triangular grid across the whole space.'},
+ {q:'Why does the brain need grids of several sizes?',o:['Each grid repeats, so one alone can’t say exactly where you are','Bigger grids are more accurate','Each size works in a different room'],a:0,f:'Combining grids that repeat at different sizes pins down one position.'},
+ {q:'When you keep track of position from your own movements, what corrects the errors that build up?',o:['Walking faster','Landmarks','Closing your eyes'],a:1,f:'Landmarks and walls let the brain reset its estimate.'}];
+const box=document.getElementById('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','ent');
+})();
+</script>
+</body>
+</html>

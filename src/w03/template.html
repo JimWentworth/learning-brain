@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading Is Learned, Not Natural</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+
+.ptabs{display:flex;gap:6px;margin:18px 0 0;border-bottom:2px solid var(--night-line);flex-wrap:wrap}
+.ptabs button{appearance:none;background:transparent;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;color:#C9D3E3;font:700 18px var(--body);padding:10px 16px 8px;cursor:pointer;min-height:48px}
+.ptabs button[aria-selected="true"]{color:#fff;border-bottom-color:var(--orange)}
+.ptabs button:hover{color:#fff}
+.ptabs button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.ppanel{padding-top:6px}
+.ppanel:focus-visible{outline:3px solid #FCB316;outline-offset:4px}
+.ppanel[hidden]{display:none}
+.iguide{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;margin-top:22px}
+@media (max-width:760px){.iguide{grid-template-columns:minmax(0,1fr)}}
+.iguide h3{font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin:0 0 8px}
+.iguide ol,.iguide ul{margin:0 0 18px;padding-left:1.3em;color:#E9EEF6;font-size:17px;line-height:1.5}
+.iguide li{margin:0 0 8px}
+.iguide p{color:#E9EEF6;font-size:17px;line-height:1.5;margin:0 0 16px}
+.iguide .itime{display:inline-block;background:#1B2E50;border:1px solid var(--night-line);border-radius:16px;padding:3px 12px;font-weight:700;color:#fff;margin:0 0 14px}
+.icard{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:18px 20px}
+.pscreen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.pscreen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.pchoices{display:flex;gap:10px;flex-wrap:wrap}
+.pchoices[hidden]{display:none}
+.pchoices button{appearance:none;min-height:48px;padding:6px 18px;text-align:left;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer}
+.pchoices button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.pchoices button.ok{border-color:#7DD3A8;background:#173B33}.pchoices button.no{border-color:#FFB38A;background:#3B2420}
+.pchoices button:disabled{cursor:default}
+.mtext b.ok{color:#7DD3A8}.mtext b.no{color:#FFB38A}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.res .row{display:grid;grid-template-columns:150px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6;margin:6px 0}
+@media (max-width:520px){.res .row{grid-template-columns:100px minmax(0,1fr) 76px}}
+.res .bar{height:14px;background:#1B2E50;border-radius:7px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:7px}
+.res b{text-align:right;font-variant-numeric:tabular-nums}
+
+__COLLCSS__
+</style>
+<style>.xvnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Language and Learning · Topic 3</div>
+      <h1 id="title">Reading is learned, <em>not natural</em></h1>
+      <p class="dek">Speech comes naturally to children; reading does not. Writing is a recent invention, so the brain has to repurpose visual areas to read. Watching that happen, even in adults, says a lot about what fluency is.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#tryT">Try it first</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the occipital lobe, at the back, where reading begins, and the temporal lobe, where written words connect to spoken language, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<main id="main">
+<article>
+  <section class="night" aria-labelledby="tryT" style="margin-top:0">
+    <div class="col">
+      <h2 class="sec" id="tryT"><span class="n">Try it first</span>Read a new script</h2>
+      <p>A made-up alphabet for familiar English words. Watch your reading speed change in a few minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="ptabs" role="tablist" aria-label="Versions of this activity">
+        <button type="button" role="tab" id="tabS" aria-controls="panS" aria-selected="true">For students</button>
+        <button type="button" role="tab" id="tabI" aria-controls="panI" aria-selected="false" tabindex="-1">For instructors</button>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panS" aria-labelledby="tabS" tabindex="0">
+        <div class="lab">
+          <div class="pscreen" id="sScreen">
+            <svg id="rdKey" viewBox="0 0 520 84" width="100%" style="max-width:520px;display:block;background:#fff;border-radius:6px" role="img" aria-label="Key: each symbol and the letter it stands for."></svg>
+            <svg id="rdWord" viewBox="0 0 520 120" width="100%" style="max-width:520px;display:block;background:#F4F6FA;border-radius:6px" role="img" aria-label="A word written in the new script."></svg>
+            <p class="prog" id="rdP" aria-live="polite">&nbsp;</p>
+          </div>
+          <div>
+            <p class="phase" id="sPhase">Ready</p>
+            <p class="mtitle" id="sTitle">Read a new script</p>
+            <p class="mtext" id="sText" aria-live="polite">Eight letters, eight new symbols. Read 12 words, as fast as you can while staying accurate. For the last six, the key disappears.</p>
+            <div class="pchoices" id="sCh" role="group" aria-label="Your answer" hidden></div>
+            <div id="sRes"></div>
+            <div class="mrow"><button class="nbtn" id="sGo" type="button">Start</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panI" aria-labelledby="tabI" tabindex="0" hidden>
+        <div class="iguide">
+          <div>
+            <span class="itime">About 10 minutes</span>
+            <h3>Run it in class</h3>
+            <ol><li>Students do the 12 words on their own devices and note how their time per word changed.</li><li>Ask: how did it feel at the start? What were you paying attention to?</li><li>Ask: in the last six words, without the key, what were you relying on?</li><li>Connect to your subject: which notations, symbols or diagrams are a “new script” for your students?</li></ol>
+          </div>
+          <div class="icard">
+            <h3>Ask the room</h3>
+            <ul><li>What happened to your attention as decoding got faster?</li><li>What would it take to read this script as easily as English?</li><li>Which symbols in our field do beginners still have to decode letter by letter?</li></ul>
+            <h3>Connect it to your course</h3>
+            <p>New notation (chemical formulas, mathematical symbols, musical scores, code) is read slowly and effortfully at first, leaving little attention for meaning. Give short, frequent practice reading it until it becomes fluent.</p>
+            <h3>Good to know</h3><p>Some letters are also flipped or turned versions of each other, which is part of what makes early reading hard.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col lede">
+    <p>Reading is too recent an invention for evolution to have built a dedicated reading area. Instead, learning to read changes how existing visual and language areas work.</p>
+    <p>Stanislas Dehaene and colleagues scanned the brains of 63 adults: 10 who were illiterate, 22 who had learned to read as adults, and 31 who had learned as children. Literacy increased the response to written words in a region of the left fusiform gyrus, often called the visual word form area, and strengthened the response to speech in an area of the temporal lobe.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>63</strong><span>adults scanned: illiterate, literate as adults, and literate as children</span></div>
+      <div role="listitem"><strong>Left fusiform</strong><span>the region that learns to respond to written words</span></div>
+      <div role="listitem"><strong>Faces</strong><span>lost a little ground there as reading gained it</span></div>
+      <div role="listitem"><strong>Adults too</strong><span>most changes also appeared when people learned to read in adulthood</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Recycling</span>A new job for visual cortex</h2>
+    <p>As literacy increased the response to writing in the left fusiform region, it produced a small competition with faces at the same location. Literacy also broadly enhanced visual responses in fusiform and occipital cortex, and gave spoken words a route to activate their spelling.</p>
+    <h2 class="sec"><span class="n">Never too late</span>Adult learners change too</h2>
+    <p>Most of these changes appeared even in people who learned to read as adults. The authors emphasise that both childhood and adult education can profoundly refine how the cortex is organised.</p>
+    <h2 class="sec"><span class="n">Fluency</span>Why decoding speed matters</h2>
+    <p>In the activity, the first words took effort: finding each symbol, holding letters in mind, then guessing the word. As the mapping became automatic, attention was freed for the word itself. That freed attention is what comprehension needs.</p>
+    <h2 class="sec"><span class="n">For learning</span>Every discipline has a script</h2>
+    <p>Students meeting chemical structures, equations, musical notation or code for the first time are decoding a new script. Until reading it is fluent, little attention is left for meaning. Short, frequent practice reading the notation itself can pay off.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Check your intuition</span>Predict the findings</h2>
+      <p>For each study on this page, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Make the notation fluent, so attention can go to meaning.</h2>
+    <ol class="tips">
+      <li><b>Spot the new scripts</b><span>Which symbols in your course are still decoded letter by letter?</span></li>
+      <li><b>Short, frequent reading practice</b><span>A few minutes reading notation aloud or translating it.</span></li>
+      <li><b>Expect adult learners to change</b><span>The brain reorganises for reading at any age.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1126/science.1194140">Dehaene, S., Pegado, F., Braga, L. W., Ventura, P., Nunes Filho, G., Jobert, A., Dehaene-Lambertz, G., Kolinsky, R., Morais, J., &amp; Cohen, L. (2010). How learning to read changes the cortical networks for vision and language. <i>Science, 330</i>(6009), 1359–1364.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The script is made up for this activity. The brain drawing is a simplified illustration.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.occ.lab=[960,-60];BR.R.occ.al='right';BR.R.tem.lab=[300,770];BR.R.tem.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['occ','tem'],labels:['occ','tem'],labelT:{occ:0.8,tem:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+
+
+
+/* ---------- tabs ---------- */
+(function(){const tl=document.querySelector('.ptabs');if(!tl)return;const tabs=[...tl.querySelectorAll('[role=tab]')];
+ function sel(t,focus){tabs.forEach(b=>{const on=b===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;$(b.getAttribute('aria-controls')).hidden=!on});if(focus)t.focus()}
+ tabs.forEach((b,i)=>{b.addEventListener('click',()=>sel(b));b.addEventListener('keydown',e=>{let j=null;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;if(j!==null){e.preventDefault();sel(tabs[j],true)}})})})();
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?Math.min(100,val/mx*100):0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+let RUN=null;
+function ask(opts,lab){return new Promise(res=>{const c=$('sCh');c.setAttribute('aria-label',lab||'Your answer');c.innerHTML=opts.map((t,j)=>`<button type="button" data-v="${j}">${t}</button>`).join('');c.hidden=false;RUN.res=res;c.querySelector('button').focus()})}
+$('sCh').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!RUN||!RUN.res||b.disabled)return;const r=RUN.res;RUN.res=null;$('sCh').querySelectorAll('button').forEach(x=>x.disabled=true);r(+b.dataset.v)});
+function mark(right,chosen){$('sCh').querySelectorAll('button').forEach((b,j)=>{if(j===right)b.classList.add('ok');else if(j===chosen)b.classList.add('no')})}
+function hideCh(){$('sCh').hidden=true;$('sCh').innerHTML=''}
+function nextBtn(label){return new Promise(res=>{const g=$('sGo');g.textContent=label;g.hidden=false;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.hidden=true;res()}})}
+function say(phase,title,text){if(phase!=null)$('sPhase').textContent=phase;if(title!=null)$('sTitle').textContent=title;if(text!=null)$('sText').innerHTML=text}
+function startRun(fn){$('sGo').addEventListener('click',async()=>{if(RUN)return;RUN={};const g=$('sGo');g.hidden=true;$('sRes').innerHTML='';try{await fn()}finally{hideCh();g.onclick=null;g.textContent='Try again';g.hidden=false;g.disabled=false;RUN=null}})}
+
+/* ---------- new script ---------- */
+const GLY={"a": "<circle cx=\"20\" cy=\"20\" r=\"13\" fill=\"none\" stroke=\"#13294B\" stroke-width=\"5\"/>", "e": "<path d=\"M20 5 L35 34 L5 34 Z\" fill=\"none\" stroke=\"#13294B\" stroke-width=\"5\" stroke-linejoin=\"round\"/>", "n": "<path d=\"M10 5 V35 M30 5 V35\" stroke=\"#13294B\" stroke-width=\"5\"/>", "o": "<rect x=\"7\" y=\"7\" width=\"26\" height=\"26\" fill=\"none\" stroke=\"#13294B\" stroke-width=\"5\"/>", "p": "<path d=\"M20 5 V35 M20 5 A9 9 0 1 1 20 23\" fill=\"none\" stroke=\"#13294B\" stroke-width=\"5\"/>", "r": "<path d=\"M6 32 L20 8 L34 32\" fill=\"none\" stroke=\"#13294B\" stroke-width=\"5\" stroke-linejoin=\"round\"/>", "s": "<path d=\"M6 10 L16 30 L24 10 L34 30\" fill=\"none\" stroke=\"#13294B\" stroke-width=\"5\" stroke-linejoin=\"round\"/>", "t": "<path d=\"M20 5 V35 M8 14 H32\" stroke=\"#13294B\" stroke-width=\"5\"/>"};
+const KEYS=Object.keys(GLY);
+$('rdKey').innerHTML=KEYS.map((k,i)=>`<g transform="translate(${10+i*64},6) scale(.9)">${GLY[k]}</g><text x="${28+i*64}" y="76" text-anchor="middle" font-family="Source Sans 3,sans-serif" font-size="24" font-weight="700" fill="#13294B">${k}</text>`).join('');
+const WL=[['stop',['pots','post','spot']],['rest',['tears','sent','rose']],['near',['earn','rate','pear']],['tone',['note','tore','nose']],['snap',['pans','span','naps']],['rope',['pore','repo','tops']],['seat',['east','teas','sate']],['star',['rats','arts','tars']],['poet',['tope','pots','port']],['nose',['ones','tone','sore']],['parent',['patron','person','prates']],['toast',['stoat','oats','taps']]];
+function draw(w){const n=w.length,x0=260-n*30;$('rdWord').innerHTML=[...w].map((c,i)=>`<g transform="translate(${x0+i*60+6},26) scale(1.25)">${GLY[c]}</g>`).join('')}
+startRun(async()=>{$('rdKey').style.visibility='visible';const list=shuf(WL.slice());const times=[];let right=0,right2=0;
+ for(let i=0;i<12;i++){const [w,ds]=list[i];if(i===6){$('rdKey').style.visibility='hidden';say('Without the key',null,'The key is gone. Read from memory.');await nextBtn('Continue');if(!RUN)return}
+  draw(w);$('rdP').textContent=`Word ${i+1} of 12`+(i>=6?' · no key':'');say(i<6?'With the key':'Without the key','Which word is this?','');
+  const opts=shuf([w,...ds]);const t0=performance.now();const a=await ask(opts,'Which word is this?');if(!RUN)return;const t=(performance.now()-t0)/1000;times.push(t);
+  const ok=opts[a]===w;if(ok){if(i<6)right++;else right2++}mark(opts.indexOf(w),a);
+  say(null,null,(ok?'<b class="ok">Right.</b> ':`<b class="no">Not quite.</b> It was “${w}”. `)+`${t.toFixed(1)} seconds.`);await sw(ok?700:1400);if(!RUN)return;hideCh()}
+ $('rdWord').innerHTML='';$('rdKey').style.visibility='visible';$('rdP').textContent=' ';
+ const m=a=>a.reduce((x,y)=>x+y,0)/a.length,f=m(times.slice(0,3)),l=m(times.slice(3,6)),nk=m(times.slice(6)),mx=Math.max(f,l,nk);
+ $('sRes').innerHTML='<div class="res">'+barRow('First 3',f,mx,f.toFixed(1)+' s','#FCB316')+barRow('Next 3',l,mx,l.toFixed(1)+' s','#FCB316')+barRow('No key',nk,mx,nk.toFixed(1)+' s','#7DD3A8')+'</div>';
+ say('What happened',l<f?'You got faster in minutes':'Decoding takes practice',`With the key: ${right} of 6 right. Without it: ${right2} of 6. At first, each word meant finding symbols one by one. As the mapping becomes automatic, reading speeds up and attention can move to meaning. That is the early stage of what every reader goes through, and what the brain reorganises itself to support.`)});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['How many adults did Dehaene and colleagues scan?',['63','6','630'],0,'10 illiterate, 22 literate as adults, 31 literate as children.'],
+ ['Literacy increased the response to written words in…',['A region of the left fusiform gyrus','The right frontal lobe','The brainstem'],0,'The visual word form area.'],
+ ['What lost a little ground in that region as reading gained it?',['Faces','Music','Colour'],0,'A small competition with faces.'],
+ ['Did most changes appear in people who learned to read as adults?',['Yes','No','Only half'],0,'Adult education can refine cortical organisation.'],
+ ['Literacy also strengthened the brain’s response to…',['Speech','Smell','Touch'],0,'In the planum temporale, part of the temporal lobe.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: reading rewires the brain at any age, and fluency frees attention for meaning.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Learning to read increases the response to written words in…',o:['A region of the left fusiform gyrus','The cerebellum','The right ear'],a:0,f:'Often called the visual word form area.'},
+ {q:'Did brain changes appear in people who learned to read as adults?',o:['Yes, most of them','No, only in children','Only in reading speed'],a:0,f:'Dehaene and colleagues, 2010.'},
+ {q:'Why does decoding speed matter for comprehension?',o:['Fluent decoding frees attention for meaning','Fast readers skip words','It doesn’t'],a:0,f:'Effortful decoding uses up attention.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','w03');
+})();
+</script>
+</body>
+</html>

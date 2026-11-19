@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Writing Is Thinking: What Happens When AI Writes the Essay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}
+.qq{font:600 clamp(18px,2.2vw,21px)/1.45 var(--body);color:#fff;max-width:42ch;margin:0;text-align:center}
+.wnote{font:600 15px/1.45 var(--body);color:#C9D3E3;margin:0;text-align:center;max-width:44ch}
+.wform{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:560px}
+.wform[hidden]{display:none}
+.wform textarea{width:100%;min-height:200px;font:500 17px/1.5 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;padding:10px 12px;box-sizing:border-box;resize:vertical}
+.wform textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.wclock{font:800 44px var(--body);color:#FCB316;margin:0}
+.wclock[hidden]{display:none}
+.jb{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.jb[hidden]{display:none}
+.gfb{font:600 16px/1.45 var(--body);color:#FFB38A;min-height:1.4em;margin:0;text-align:center}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Generative AI · Topic 9</div>
+      <h1 id="title">Writing is thinking <em>Hand it off, and the encoding goes with it</em></h1>
+      <p class="dek">Minutes after writing an essay with ChatGPT, most students couldn’t quote a sentence from it. Writing is not only a way to show thinking. It is where much of the thinking happens.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#wT">Can you quote it?</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the prefrontal cortex, at the front, and the temporal lobe, at the side, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Writing is thinking</b> · The Learning Brain, Generative AI, episode 9</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Fifty-four students wrote short essays over four months, in three groups: with ChatGPT, with a search engine, or with only their own heads. Electrodes recorded their brain activity (EEG) as they wrote. Nataliya Kosmyna and colleagues at the MIT Media Lab posted the results in 2025.</p>
+    <p>Brain connectivity scaled down with the amount of outside support. The unaided group showed the strongest, most widespread networks. Search users were in between. The AI group showed the weakest.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>54</strong><span>students writing essays over four months</span></div>
+      <div role="listitem"><strong>~83%</strong><span>of the AI group couldn’t correctly quote their own essay, minutes after writing it</span></div>
+      <div role="listitem"><strong>~11%</strong><span>in each of the other groups</span></div>
+      <div role="listitem"><strong>18</strong><span>students in a fourth session, where the groups swapped</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Memory and ownership</span>Written, but not remembered</h2>
+    <p>Minutes after finishing, most of the AI group could not correctly quote a sentence from the essay they had just written. In the first session the reported figure was about 83%, against about 11% in the other groups. They also felt the least ownership of their essays.</p>
+  </div>
+
+  <section class="night" aria-labelledby="wT">
+    <div class="col">
+      <h2 class="sec" id="wT"><span class="n">Try it</span>Can you quote it?</h2>
+      <p>Write two very short essays: one in your own words, and one starting from a simulated assistant’s draft (written for this page), which you can edit. After a short break, try to type a sentence from each. About 4 minutes. Nothing you write leaves this page.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="wScreen">
+          <p class="qq" id="wQ" aria-live="polite">Press Start.</p>
+          <p class="wnote" id="wN"></p>
+          <form class="wform" id="wF" hidden><label class="sr-only" for="wI" id="wIL">Your text</label><textarea id="wI" spellcheck="true"></textarea><button class="nbtn" type="submit" id="wSub">Submit</button></form>
+          <p class="gfb" id="wFb" aria-live="polite"></p>
+          <p class="wclock" id="wC" hidden aria-live="off"></p>
+          <div class="jb" id="wB" hidden role="group" aria-label="Which feels more like yours?"></div>
+          <p class="prog" id="wProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="wPhase">Ready</p>
+          <p class="mtitle" id="wTitle">Write, break, quote</p>
+          <p class="mtext" id="wText" aria-live="polite">Two essays of two or three sentences each.</p>
+          <div id="wRes"></div>
+          <div class="mrow"><button class="nbtn" id="wGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The swap</span>Unaided first, then AI</h2>
+    <p>In a fourth session, the groups swapped. Students who had first written unaided, and then used AI, showed higher engagement and used it more strategically. Students moving the other way showed weaker connectivity than those who had practised unaided all along.</p>
+    <h2 class="sec"><span class="n">Generation</span>Where the thinking happens</h2>
+    <p>This is the generation effect again. Writing is not only a way to show thinking. It is where much of the thinking happens. Hand it off, and the encoding goes with it.</p>
+    <h2 class="sec"><span class="n">A caution</span>A warning sign, not a verdict</h2>
+    <p>This is a preprint with a small sample: 54 people, and only 18 in the swap session. EEG connectivity is an indirect measure. Treat it as a warning sign, not a verdict.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each study in the video, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Protect an unaided stage</h3>
+      <p>Have students draft their ideas and structure before any AI use. Ask them to explain or quote their own work afterwards. And when AI comes in, use it to critique and extend a draft the student already owns.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>If AI does the writing, the thinking may never happen</h2>
+    <ol class="tips">
+      <li><b>Draft first, unaided</b><span>Ideas and structure before any AI.</span></li>
+      <li><b>Explain or quote it back</b><span>Can students say what their own work says?</span></li>
+      <li><b>AI to critique and extend</b><span>A draft the student already owns.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://arxiv.org/abs/2506.08872">Kosmyna, N., Hauptmann, E., Yuan, Y. T., Situ, J., Liao, X.-H., Beresnitzky, A. V., Braunstein, I., &amp; Maes, P. (2025). Your brain on ChatGPT: Accumulation of cognitive debt when using an AI assistant for essay writing task. <i>arXiv preprint</i> 2506.08872.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.tem.lab=[600,770];BR.R.tem.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['pfc','tem'],labels:['pfc','tem'],labelT:{pfc:0.8,tem:1.0},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- can you quote it? ----------
+   Two prompts, randomly assigned: one written unaided, one starting from a simulated draft (editable).
+   20-second break, then type one sentence from each (in writing order). Score: best overlap with any sentence of what was submitted.
+   Then: which feels more like yours? */
+const WP=[
+ ['What makes a teacher memorable?','A memorable teacher combines deep knowledge of their subject with genuine care for students. They ask questions that spark curiosity rather than simply delivering facts. Their enthusiasm is contagious, and they make every student feel that their ideas matter.'],
+ ['Why do people enjoy music?','Music engages both emotion and memory, linking sounds to moments in our lives. Its patterns of tension and release create a satisfying sense of anticipation. Sharing music with others also builds a feeling of connection and belonging.']];
+const sents=t=>t.split(/(?<=[.!?])\s+/).map(s=>s.trim()).filter(s=>toks(s).length>=3);
+function overlap(rec,txt){const r=toks(rec);let best=0;(sents(txt).length?sents(txt):[txt]).forEach(s=>{const w=toks(s);if(!w.length)return;const hit=w.filter(x=>r.some(y=>match(y,x))).length;best=Math.max(best,hit/Math.max(w.length,r.length))});return best}
+let wr=null;
+function wWrite(q,note,pre,label,minW){return new Promise(res=>{wr.res=res;wr.minW=minW;$('wQ').textContent=q;$('wN').textContent=note;$('wIL').textContent=label;$('wI').value=pre;$('wFb').textContent='';$('wF').hidden=false;$('wI').focus()})}
+$('wF').addEventListener('submit',e=>{e.preventDefault();if(!wr||!wr.res)return;const v=$('wI').value.trim();const n=v.split(/\s+/).filter(Boolean).length;
+ if(n<wr.minW){$('wFb').textContent=wr.minW>3?`Please write at least ${wr.minW} words (you have ${n}).`:'Type what you remember, even a few words.';$('wI').focus();return}
+ const r=wr.res;wr.res=null;$('wF').hidden=true;$('wFb').textContent='';r(v)});
+function wPick(){return new Promise(res=>{wr.pres=res;const b=$('wB');b.innerHTML=[['o','The one I wrote'],['a','The one the assistant drafted'],['b','Both equally']].map(([k,t],j)=>`<button class="nbtn${j?' ghost':''}" type="button" data-v="${k}">${t}</button>`).join('');b.hidden=false;b.querySelector('button').focus()})}
+$('wB').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!wr||!wr.pres)return;const r=wr.pres;wr.pres=null;$('wB').hidden=true;r(b.dataset.v)});
+function wBreak(sec){return new Promise(res=>{const c=$('wC');c.hidden=false;let s=sec;c.textContent=s;const tick=()=>{if(!wr)return;s--;c.textContent=s;if(s<=0){c.hidden=true;res()}else wr.tm=setTimeout(tick,1000)};wr.tm=setTimeout(tick,1000)})}
+const pct=x=>Math.round(x*100);
+$('wGo').addEventListener('click',async()=>{if(wr)return;wr={};const g=$('wGo');g.disabled=true;g.textContent='In progress';$('wRes').innerHTML='';
+ const [P,Q]=shuf([...WP]);const ownFirst=Math.random()<.5;const own={p:P[0]},ai={p:Q[0],draft:Q[1]};const order=ownFirst?[own,ai]:[ai,own];
+ $('wPhase').textContent='Write';
+ for(let i=0;i<2;i++){const e=order[i];$('wProg').textContent=`Essay ${i+1} of 2`;
+  if(e===own){$('wTitle').textContent='In your own words';$('wText').textContent='Two or three sentences. No need to polish.';
+   e.txt=await wWrite(e.p,'Write two or three sentences of your own (at least 15 words).','','Your essay',15)}
+  else{$('wTitle').textContent='With the assistant';$('wText').textContent='Edit the draft as much or as little as you like, then submit.';
+   e.txt=await wWrite(e.p,'An assistant drafted this answer. Edit it as you like, then submit it as your essay.',e.draft,'Your essay, starting from the assistant’s draft',15)}
+  if(!wr)return}
+ $('wPhase').textContent='Short break';$('wTitle').textContent='20 seconds';$('wText').textContent='A short gap before the quiz.';$('wProg').textContent='';
+ $('wQ').textContent='Count backwards from 100 in threes, in your head.';$('wN').textContent='';await wBreak(20);if(!wr)return;
+ $('wPhase').textContent='Quote it';$('wTitle').textContent='From memory';$('wText').textContent='Type one sentence from each essay, as exactly as you can.';
+ for(let i=0;i<2;i++){const e=order[i];$('wProg').textContent=`Quote ${i+1} of 2`;
+  const rec=await wWrite(e.p,`Type one sentence from your essay on this question, as exactly as you can.`,'','One sentence from your essay',1);if(!wr)return;e.score=overlap(rec,e.txt)}
+ $('wQ').textContent='Which essay feels more like yours?';$('wN').textContent='';$('wProg').textContent='';$('wPhase').textContent='Ownership';$('wTitle').textContent='One last question';$('wText').textContent='Go with your first reaction.';
+ const feel=await wPick();if(!wr)return;
+ $('wQ').textContent='Done.';$('wPhase').textContent='Your results';
+ const sim=(a,b)=>{const A=toks(a),B=toks(b);return A.filter(x=>B.includes(x)).length/Math.max(A.length,B.length,1)};const edited=sim(ai.draft,ai.txt)<0.7;
+ $('wRes').innerHTML=`<div class="res wl2"><p class="gh">Best match to a sentence you submitted</p>${barRow('Your own essay',own.score,1,pct(own.score)+'%','#7DD3A8')}${barRow('Assistant’s draft',ai.score,1,pct(ai.score)+'%','#FCB316')}</div>`;
+ const Ok=own.score>=0.8,Ak=ai.score>=0.8;let title,text;
+ if(Ok&&!Ak){title='Yours stuck; the draft didn’t';text=`You could quote your own essay (${pct(own.score)}% match) but not the one that started as the assistant’s (${pct(ai.score)}%). Producing the words is what lays them down.`}
+ else if(Ok&&Ak){title='You could quote both';text=edited?`Both matched well. You edited the assistant’s draft a lot, which may have made it yours: the effort of rewriting is generation too.`:`Both matched well, with only a short gap and very short essays. In the study, after 20 minutes of writing, about 83% of the AI group couldn’t quote their essay.`}
+ else if(Ak&&!Ok){title='The draft stuck better this time';text=`You quoted the assistant’s draft better (${pct(ai.score)}%) than your own (${pct(own.score)}%). Perhaps you read it closely, or your own essay was longer. With one try each, chance plays a big part.`}
+ else if(own.score>ai.score+0.15){title='Closer for your own';text=`Neither quote was close to exact, but your own essay came closer (${pct(own.score)}% against ${pct(ai.score)}%). Writing it yourself left more behind.`}
+ else{title='Neither stuck exactly';text=`Your quotes matched ${pct(own.score)}% of your own essay and ${pct(ai.score)}% of the drafted one. Exact recall is hard; the study’s gap was between groups, over many people.`}
+ text+=feel==='o'?' And your own essay felt more like yours, which matches the study.':feel==='a'?' Interestingly, the drafted essay felt more like yours.':' You felt both were equally yours.';
+ $('wTitle').textContent=title;$('wText').textContent=text;g.textContent='Try again';g.disabled=false;g.focus();wr=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Brain connectivity while writing was strongest…',['With no tools at all','With a search engine','With ChatGPT'],0,'Kosmyna and colleagues, 2025. It scaled down with outside support.'],
+ ['Search engine users’ connectivity was…',['In between','The strongest','The weakest'],0,'The AI group showed the weakest.'],
+ ['In the first session, the share of the AI group who couldn’t correctly quote their essay was about…',['83%','11%','50%'],0,'Against about 11% in each of the other groups.'],
+ ['Which group felt the least ownership of their essays?',['The AI group','The unaided group','The search group'],0,'Ownership tracked who did the writing.'],
+ ['In the swap session, students who wrote unaided first and then used AI…',['Showed higher engagement and used it more strategically','Stopped using it','Did worst of all'],0,'Students moving the other way showed weaker connectivity.'],
+ ['How much weight should this study carry?',['A warning sign: a small preprint with an indirect measure','A settled verdict','None at all'],0,'54 people, and only 18 in the swap session.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: the more the tool writes, the less the writer’s brain engages and remembers. Protect an unaided stage.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Brain connectivity while writing was weakest…',o:['With ChatGPT','With a search engine','With no tools'],a:0,f:'It scaled down with the amount of outside support.'},
+ {q:'Minutes after writing, most of the AI group…',o:['Couldn’t correctly quote their own essay','Could quote it word for word','Had forgotten the topic'],a:0,f:'About 83% in the first session, against about 11% in the other groups.'},
+ {q:'Which order worked better in the swap session?',o:['Unaided first, then AI','AI first, then unaided','No difference'],a:0,f:'Students who had written unaided first used AI more strategically.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','a09');
+})();
+</script>
+</body>
+</html>

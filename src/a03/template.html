@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Jagged Frontier: Where AI Helps and Where It Misleads</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}
+.qq{font:600 clamp(18px,2.2vw,21px)/1.45 var(--body);color:#fff;max-width:42ch;margin:0}
+.ai{background:#0F2240;border:1px solid #3A4E72;border-radius:10px;padding:12px 14px;max-width:42ch;width:100%;margin:0;color:#E9EEF6;font-size:18px;line-height:1.45}
+.ai b{display:block;font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#FCB316;margin-bottom:4px}
+.ai[hidden]{display:none}
+.jb{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.jb[hidden]{display:none}
+.gin{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.gin[hidden]{display:none}
+.gin input{width:180px;min-height:50px;font:700 20px var(--body);text-align:center;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff}
+.gin input:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.gfb{font:600 17px/1.45 var(--body);color:#E9EEF6;min-height:1.5em;margin:0;text-align:center;max-width:42ch}
+.gfb b.ok{color:#7DD3A8}.gfb b.no{color:#FFB38A}
+.rlist{margin:8px 0 14px;padding-left:20px;color:#E9EEF6;font-size:16px;line-height:1.5}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Generative AI · Topic 3</div>
+      <h1 id="title">The jagged frontier <em>Real, but invisible</em></h1>
+      <p class="dek">On some tasks AI makes people much faster and better; on others that look just as hard, it makes them worse, and sounds just as confident. Finding the edge is now part of learning.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#jT">Accept or check?</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the prefrontal cortex, at the front, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>The jagged frontier</b> · The Learning Brain, Generative AI, episode 3</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>In 2023, Fabrizio Dell’Acqua, Ethan Mollick, Karim Lakhani and colleagues gave 758 consultants at a global firm realistic tasks, some with an AI model and some without. On tasks inside the AI’s abilities, those with AI finished 12% more tasks, a quarter faster, at more than 40% higher quality.</p>
+    <p>But one task was chosen to sit just outside what the AI could do. There, consultants using AI were 19 percentage points less likely to get the right answer. The tool sounded just as confident.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>758</strong><span>consultants in a pre-registered experiment</span></div>
+      <div role="listitem"><strong>+40%</strong><span>quality on tasks inside the frontier</span></div>
+      <div role="listitem"><strong>−19 points</strong><span>in correct answers on a task just outside it</span></div>
+      <div role="listitem"><strong>+34%</strong><span>productivity for novice support agents, with little effect for experts</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">A jagged frontier</span>The line is invisible from the inside</h2>
+    <p>The researchers called this a jagged frontier. Tasks that look equally hard can fall on either side, and the line is invisible from the inside.</p>
+  </div>
+
+  <section class="night" aria-labelledby="jT">
+    <div class="col">
+      <h2 class="sec" id="jT"><span class="n">Try it</span>Accept or check?</h2>
+      <p>A simulated assistant answers eight short questions, confidently. The answers were written for this page, not produced by a real AI, and some may be wrong. For each, accept the answer or work it out yourself. About 3 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="jScreen">
+          <p class="qq" id="jQ" aria-live="polite">Press Start.</p>
+          <p class="ai" id="jA" hidden></p>
+          <div class="jb" id="jB" hidden><button class="nbtn" type="button" data-v="a">Accept</button><button class="nbtn ghost" type="button" data-v="c">Check it myself</button></div>
+          <form class="gin" id="jGen" hidden><label class="sr-only" for="jGi">Your own answer</label><input id="jGi" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Your answer"><button class="nbtn" type="submit">OK</button></form>
+          <p class="gfb" id="jFb" aria-live="polite"></p>
+          <div class="mrow" style="justify-content:center"><button class="nbtn ghost" id="jNext" type="button" hidden>Next question</button></div>
+          <p class="prog" id="jProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="jPhase">Ready</p>
+          <p class="mtitle" id="jTitle">Where is the edge?</p>
+          <p class="mtext" id="jText" aria-live="polite">Accepting is quick. Checking takes effort. You decide, question by question.</p>
+          <div id="jRes"></div>
+          <div class="mrow"><button class="nbtn" id="jGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Levelling</span>Novices gain most, and see least</h2>
+    <p>AI also levels skill. Consultants below average improved by 43%, those above by 17%. In a study of 5,179 customer-support agents, Erik Brynjolfsson, Danielle Li and Lindsey Raymond found that AI raised productivity by 14% overall and by 34% for novices, with little effect for experts.</p>
+    <p>For learning, that levelling cuts two ways. Novices gain the most performance, and they are also the least able to tell when the AI is wrong.</p>
+    <h2 class="sec"><span class="n">Centaurs and cyborgs</span>Two ways that worked</h2>
+    <p>Successful users worked in two ways. Centaurs split the task, deciding what to hand off. Cyborgs worked in constant back-and-forth. Both kept judging the output.</p>
+    <h2 class="sec"><span class="n">A caution</span>Performance, not learning</h2>
+    <p>These are workplace studies of performance, not learning, using models from 2023. The frontier has moved since, and it is still jagged.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each study in the video, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Teach students to find the edge</h3>
+      <p>Map your own assignments against the frontier: where does AI help, and where does it mislead? Give students one task deliberately outside it, so they learn to spot the edge. And require a check step before any AI answer is accepted.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>The frontier is real, but invisible</h2>
+    <ol class="tips">
+      <li><b>Map your assignments</b><span>Where does AI help, and where does it mislead?</span></li>
+      <li><b>One task outside the frontier</b><span>So students learn to spot the edge.</span></li>
+      <li><b>A check step, always</b><span>Before any AI answer is accepted.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://mitsloan.mit.edu/sites/default/files/2023-10/SSRN-id4573321.pdf">Dell’Acqua, F., McFowland, E., Mollick, E., et al. (2023). Navigating the jagged technological frontier: Field experimental evidence of the effects of AI on knowledge worker productivity and quality. <i>Harvard Business School Working Paper 24-013</i>.</a></li>
+        <li><a href="https://www.nber.org/papers/w31161">Brynjolfsson, E., Li, D., &amp; Raymond, L. R. (2023). Generative AI at work. <i>NBER Working Paper 31161</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['pfc'],labels:['pfc'],labelT:{pfc:0.8},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- accept or check? ----------
+   8 questions with simulated, confident answers (written for this page). Two are wrong (classic trick questions).
+   Accept, or check by entering your own answer. Then the correct answer is shown (after checking) or at the end (if accepted). */
+const QS=[
+ ['What is 15% of 80?','15% of 80 is 12.',1,['12'],'12. 10% is 8, and 5% is 4.'],
+ ['A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost?','The ball costs 10 cents.',0,['5','0.05','.05','$0.05','5c','5 cents','five cents','five'],'5 cents. If the ball were 10 cents, the bat would be $1.10 and the total $1.20.'],
+ ['How many days are there in a leap year?','A leap year has 366 days.',1,['366'],'366.'],
+ ['If 5 machines take 5 minutes to make 5 widgets, how long would 100 machines take to make 100 widgets?','100 machines would take 100 minutes.',0,['5','5 minutes','five','five minutes'],'5 minutes. Each machine makes one widget in 5 minutes, however many machines there are.'],
+ ['How many minutes are there in 3 hours and 15 minutes?','That is 195 minutes.',1,['195'],'195.'],
+ ['What comes next: 2, 4, 8, 16, …?','The next number is 32.',1,['32'],'32. Each number doubles.'],
+ ['Rearrange the letters of LISTEN to make another word.','SILENT.',1,['silent','enlist','tinsel','inlets'],'SILENT works; so do ENLIST and TINSEL.'],
+ ['A patch of lily pads doubles in size every day. It takes 48 days to cover the lake. How long to cover half the lake?','It takes 47 days.',1,['47','47 days'],'47 days. It doubles to cover the whole lake on the last day.']];
+const norm=v=>v.toLowerCase().replace(/\s+/g,' ').replace(/[^a-z0-9.$ ]/g,'').trim();
+let jr=null;
+function choose(){return new Promise(res=>{jr.res=res;const b=$('jB');b.hidden=false;b.querySelector('button').focus()})}
+$('jB').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!jr||!jr.res)return;const r=jr.res;jr.res=null;$('jB').hidden=true;r(b.dataset.v)});
+function ask(){return new Promise(res=>{jr.gres=res;$('jGen').hidden=false;$('jGi').value='';$('jGi').focus()})}
+$('jGen').addEventListener('submit',e=>{e.preventDefault();if(!jr||!jr.gres)return;const r=jr.gres;jr.gres=null;$('jGen').hidden=true;r(norm($('jGi').value))});
+function next(label){return new Promise(res=>{const b=$('jNext');b.textContent=label;b.hidden=false;b.focus();b.onclick=()=>{b.onclick=null;b.hidden=true;res()}})}
+$('jGo').addEventListener('click',async()=>{if(jr)return;jr={};const g=$('jGo');g.disabled=true;g.textContent='In progress';$('jRes').innerHTML='';
+ const order=shuf([...QS]);let acc=0,chk=0,accWrong=[],caught=0,fooled=0,right=0;
+ $('jPhase').textContent='Accept or check';$('jTitle').textContent='Your call';
+ for(let i=0;i<order.length;i++){const [q,a,ok,good,ex]=order[i];$('jProg').textContent=`Question ${i+1} of 8`;$('jQ').textContent=q;$('jA').innerHTML=`<b>Assistant</b>${a}`;$('jA').hidden=false;$('jFb').textContent='';
+  const c=await choose();if(!jr)return;
+  if(c==='a'){acc++;if(ok)right++;else accWrong.push([q,ex]);$('jFb').textContent='Accepted.'}
+  else{chk++;const v=await ask();if(!jr)return;const mine=good.some(x=>norm(x)===v);if(mine)right++;
+   if(!ok&&mine)caught++;if(!ok&&!mine)fooled++;
+   $('jFb').innerHTML=(mine?'<b class="ok">Your answer is right.</b> ':'<b class="no">Not quite.</b> ')+(ok?'The assistant was right too. ':'<b class="no">The assistant was wrong.</b> ')+'The answer: '+ex}
+  if(i<7){await next('Next question');if(!jr)return}}
+ $('jQ').textContent='Done.';$('jA').hidden=true;$('jFb').textContent='';$('jProg').textContent='';$('jPhase').textContent='Your results';
+ const W=accWrong.length;
+ $('jRes').innerHTML=`<div class="res wl2"><p class="gh">Out of 8</p>${barRow('Accepted',acc,8,acc+' of 8','#C9D3E3')}${barRow('Checked',chk,8,chk+' of 8','#FCB316')}${barRow('Right in the end',right,8,right+' of 8','#7DD3A8')}</div>`+(W?`<p class="gh" style="color:#FFB38A">Wrong answers you accepted</p><ul class="rlist">${accWrong.map(([q,ex])=>`<li>${q} <b>${ex}</b></li>`).join('')}</ul>`:'');
+ let title,text;
+ if(W===2){title='Both wrong answers got through';text=`You accepted ${acc} answers, including both wrong ones. They sounded as confident as the right ones, and the questions looked no harder. That is the jagged frontier: the edge is invisible from the inside.`}
+ else if(W===1){title='One wrong answer got through';text=`You accepted ${acc} answers, and one of them was wrong. You checked ${chk}.`+(caught?` Checking caught ${caught===1?'one wrong answer':'the other'}.`:'')+' Nothing in the tone told the right answers from the wrong ones.'}
+ else if(fooled>0){title='You checked, but the trick got you';text=`You didn’t accept any wrong answers, but when you checked, ${fooled===1?'one of the trick questions':'the trick questions'} led you to the same wrong answer as the assistant. Checking only helps when you know enough to check. Two of the questions are classic traps.`}
+ else if(chk===8){title='Careful, and slow';text=`You checked all 8 and caught both wrong answers. That works, but checking everything costs time. The skill is knowing where the edge is likely to be, and checking there.`}
+ else{title='You found the edge';text=`You accepted ${acc}, checked ${chk}, and let no wrong answers through. Two of the eight were wrong, written as confidently as the rest.`}
+ $('jTitle').textContent=title;$('jText').textContent=text;g.textContent='Try again';g.disabled=false;g.focus();jr=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Consultants with AI, on tasks inside its abilities',['Finished 12% more tasks, faster, at over 40% higher quality','Did about the same','Did worse'],0,'Dell’Acqua and colleagues, 2023.'],
+ ['On a task just outside the AI’s abilities',['19 percentage points less likely to be right','Slightly better','The same'],0,'The tool sounded just as confident.'],
+ ['Consultants below average, with AI',['Improved by 43%','Improved by 17%','Didn’t improve'],0,'Those above average improved by 17%.'],
+ ['Novice customer-support agents with AI',['34% more productive','Less productive','No change'],0,'With little effect for experts.'],
+ ['Who is least able to tell when the AI is wrong?',['Novices','Experts','Everyone equally'],0,'Levelling cuts two ways for learners.'],
+ ['These studies measured…',['Workplace performance, with 2023 models','Long-term learning','Children’s learning'],0,'The frontier has moved since, and it is still jagged.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: AI helps a lot inside the frontier and misleads just outside it, so checking is part of the job.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'On the task chosen to sit just outside the AI’s abilities, consultants using AI…',o:['Were 19 percentage points less likely to be right','Did better','Did the same'],a:0,f:'The tool sounded just as confident.'},
+ {q:'Who gained most from AI help?',o:['Novices and below-average workers','Experts','Everyone equally'],a:0,f:'And novices are least able to tell when the AI is wrong.'},
+ {q:'What did successful users, centaurs and cyborgs alike, keep doing?',o:['Judging the output','Accepting every answer','Avoiding AI'],a:0,f:'Require a check step before any AI answer is accepted.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','a03');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Cerebellum: Timing and Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+/* darts */
+.board{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;overflow:hidden;touch-action:none}
+.board:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.board canvas{display:block;width:100%;height:auto;aspect-ratio:3/2;cursor:crosshair}
+.badge{position:absolute;left:12px;top:12px;font:800 15px var(--body);letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:14px;background:#13294B;color:#E9EEF6;border:2px solid #5C7096}
+.badge.on{background:#FCB316;color:#13294B;border-color:#FCB316}
+.count{position:absolute;right:12px;top:12px;font:700 16px var(--body);color:#E9EEF6}
+.hint{font-size:16px;color:var(--night-muted);margin:10px 0 0}
+.errc{display:block;width:100%;height:auto;aspect-ratio:3/1;margin:8px 0 6px}
+.legend{font-size:15px;color:var(--night-muted);margin:0 0 12px}
+/* neurons */
+.neu{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.neu label{font-weight:700;font-size:18px;display:block;margin-bottom:8px}
+.neu input[type=range]{width:100%;accent-color:#13294B;min-height:44px}
+.neu .val{font-family:var(--display);font-weight:900;font-size:44px;line-height:1;margin:6px 0 12px}
+.neu .val small{font:600 18px var(--body);color:var(--ink-2)}
+.pbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.stack{display:flex;height:44px;border-radius:8px;overflow:hidden;margin:18px 0 8px}
+.stack span{display:flex;align-items:center;justify-content:center;font:700 15px var(--body);white-space:nowrap;overflow:hidden}
+.keyrow{display:flex;flex-wrap:wrap;gap:14px;font-size:16px;margin:0 0 10px}
+.keyrow i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+__POPCSS__
+__COLLCSS__
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Brain regions</div>
+      <h1 id="title">The Cerebellum <em>Timing and practice</em></h1>
+      <p class="dek">At the back of the head, the “little brain” compares what you meant to do with what happened, and quietly corrects the next try. It is how practice turns into skill.</p>
+      <div class="byline"><span>About 8 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#dartT">Prism darts</a></span><span><a href="#neuT">Where are the neurons?</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the brain from the side, with the cerebellum, at the back and below the rest, glowing orange."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 1¾ minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>The cerebellum: timing and practice</b> · The Learning Brain</span><span>Captions are on; turn them off in the player.</span></div>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Put on goggles fitted with wedge prisms and the world appears shifted to one side. In a 1996 study, T. A. Martin, Amy Bastian, W. T. Thach and colleagues asked people to throw balls of clay at a target while wearing them. At first, each throw missed in the direction of the shift. Throw by throw, people corrected, until they hit the target again.</p>
+    <p>Then the goggles came off, and people missed to the other side. Their aim had been recalibrated, and it took more throws to set it back. That aftereffect is the sign that something had been learned, not just consciously corrected. People with damage to the cerebellum, or to the pathways that feed it, adapted much less.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>“Little brain”</strong><span>what <i>cerebellum</i> means in Latin</span></div>
+      <div role="listitem"><strong>69 billion</strong><span>neurons, about 80% of the brain’s 86 billion</span></div>
+      <div role="listitem"><strong>1996</strong><span>prism throwing study shows the cerebellum is needed to adapt</span></div>
+      <div role="listitem"><strong>Just in time</strong><span>blinks learned to arrive right before a puff of air</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">An error corrector</span>Compare, then adjust</h2>
+    <p>The cerebellum sits at the back of the head, below the rest of the brain. It does not decide what to do. It works out how to do it smoothly. As a movement unfolds, it compares what you meant to do with what your eyes and body report actually happened. The difference, an error signal, adjusts the next try.</p>
+    <p>That is why the prism study works as a test. Healthy throwers did not just aim differently on purpose. Their cerebellum quietly re-tuned the link between where they looked and where they threw, which is why the old setting came back as a miss once the goggles were removed.</p>
+  </div>
+
+  <section class="night" aria-labelledby="dartT">
+    <div class="col">
+      <h2 class="sec" id="dartT"><span class="n">Try it</span>Prism darts</h2>
+      <p>Throw 35 darts at the bullseye. For some of them, you’ll be wearing virtual prism goggles. Watch what happens to your aim, and especially what happens when the goggles come off.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div>
+          <div class="board" id="dtBoard" tabindex="0" role="application" aria-label="Dart board. Tap or click where you want to aim. With a keyboard, move the aim with the arrow keys and throw with Space or Enter." aria-describedby="dtSay">
+            <canvas id="dtCan" width="900" height="600"></canvas>
+            <span class="badge" id="dtBadge">Goggles off</span><span class="count" id="dtCount">Dart 1 of 35</span>
+          </div>
+          <p class="hint">Tap or click to throw where you aim. Keyboard: arrow keys to aim, Space to throw.</p>
+          <p class="sr-only" id="dtSay" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="dtPhase">Darts 1 to 5</p>
+          <p class="mtitle" id="dtTitle">Warm up</p>
+          <p class="mtext" id="dtText" aria-live="polite">Aim straight at the bullseye.</p>
+          <canvas class="errc" id="dtErr" width="600" height="200" aria-hidden="true"></canvas>
+          <p class="legend">Each dot is one dart: above the line missed right, below missed left. Shaded: goggles on.</p>
+          <div class="mrow"><button class="nbtn" id="dtReset">Start over</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <p>The screen version has a difference you may have noticed. You could see the misses and choose to aim off, so much of your correction was a conscious strategy. In the real study, throwers corrected without deciding to, and most of the aftereffect came from that automatic recalibration. People with cerebellar damage could still use a strategy to reduce their misses, but they did not get back to their normal accuracy, and their aftereffect was much smaller.</p>
+
+    <h2 class="sec"><span class="n">Timing</span>Blink just in time</h2>
+    <p>The cerebellum also learns when to act. In eyeblink conditioning, a tone is followed by a puff of air to the eye. After many pairings, animals and people blink to the tone alone, timed to close the eye just before the puff arrives. Beginning in 1981, Richard Thompson and colleagues showed that this learning depends on the cerebellum. When parts of its cortex are switched off, blinks may still happen, but the precise timing is lost.</p>
+  </div>
+
+  <section aria-labelledby="neuT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="neuT"><span class="n">Try it</span>Where are the neurons?</h2>
+      <p>The cerebellum is about a tenth of the brain’s weight. Guess before you look.</p>
+    </div>
+    <div class="wide">
+      <div class="neu">
+        <label for="nuIn">What share of the brain’s neurons do you think are in the cerebellum?</label>
+        <input type="range" id="nuIn" min="0" max="100" step="1" value="20" aria-describedby="nuVal">
+        <p class="val" id="nuVal">20<small>%</small></p>
+        <button class="pbtn" id="nuGo">Show the count</button>
+        <div id="nuRes" hidden>
+          <div class="stack" aria-hidden="true" id="nuStack"></div>
+          <div class="keyrow" aria-hidden="true"><span><i style="background:#B84300"></i>Cerebellum: 69 billion</span><span><i style="background:#13294B"></i>Cerebral cortex: 16 billion</span><span><i style="background:#8FA3C2"></i>Rest of the brain: under 1 billion</span></div>
+          <p class="pmsg" id="nuMsg" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <p>In 2009, Frederico Azevedo, Suzana Herculano-Houzel and colleagues counted the cells in four whole human brains by grinding up the tissue and counting the cell nuclei. They found about 86 billion neurons in all, about 69 billion of them in the cerebellum and only about 19% in the much larger cerebral cortex. Most of the cerebellum’s neurons are tiny granule cells.</p>
+    <aside class="box" aria-labelledby="bkT">
+      <h3 id="bkT">More than movement</h3>
+      <p>Most of what is known about the cerebellum concerns movement, balance and timing. Researchers increasingly find links to thinking and language too, but those roles are less well understood. This page sticks to the well-established part.</p>
+    </aside>
+  </div>
+
+  <section class="pop wide" aria-labelledby="popT">
+    <div style="max-width:700px;margin:0 auto">
+      <h2 class="sec" id="popT"><span class="n">In popular culture</span>Practice, timing and balance</h2>
+      <p>A film about a drummer chasing perfect tempo, an internet experiment with a bicycle, and a test seen in countless police dramas.</p>
+    </div>
+    <div class="poptabs" role="tablist" aria-label="The cerebellum in popular culture" id="popTabs"></div>
+    <div id="popPanels"></div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Errors are the signal</h2>
+    <ol class="tips">
+      <li><b>Quick, specific feedback</b><span>The cerebellum learns from the gap between what you meant and what happened. Practice works best when learners can see that gap right away.</span></li>
+      <li><b>Expect early misses</b><span>Mistakes in early practice are the information that drives correction, not a sign of failure.</span></li>
+      <li><b>Unlearning takes practice too</b><span>A tuned skill doesn’t switch off instantly. Changing a well-practised technique means practising the new one until it takes over.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://bvbvf1.bib-bvb.de/vufind/PrimoRecord/cdi_proquest_miscellaneous_78338957">Martin, T. A., Keating, J. G., Goodkin, H. P., Bastian, A. J., &amp; Thach, W. T. (1996). Throwing while looking through prisms. I. Focal olivocerebellar lesions impair adaptation. <i>Brain</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3389289">Block, H. J., &amp; Bastian, A. J. (2012). Cerebellar involvement in motor but not sensory adaptation. <i>Neuropsychologia</i>.</a></li>
+        <li><a href="https://Gwern.net/doc/psychology/neuroscience/2009-azevedo.pdf">Azevedo, F. A. C., et al. (2009). Equal numbers of neuronal and nonneuronal cells make the human brain an isometrically scaled-up primate brain. <i>Journal of Comparative Neurology</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3861981">Review of eyeblink conditioning and the cerebellum, including the work of Thompson and colleagues (McCormick et al., 1981, 1982).</a></li>
+        <li><a href="https://link.springer.com/10.1007/s12311-015-0722-4">Classical conditioning of blink responses and the cerebellum. <i>The Cerebellum</i> (2015).</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6875723">Alcohol and the cerebellum: effects on balance, motor coordination, and cognition. <i>Alcohol Health and Research World</i> (1995).</a></li>
+        <li><a href="https://www.openculture.com/2015/08/the-backwards-brain-bicycle.html">Open Culture (2015). The Backwards Brain Bicycle.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawings and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__POPJS__
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.cer.lab=[700,720];BR.R.cer.al='right';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.45,s:fitS(W,H,1.32),t,active:['cer'],labels:['cer'],labelT:{cer:0.8},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560)),deep:0.4})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(1).join(' ')})();
+
+/* ---------- prism darts ----------
+   Board is 900 x 600 units, bullseye at (450,300). A dart lands at aim + shift + small scatter (up to ±8 units).
+   Darts 1-5: no shift. Darts 6-25: goggles on, shift +120 (right). Darts 26-35: goggles off, no shift.
+   Error = landing x minus bullseye x (+ right, - left). */
+const W0=900,H0=600,CX=450,CY=300,SHIFT=120,N=35;
+const cv=$('dtCan'),g=cv.getContext('2d'),ec=$('dtErr'),eg=ec.getContext('2d');
+let darts=[],aim={x:CX,y:CY},hover=null;
+const phase=k=>k<5?0:k<25?1:2;
+function drawBoard(){g.clearRect(0,0,W0,H0);
+ [[150,'#1B2E50'],[100,'#22385F'],[50,'#2A4470'],[18,'#FF5F05']].forEach(([r,c])=>{g.beginPath();g.arc(CX,CY,r,0,7);g.fillStyle=c;g.fill();g.strokeStyle='#8FA3C2';g.lineWidth=2;g.stroke()});
+ darts.forEach((d,i)=>{const last=i===darts.length-1;g.beginPath();g.arc(d.x,d.y,last?13:8,0,7);g.fillStyle=d.ph===1?'#FCB316':d.ph===2?'#58C4E8':'#E9EEF6';g.globalAlpha=last?1:0.55;g.fill();g.globalAlpha=1;if(last){g.strokeStyle='#fff';g.lineWidth=3;g.stroke()}});
+ const a=hover||aim;g.strokeStyle='#fff';g.lineWidth=3;g.beginPath();g.moveTo(a.x-22,a.y);g.lineTo(a.x+22,a.y);g.moveTo(a.x,a.y-22);g.lineTo(a.x,a.y+22);g.stroke();g.beginPath();g.arc(a.x,a.y,10,0,7);g.stroke()}
+function drawErr(){const w=600,h=200,m=20;eg.clearRect(0,0,w,h);const sx=k=>m+k/(N-1)*(w-2*m),sy=e=>h/2-Math.max(-1,Math.min(1,e/220))*(h/2-12);
+ eg.fillStyle='rgba(252,179,22,0.13)';eg.fillRect(sx(4.5),0,sx(24.5)-sx(4.5),h);
+ eg.strokeStyle='#8FA3C2';eg.lineWidth=2;eg.beginPath();eg.moveTo(0,h/2);eg.lineTo(w,h/2);eg.stroke();
+ darts.forEach((d,k)=>{eg.beginPath();eg.arc(sx(k),sy(d.x-CX),6,0,7);eg.fillStyle=d.ph===1?'#FCB316':d.ph===2?'#58C4E8':'#E9EEF6';eg.fill()})}
+const mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
+function status(){const k=darts.length;$('dtCount').textContent=k<N?`Dart ${k+1} of ${N}`:'Done';const p=k<N?phase(k):2;$('dtBadge').textContent=p===1?'Goggles on':'Goggles off';$('dtBadge').classList.toggle('on',p===1);
+ if(k<5){$('dtPhase').textContent='Darts 1 to 5';$('dtTitle').textContent='Warm up';$('dtText').textContent='Aim straight at the bullseye.'}
+ else if(k<25){$('dtPhase').textContent=`Darts 6 to 25 · goggles on`;$('dtTitle').textContent=k===5?'Goggles on':'Keep throwing';$('dtText').textContent=k===5?'You are now wearing prism goggles. Keep aiming for the bullseye.':'Try to hit the bullseye.'}
+ else if(k<N){$('dtPhase').textContent='Darts 26 to 35 · goggles off';$('dtTitle').textContent=k===25?'Goggles off':'Keep throwing';$('dtText').textContent=k===25?'The goggles are off. Throw exactly as you just were.':'Try to hit the bullseye.'}
+ else summary()}
+const side=e=>{const m=Math.abs(e),d=e>0?'right':'left';return m<15?'on the bullseye':m<40?`slightly ${d} of the bullseye`:m<100?`${d} of the bullseye`:`far ${d} of the bullseye`};
+function summary(){const e=darts.map(d=>d.x-CX);const first=mean(e.slice(5,7)),late=mean(e.slice(20,25)),after=e[25],after3=mean(e.slice(25,28));
+ $('dtPhase').textContent='Your results';
+ let title,msg;
+ if(late>40){title='The goggles kept winning';msg=`With the goggles on, your darts landed ${side(first)} at first and still ${side(late)} at the end, so your aim never shifted. With nothing re-tuned, there was nothing to undo when the goggles came off. Try again, and correct your aim as you see the misses.`}
+ else if(after3<-25){title='You missed left when the goggles came off';msg=`With the goggles on, your first darts landed ${side(first)}; by the end they were ${side(late)}. When the goggles came off, your corrected aim kept going and your next darts landed ${side(after)}: an aftereffect. In the real study this happened even though people never chose to aim off. Their cerebellum had re-tuned their throw.`}
+ else{title='Little or no aftereffect';msg=`With the goggles on, your first darts landed ${side(first)}; by the end they were ${side(late)}. When the goggles came off, your next dart landed ${side(after)}, so you probably switched your aim back on purpose. On screen you can do that, because you can see the misses and pick a new aim point. In the real study, throwers couldn’t simply switch back: their cerebellum had re-tuned, and it took several throws to undo.`}
+ $('dtTitle').textContent=title;$('dtText').textContent=msg;$('dtSay').textContent=title}
+function throwAt(x,y){if(darts.length>=N)return;const k=darts.length,ph=phase(k);const sc=()=>(Math.random()*2-1)*8;
+ const d={x:Math.max(10,Math.min(W0-10,x+(ph===1?SHIFT:0)+sc())),y:Math.max(10,Math.min(H0-10,y+sc())),ph};darts.push(d);aim={x,y};
+ drawBoard();drawErr();$('dtSay').textContent=`Dart ${k+1}: ${side(d.x-CX)}${Math.abs(d.y-CY)>30?(d.y<CY?', high':', low'):''}.`;status()}
+function toBoard(ev){const r=cv.getBoundingClientRect();return{x:(ev.clientX-r.left)/r.width*W0,y:(ev.clientY-r.top)/r.height*H0}}
+cv.addEventListener('pointermove',ev=>{if(ev.pointerType==='mouse'){hover=toBoard(ev);drawBoard()}});
+cv.addEventListener('pointerleave',()=>{hover=null;drawBoard()});
+cv.addEventListener('pointerdown',ev=>{ev.preventDefault();const p=toBoard(ev);hover=null;throwAt(p.x,p.y)});
+$('dtBoard').addEventListener('keydown',e=>{const st=e.shiftKey?40:12;let used=true;if(e.key==='ArrowLeft')aim.x=Math.max(0,aim.x-st);else if(e.key==='ArrowRight')aim.x=Math.min(W0,aim.x+st);else if(e.key==='ArrowUp')aim.y=Math.max(0,aim.y-st);else if(e.key==='ArrowDown')aim.y=Math.min(H0,aim.y+st);else if(e.key===' '||e.key==='Enter'){throwAt(aim.x,aim.y)}else used=false;if(used){e.preventDefault();hover=null;drawBoard()}});
+$('dtReset').addEventListener('click',()=>{darts=[];aim={x:CX,y:CY};drawBoard();drawErr();status();$('dtSay').textContent='New round. Dart 1 of 35.'});
+drawBoard();drawErr();status();
+
+/* ---------- where are the neurons? ---------- */
+$('nuIn').addEventListener('input',()=>{$('nuVal').innerHTML=`${$('nuIn').value}<small>%</small>`});
+$('nuGo').addEventListener('click',()=>{const gs=+$('nuIn').value;$('nuRes').hidden=false;
+ $('nuStack').innerHTML=`<span style="width:80%;background:#B84300;color:#fff">Cerebellum 80%</span><span style="width:19%;background:#13294B;color:#fff">Cortex 19%</span><span style="width:1%;background:#8FA3C2"></span>`;
+ const d=gs-80;$('nuMsg').textContent=`${Math.abs(d)<=8?'Close. ':gs<80?'Far more than you guessed. ':'A bit less than you guessed. '}You guessed ${gs}%. About 69 of the brain’s 86 billion neurons, around 80%, are in the cerebellum, even though it is only about a tenth of the brain’s weight. The cerebral cortex holds about 19%.`});
+
+/* ---------- in popular culture ---------- */
+renderPop([
+ {id:'whiplash',title:'Whiplash',sub:'Film, 2014',kind:'Drama',films:[['Whiplash (2014)','https://www.imdb.com/title/tt2582802/']],verdict:['mixed','Right on practice, wrong on fear'],
+  desc:'Andrew Neiman, a first-year jazz drummer at a fictional New York conservatory, wants to be one of the greats. His conductor, Terence Fletcher (J. K. Simmons), drives him with insults, humiliation and a thrown chair over a missed tempo.',
+  right:['Andrew’s skill comes from enormous amounts of repetition, judged against a precise standard of timing. That is the kind of error-driven tuning the cerebellum does.','Fletcher’s ear catches tiny timing errors and points them out immediately. Fast, specific feedback on errors is what fine-tunes a skill.'],
+  wrong:['The film suggests fear and humiliation produce greatness. Fear narrows attention and weakens the prefrontal cortex (see the amygdala and prefrontal pages). Useful feedback says what was off and by how much, not who you are.'],
+  src:'Martin et al. (1996); Arnsten (2009).'},
+ {id:'bike',title:'The Backwards Brain Bicycle',sub:'YouTube, 2015',kind:'Smarter Every Day, episode 133',films:[],verdict:['good','A real experiment of one'],
+  desc:'Engineer Destin Sandlin rode a bicycle whose handlebars steer the front wheel the opposite way. Knowing exactly how it worked didn’t help: he couldn’t ride it. He practised about five minutes a day for eight months before it clicked. Then he struggled to ride a normal bike.',
+  right:['It shows adaptation and its aftereffect, just like the prism study: a well-tuned skill has to be re-tuned through practice, and the old one takes practice to come back.','Understanding a skill is not the same as being able to do it. Knowing how the steering works did not let Destin ride.'],
+  wrong:['His young son learned in about two weeks, a striking contrast often used to show that children’s brains adapt faster. But it is one child and one adult, not a study.'],
+  more:[['Watch on YouTube','https://www.youtube.com/watch?v=MFzDaBzBlL0']],
+  src:'Smarter Every Day (2015); Open Culture.'},
+ {id:'sobriety',title:'Roadside sobriety tests',sub:'TV and film staple',kind:'Police dramas',films:[],verdict:['good','A rough cerebellum check'],
+  desc:'In countless police shows, an officer asks a driver to walk heel-to-toe along a line, turn, and walk back, or to stand on one leg.',
+  right:['These tests check balance and coordination, which depend heavily on the cerebellum. A staggering walk is one of the most widely recognized signs of alcohol intoxication, and alcohol disrupts the firing of key cerebellar cells.'],
+  wrong:['The tests are not a pure measure of the cerebellum. Alcohol also affects the balance system in the inner ear, and many other things can make balance worse.'],
+  src:'Alcohol Health and Research World (1995).'}],'popTabs','popPanels');
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'In the 1996 prism study, what happened when the goggles came off?',o:['Throws were perfectly accurate','Throws missed to the other side for a while','Throws missed in the same direction as before'],a:1,f:'The aftereffect shows the aim had been recalibrated, not just consciously adjusted.'},
+ {q:'About how many of the brain’s 86 billion neurons are in the cerebellum?',o:['About 9 billion','About 30 billion','About 69 billion'],a:2,f:'Around 80% of all neurons, most of them tiny granule cells.'},
+ {q:'In eyeblink conditioning, what does the cerebellum help learn?',o:['To blink at the right moment, just before the puff','To stop blinking altogether','To remember the tone’s pitch'],a:0,f:'With the cerebellum damaged, the well-timed blink is lost.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','cer');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Social Learning: Learning from Each Other</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.bscen{font:600 clamp(19px,2.4vw,22px)/1.45 var(--body);color:#fff;max-width:40ch;min-height:5.8em;margin:0}
+.bopts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;max-width:480px}
+.bopts[hidden]{display:none}
+.bopts button{min-height:52px;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer;padding:4px 8px}
+.bopts button small{display:block;font-size:13px;color:#C9D3E3;font-weight:600}
+.bopts button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.bopts button.ok{border-color:#7DD3A8;background:#173B33}.bopts button.no{border-color:#FFB38A;background:#3B2420}
+.bopts button:disabled{cursor:default}
+.bfb{font-size:18px;line-height:1.45;color:#E9EEF6;margin:0;min-height:3em;max-width:44ch}
+.bfb b.ok{color:#7DD3A8}.bfb b.no{color:#FFB38A}
+.res.wl2 .row{grid-template-columns:150px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 70px}}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Topic 16</div>
+      <h1 id="title">Social learning <em>Learning from each other</em></h1>
+      <p class="dek">People learn by watching, but watching is not passive: learners must attend, remember, be able to reproduce, and have a reason to. Worked examples, observed tutoring, peer discussion and the expectation of teaching all put this to work.</p>
+      <div class="byline"><span>About 8 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#bT">Why didn’t they learn it?</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with two areas glowing orange and labelled: the frontal lobe, whose premotor region holds cells that respond both to doing and to watching an action, and the parietal lobe."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 3 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Social learning</b> · The Learning Brain, episode 16</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>In 1961, preschool children watched an adult attack an inflatable Bobo doll: punching it, sitting on it, striking it with a mallet. Later, alone with the doll, many of them copied those exact, unusual actions. Nobody had rewarded them. They learned just by watching.</p>
+    <p>Albert Bandura argued that watching is not passive. The learner has to attend to the model, retain what they saw, be able to reproduce it, and have a reason to. If any one of these fails, the learning doesn’t show up.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>4 steps</strong><span>attend, retain, reproduce, and have a reason to</span></div>
+      <div role="listitem"><strong>92 of 532</strong><span>cells recorded in monkey premotor cortex, about 17%, responded to both doing and watching</span></div>
+      <div role="listitem"><strong>Pairs</strong><span>of students watching tutoring videos learned as much as the students being tutored</span></div>
+      <div role="listitem"><strong>“You’ll teach this”</strong><span>was enough to improve recall, though nobody actually taught</span></div>
+    </div>
+  </div>
+
+  <section class="night" aria-labelledby="bT">
+    <div class="col">
+      <h2 class="sec" id="bT"><span class="n">Try it</span>Why didn’t they learn it?</h2>
+      <p>Eight short cases where watching didn’t lead to learning. For each, decide which of Bandura’s four steps broke down. About 3 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="bScreen">
+          <p class="bscen" id="bScen" aria-live="polite">Press Start.</p>
+          <div class="bopts" id="bOpts" hidden role="group" aria-label="Which step broke down?"><button type="button" data-k="A">Attention<small>didn’t take it in</small></button><button type="button" data-k="R">Retention<small>didn’t keep it</small></button><button type="button" data-k="P">Reproduction<small>can’t do it yet</small></button><button type="button" data-k="M">Motivation<small>no reason to</small></button></div>
+          <p class="prog" id="bProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="bPhase">Ready</p>
+          <p class="mtitle" id="bTitle">Diagnose the breakdown</p>
+          <p class="bfb" id="bFb" aria-live="polite">Each case has one main breakdown. You’ll get feedback after each answer.</p>
+          <div id="bRes"></div>
+          <div class="mrow"><button class="nbtn" id="bGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The brain</span>Mirror neurons, and a caution</h2>
+    <p>In the 1990s, Giacomo Rizzolatti’s group, recording single cells in the premotor cortex of macaque monkeys, found neurons that fired both when the monkey grasped an object and when it watched someone else do so. They called them mirror neurons. In the most detailed early study, by Vittorio Gallese and colleagues in 1996, they were 92 of the 532 cells recorded, about 17%.</p>
+    <p>Claims that mirror neurons explain empathy, language or human learning went far beyond the data. Most human evidence comes from brain imaging, not single cells, and whether these cells are needed to understand actions is contested. The behavioural finding stands on its own: people learn by watching.</p>
+    <h2 class="sec"><span class="n">The classroom</span>Watching, discussing, teaching</h2>
+    <p>For novices, studying worked examples beats solving the same problems unaided, as <a href="@@LB:lb06@@">the working memory page</a> explains. As skill grows, the advantage fades and practice should take over.</p>
+    <p>Watching expert help can work too. In 2008, Michelene Chi, Marguerite Roy and Robert Hausmann found that students who watched videos of physics tutoring in pairs, talking it through, learned to solve problems as well as the students being tutored. Peers matter as well. In 2009, Michelle Smith and colleagues had genetics students answer a clicker question, discuss it with neighbours, then answer a new question on the same concept alone. Scores improved, even in groups where no one had known the answer at first. And in 2014, John Nestojko and colleagues found that learners told they would teach a passage recalled more of it, and organized it better, than learners expecting a test. Nobody actually taught.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each comparison from the research, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Let students see how experts think</h3>
+      <p>Show worked examples early, then fade them as students gain skill. Think aloud: make your reasoning visible, including the dead ends. Use peer discussion before you reveal the answer. And give students reasons to explain to someone else.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>We are built to learn from each other</h2>
+    <ol class="tips">
+      <li><b>Worked examples, then fade</b><span>Examples for novices; practice as skill grows.</span></li>
+      <li><b>Think aloud</b><span>Show your reasoning, dead ends included.</span></li>
+      <li><b>Discuss, then reveal</b><span>And give students reasons to explain.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1037/h0045925">Bandura, A., Ross, D., &amp; Ross, S. A. (1961). Transmission of aggression through imitation of aggressive models. <i>Journal of Abnormal and Social Psychology</i>.</a></li>
+        <li><a href="https://pages.ucsd.edu/~jpineda/COGS260Mirroring/readings/Gallese%20et%20al.%20-%20action%20recognition%20in%20the%20premotor%20cortex.pdf">Gallese, V., Fadiga, L., Fogassi, L., &amp; Rizzolatti, G. (1996). Action recognition in the premotor cortex. <i>Brain</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3898692">Review table of mirror-neuron proportions (Gallese et al.: 92 of 532, 17.3%).</a></li>
+        <li><a href="https://api.crossref.org/works/10.1080%2F03640210701863396">Chi, M. T. H., Roy, M., &amp; Hausmann, R. G. M. (2008). Observing tutorial dialogues collaboratively. <i>Cognitive Science</i>.</a></li>
+        <li><a href="https://serc.carleton.edu/resources/40584.html">Smith, M. K., et al. (2009). Why peer discussion improves student performance on in-class concept questions. <i>Science</i>.</a></li>
+        <li><a href="https://profiles.wustl.edu/en/publications/expecting-to-teach-enhances-learning-and-organization-of-knowledg/">Nestojko, J. F., Bui, D. C., Kornell, N., &amp; Bjork, E. L. (2014). Expecting to teach enhances learning and organization of knowledge in free recall of text passages. <i>Memory &amp; Cognition</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.fro.lab=[40,-60];BR.R.fro.al='left';BR.R.par.lab=[1000,770];BR.R.par.al='right';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['fro','par'],labels:['fro','par'],labelT:{fro:0.8,par:1.0},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+/* ---------- why didn't they learn it? ----------
+   8 cases, 2 per step, random order. Pick one of four steps; feedback after each. Score, and which steps were confused. */
+const NM={A:'Attention',R:'Retention',P:'Reproduction',M:'Motivation'};
+const CASES=[
+ ['A student watches the teacher solve a problem on the board while texting under the desk.','A','Attention: the demonstration never got in. The student was looking elsewhere.'],
+ ['A new employee watches a software demo, but the presenter’s screen is too small to read from the back of the room.','A','Attention: the key details couldn’t be seen, so they couldn’t be learned.'],
+ ['A trainee watches a 12-step lab procedure once. A week later, they can’t remember the order of the steps.','R','Retention: they saw it, but didn’t keep it. Notes, practice or a checklist would help.'],
+ ['Students follow a worked example in class and understand it, but take no notes. Two weeks later, they can’t recall the method.','R','Retention: understanding at the time isn’t the same as remembering later.'],
+ ['A child watches a gymnast’s back flip closely and can describe every step, but can’t do one yet.','P','Reproduction: knowing what to do isn’t the same as being able to do it. That takes practice.'],
+ ['A beginner watches a pianist play a passage slowly and remembers the fingering, but their hands can’t move that fast yet.','P','Reproduction: the skill is in memory but not yet in the hands.'],
+ ['A student knows exactly how a classmate asks good questions, but in this class questions are ignored, so they don’t bother.','M','Motivation: they could do it, but see no reason to.'],
+ ['In a later Bandura study, children who saw the model punished copied less, until they were offered a reward for showing what they had seen.','M','Motivation: they had learned the actions all along. The reward revealed it.']];
+let br=null;
+function bAnswer(){return new Promise(res=>{br.res=res;const o=$('bOpts');o.hidden=false;o.querySelectorAll('button').forEach(b=>{b.disabled=false;b.classList.remove('ok','no')});o.querySelector('button').focus()})}
+$('bOpts').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!br||!br.res)return;const r=br.res;br.res=null;r(b.dataset.k)});
+function bWait(label){return new Promise(res=>{const g=$('bGo');g.textContent=label;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.disabled=true;g.textContent='In progress';res()}})}
+$('bGo').addEventListener('click',async()=>{if(br||$('bGo').onclick)return;br={};const g=$('bGo');g.disabled=true;g.textContent='In progress';$('bRes').innerHTML='';
+ const order=shuf([...CASES]);let right=0;const miss={A:0,R:0,P:0,M:0};
+ $('bTitle').textContent='Which step broke down?';
+ for(let i=0;i<order.length;i++){const [txt,k,ex]=order[i];$('bPhase').textContent=`Case ${i+1} of ${order.length}`;$('bScen').textContent=txt;$('bProg').textContent='';$('bFb').textContent='';
+  const a=await bAnswer();if(!br)return;const ok=a===k;if(ok)right++;else miss[k]++;
+  $('bOpts').querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.k===k)b.classList.add('ok');else if(b.dataset.k===a)b.classList.add('no')});
+  $('bFb').innerHTML=(ok?'<b class="ok">Right.</b> ':`<b class="no">Not quite.</b> You chose ${NM[a]}. `)+ex;$('bProg').textContent=`${right} of ${i+1} right so far.`;
+  if(i<order.length-1){await bWait('Next case');if(!br)return}}
+ $('bOpts').hidden=true;$('bScen').textContent='Done.';$('bProg').textContent='';$('bPhase').textContent='Your results';
+ const row=(k)=>`<div class="row"><span>${NM[k]}</span><div class="bar"><i style="width:${(2-miss[k])/2*100}%;background:#FCB316"></i></div><b>${2-miss[k]} of 2</b></div>`;
+ $('bRes').innerHTML=`<div class="res wl2">${['A','R','P','M'].map(row).join('')}</div>`;
+ const weak=Object.keys(miss).filter(k=>miss[k]>0).map(k=>NM[k]);
+ let title,text;
+ if(right>=7){title='You can diagnose the breakdown';text=`${right} of 8 right. When watching doesn’t lead to learning, ask which step failed: the fix for a student who wasn’t looking is different from the fix for one who can’t do it yet.`}
+ else if(right>=4){title='Mostly there';text=`${right} of 8 right. You missed some ${weak.join(', ')} cases. A tip: if the learner could describe what they saw, attention and retention worked, so look at reproduction or motivation.`}
+ else{title='Worth another look';text=`${right} of 8 right. Try asking two questions in order: did they take it in and keep it? If yes, can they physically or mentally do it, and do they have a reason to?`}
+ $('bTitle').textContent=title;$('bFb').textContent=text;g.onclick=null;g.textContent='Try again';g.disabled=false;g.focus();br=null});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Preschoolers who had watched an adult attack a Bobo doll, later alone with it, with no reward',['Many copied the exact actions','Few did anything unusual','They avoided the doll'],0,'They learned just by watching.'],
+ ['Share of recorded premotor cells that responded to both doing and watching, in the 1996 study',['About 17%','Nearly all','Under 1%'],0,'92 of 532 cells.'],
+ ['Novices studying worked examples, compared with solving the same problems unaided',['Learned more','Learned less','No difference'],0,'The worked example effect. It fades as skill grows.'],
+ ['Pairs of students watching tutoring videos and talking it through, compared with the students being tutored',['Learned about as much','Learned much less','Learned more'],0,'Students watching alone learned less.'],
+ ['Students who discussed a clicker question, then answered a new question on the same concept alone',['Did better, even if no one in the group knew the answer at first','Did better only if someone already knew','Did no better'],0,'Discussion built understanding, not just copying.'],
+ ['Learners told they would teach a passage, compared with learners expecting a test',['Recalled more, and better organized','Recalled less, from stress','No difference'],0,'Nobody actually taught; expecting to was enough.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: people learn a great deal from watching and talking with others, especially when they are active while they do it.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'A student watched a clear demonstration but has forgotten the steps by the time they try. Which step failed?',o:['Retention','Attention','Motivation'],a:0,f:'They took it in, but didn’t keep it.'},
+ {q:'What did students learn from watching tutoring videos in pairs?',o:['As much as the students being tutored','Nothing useful','Less than students studying alone'],a:0,f:'Talking it through while watching made the difference.'},
+ {q:'Why be cautious about mirror-neuron claims?',o:['Broad claims about empathy and language went far beyond the data','Mirror neurons were never found','They are found only in humans'],a:0,f:'The behavioural finding, that people learn by watching, stands on its own.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','lb16');
+})();
+</script>
+</body>
+</html>

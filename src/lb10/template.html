@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retrieval Practice: Pull It Out to Make It Stay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.rpair{font:800 clamp(28px,4.6vw,44px)/1.25 var(--body);color:#fff;text-align:center;min-height:1.25em}
+.rpair .en{color:#FCB316}
+.rcap{font-size:18px;color:#E9EEF6;text-align:center;margin:0;min-height:1.4em;max-width:36ch}
+.rin{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.rin[hidden]{display:none}
+.rin input{min-height:52px;width:min(280px,100%);padding:0 12px;font:700 22px var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff}
+.rin input:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.rq{display:grid;gap:8px;margin:6px 0 14px;border:1px solid var(--night-line);border-radius:8px;padding:10px 12px;color:#fff}
+.rq[hidden]{display:none}
+.rq legend{font-size:17px;font-weight:700;padding:0 4px}
+.rq label{display:flex;align-items:center;gap:8px;font-size:17px;min-height:36px}
+.res.wl2 .row{grid-template-columns:150px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 70px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}
+.later{margin-top:14px;border-top:1px solid var(--night-line);padding-top:12px}
+.later[hidden]{display:none}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Topic 10</div>
+      <h1 id="title">Retrieval practice <em>Pull it out to make it stay</em></h1>
+      <p class="dek">Rereading feels like learning because the page becomes familiar. Trying to recall the material feels harder, because you notice what’s missing. A week later, the recall group remembers more.</p>
+      <div class="byline"><span>About 8 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#rT">Recall or restudy</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with two areas glowing orange and labelled: the prefrontal cortex, which helps steer a search through memory, and the hippocampus, which helps bring a memory back."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Retrieval practice</b> · The Learning Brain, episode 10</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Two groups study the same short passage. One reads it four times. The other reads it once, then three times tries to write down everything it remembers, with no feedback. Five minutes later, the rereaders are ahead: 83% of the ideas recalled against 71%. A week later the result flips: 61% for the group that practised recall, 40% for the rereaders.</p>
+    <p>That was Henry Roediger and Jeffrey Karpicke’s 2006 experiment. The rereaders were also the more confident group.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>61% vs 40%</strong><span>of a passage recalled after one week: recall practice against rereading</span></div>
+      <div role="listitem"><strong>272</strong><span>effects from 118 articles pooled in a 2017 review: practice tests beat restudying</span></div>
+      <div role="listitem"><strong>84%</strong><span>of students in one survey reread their notes or textbook to study</span></div>
+      <div role="listitem"><strong>11%</strong><span>said they practised recalling the material, by testing themselves</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Why it works</span>Each recall strengthens the route back</h2>
+    <p>Rereading makes a text familiar, and familiarity feels like knowing. Recall is different work. Starting from a question, you have to find your own way to the answer, and each successful search strengthens that route for next time. When the search fails, you find out exactly what is missing, which a smooth reread hides.</p>
+    <p>The benefit is not limited to the lab. In 2017, Olusola Adesope and colleagues pooled 272 effects from 118 articles and found practice tests ahead of restudying, in classrooms as well as labs. In 2011, Jeffrey Karpicke and Janell Blunt found that retrieval practice beat drawing concept maps a week later, even on questions that asked students to draw inferences.</p>
+  </div>
+
+  <section class="night" aria-labelledby="rT">
+    <div class="col">
+      <h2 class="sec" id="rT"><span class="n">Try it</span>Recall or restudy</h2>
+      <p>You’ll learn 12 Swahili words. After seeing each once, you’ll go through them twice more: six you’ll simply see again, and for the other six you’ll try to recall the English, then see the answer. A short test follows, and you can come back in a day or more for a second test. About 6 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="rScreen">
+          <div class="rpair" id="rPair" aria-live="polite"></div>
+          <p class="rcap" id="rCap"></p>
+          <div class="tbar" aria-hidden="true"><i id="rTb" style="width:0"></i></div>
+          <form class="rin" id="rForm" hidden><label class="sr-only" for="rIn">English meaning</label><input id="rIn" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="30"><button class="nbtn" type="submit">Enter</button></form>
+          <button class="brk" id="rBrk" hidden aria-label="Tap when the circle is orange"></button>
+          <p class="prog" id="rProg" aria-live="polite">Press Start.</p>
+        </div>
+        <div>
+          <p class="phase" id="rPhase">Ready</p>
+          <p class="mtitle" id="rTitle">Which words will last?</p>
+          <p class="mtext" id="rText" aria-live="polite">Which six words you recall and which six you see again is chosen at random. The two ways take about the same time.</p>
+          <fieldset class="rq" id="rQ" hidden><legend>A week from now, which six will you remember better?</legend><label><input type="radio" name="rq" value="S">The ones I saw again</label><label><input type="radio" name="rq" value="R">The ones I tried to recall</label><label><input type="radio" name="rq" value="E">About the same</label></fieldset>
+          <div id="rRes"></div>
+          <div class="mrow"><button class="nbtn" id="rGo">Start</button></div>
+          <div class="later" id="rLater" hidden><p class="mtext" id="rLaterText"></p><div class="mrow"><button class="nbtn ghost" id="rLaterGo">Take the second test</button></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The puzzle</span>Why students rarely choose it</h2>
+    <p>In 2009, Jeffrey Karpicke, Andrew Butler and Henry Roediger asked 177 college students how they studied. 84% said they reread their notes or textbook, and 55% named it as their main strategy. Only 11% said they practised recall, and 1% named it as their main strategy. Rereading feels productive. Recall feels hard, and the hard feeling is easy to mistake for not learning.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Try it</span>Predict the findings</h2>
+      <p>For each comparison from the research, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Some caution</span>Feedback, and low stakes</h2>
+    <p>Feedback matters, especially after wrong answers, so errors don’t stick. In a 2005 study by Harold Pashler and colleagues, people learning foreign words who were shown the correct answer after an error remembered far more a week later than those who weren’t. And keep the stakes low: the point is practice, not grading.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Make pulling it out part of every lesson</h3>
+      <p>Open class with two or three questions on last week’s material. Ask students to write down everything they remember before they look at their notes. Swap some review lectures for practice problems and quick quizzes, give feedback fast, and tell students why it feels hard.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Putting it in is only half of learning</h2>
+    <ol class="tips">
+      <li><b>Start with recall</b><span>A few questions on last week, before anything new.</span></li>
+      <li><b>Brain dump before notes</b><span>Write what you remember, then check.</span></li>
+      <li><b>Feedback, fast and low-stakes</b><span>Correct errors quickly, and don’t grade practice.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1111/j.1467-9280.2006.01693.x">Roediger, H. L., &amp; Karpicke, J. D. (2006). Test-enhanced learning: Taking memory tests improves long-term retention. <i>Psychological Science</i>.</a></li>
+        <li><a href="https://doi.org/10.3102/0034654316689306">Adesope, O. O., Trevisan, D. A., &amp; Sundararajan, N. (2017). Rethinking the use of tests: A meta-analysis of practice testing. <i>Review of Educational Research</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/21252317/">Karpicke, J. D., &amp; Blunt, J. R. (2011). Retrieval practice produces more learning than elaborative studying with concept mapping. <i>Science</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/19358016/">Karpicke, J. D., Butler, A. C., &amp; Roediger, H. L. (2009). Metacognitive strategies in student learning: Do students practise retrieval when they study on their own? <i>Memory</i>.</a></li>
+        <li><a href="https://www.yorku.ca/ncepeda/publications/PCWR2005.pdf">Pashler, H., Cepeda, N. J., Wixted, J. T., &amp; Rohrer, D. (2005). When does feedback facilitate learning of words? <i>Journal of Experimental Psychology: Learning, Memory, and Cognition</i>.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.hip.lab=[700,740];BR.R.hip.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['pfc','hip'],labels:['pfc','hip'],labelT:{pfc:0.8,hip:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+/* ---------- recall or restudy ----------
+   12 of 15 Swahili-English pairs. Study: each pair 4 s. Then 2 rounds: 6 pairs restudied (pair shown 6 s);
+   6 pairs recalled (Swahili shown, up to 6 s to type, then the pair for 2 s). 30 s easy task, then a prediction,
+   then a cued test of all 12 (no feedback). Results saved in this browser (if allowed) for a second test after 1 day or more. */
+const POOL=[['maji',['water']],['kitabu',['book']],['mbwa',['dog']],['chakula',['food']],['nyumba',['house','home']],['mti',['tree']],['mvua',['rain']],['samaki',['fish']],['ndege',['bird']],['mlima',['mountain','hill']],['kalamu',['pen']],['dirisha',['window']],['mkate',['bread']],['chumvi',['salt']],['nyota',['star']]];
+const KEY='lb10-recall-v1';
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+function ok(typed,ans){const t=typed.toLowerCase().trim().replace(/^(a|an|the|to)\s+/,'').replace(/[^a-z ]/g,'').trim();if(!t)return false;
+ return ans.some(a=>t===a||t===a+'s'||(a.length>=4&&ed1(t,a)))}
+const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}};
+const save=d=>{try{localStorage.setItem(KEY,JSON.stringify(d));return true}catch(e){return false}};
+let rr=null;
+function rTimer(sec,me){const t0=performance.now();const tick=()=>{if(!rr||rr.tok!==me)return;const f=Math.min(1,(performance.now()-t0)/(sec*1000));$('rTb').style.width=(100-f*100)+'%';if(f<1)requestAnimationFrame(tick)};tick()}
+const pairHTML=(s,e)=>`${s} <span aria-hidden="true">=</span><span class="sr-only">means</span> <span class="en">${e}</span>`;
+function rAsk(sec){return new Promise(res=>{rr.res=res;$('rForm').hidden=false;$('rIn').value='';$('rIn').focus();if(sec){const me=Symbol();rr.tok=me;rTimer(sec,me);rr.to=setTimeout(()=>{if(rr&&rr.res===res){rr.res=null;$('rForm').hidden=true;res($('rIn').value)}},sec*1000)}})}
+$('rForm').addEventListener('submit',e=>{e.preventDefault();if(!rr||!rr.res)return;const r=rr.res;rr.res=null;clearTimeout(rr.to);rr.tok=null;$('rTb').style.width='0';$('rForm').hidden=true;r($('rIn').value)});
+async function hold(sec){const me=Symbol();rr.tok=me;rTimer(sec,me);await sw(sec*1000);if(!rr)return false;rr.tok=null;$('rTb').style.width='0';return true}
+async function rBreak(){$('rPair').textContent='Easy break';$('rCap').textContent='';$('rBrk').hidden=false;$('rBrk').focus();let on=false;const me=Symbol();rr.tok=me;
+ $('rProg').textContent='For 30 seconds, tap the circle (or press Space) whenever it turns orange.';
+ const brk=$('rBrk');brk.onclick=()=>{if(on){on=false;brk.classList.remove('on')}};const t0=performance.now();rTimer(30,me);
+ while(performance.now()-t0<30000){await sw(1000+Math.random()*1800);if(!rr)return;on=true;brk.classList.add('on');await sw(900);on=false;brk.classList.remove('on')}
+ brk.hidden=true;rr.tok=null;$('rTb').style.width='0'}
+$('rBrk').addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();$('rBrk').click()}});
+function rWait(label){return new Promise(res=>{const b=$('rGo');b.textContent=label;b.disabled=false;b.focus();b.onclick=()=>{b.onclick=null;b.disabled=true;b.textContent='In progress';res()}})}
+async function testAll(items,label){let R=0,S=0;const order=shuf([...items]);
+ for(let i=0;i<order.length;i++){const [s,ans,set]=order[i];$('rPair').textContent=s;$('rCap').textContent='What does it mean in English? Leave it blank if you don’t know.';$('rProg').textContent=`${label}: word ${i+1} of ${order.length}`;
+  const v=await rAsk(0);if(!rr)return null;if(ok(v,ans)){if(set==='R')R++;else S++}}
+ $('rPair').textContent='';$('rCap').textContent='';return{R,S}}
+const bars=(rows)=>`<div class="res wl2">${rows.map(([g,l,n,c])=>(g?`<p class="gh">${g}</p>`:'')+`<div class="row"><span>${l}</span><div class="bar"><i style="width:${n/6*100}%;background:${c}"></i></div><b>${n} of 6</b></div>`).join('')}</div>`;
+function fmtDate(t){try{return new Date(t).toLocaleString(undefined,{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit'})}catch(e){return 'earlier'}}
+function showLater(){const d=load();const box=$('rLater');if(!d||d.later){box.hidden=true;return}
+ const age=Date.now()-d.t,DAY=864e5;box.hidden=false;
+ if(age>=DAY){$('rLaterText').textContent=`You learned these words on ${fmtDate(d.t)}. Ready for the second test? No studying first.`;$('rLaterGo').hidden=false}
+ else{const h=Math.ceil((DAY-age)/36e5);$('rLaterText').textContent=`Your words are saved in this browser. Come back in about ${h} hour${h>1?'s':''} or later for a second test, and don’t study them in between.`;$('rLaterGo').hidden=true}}
+showLater();
+$('rGo').addEventListener('click',async()=>{if(rr||$('rGo').onclick)return;rr={};const g=$('rGo');g.disabled=true;g.textContent='In progress';$('rRes').innerHTML='';$('rLater').hidden=true;
+ const pick=shuf([...POOL]).slice(0,12);const sets=shuf(['R','R','R','R','R','R','S','S','S','S','S','S']);const items=pick.map((p,i)=>[p[0],p[1],sets[i]]);
+ $('rPhase').textContent='Step 1 of 4 · Study';$('rTitle').textContent='Meet the words';$('rText').textContent='Each word appears for 4 seconds. Just learn what it means.';
+ for(let i=0;i<12;i++){const [s,a]=items[i];$('rPair').innerHTML=pairHTML(s,a[0]);$('rCap').textContent='';$('rProg').textContent=`Word ${i+1} of 12`;if(!await hold(4))return}
+ for(let c=0;c<2;c++){$('rPhase').textContent=`Step 2 of 4 · Practice, round ${c+1} of 2`;$('rTitle').textContent='Recall or see again';$('rText').textContent='Some words appear with their meaning: read them again. For others, only the Swahili appears: type the English, then check the answer.';
+  const ord=shuf([...items]);
+  for(let i=0;i<12;i++){const [s,a,set]=ord[i];$('rProg').textContent=`Round ${c+1}: word ${i+1} of 12`;
+   if(set==='S'){$('rPair').innerHTML=pairHTML(s,a[0]);$('rCap').textContent='Read it again.';if(!await hold(6))return}
+   else{$('rPair').textContent=s;$('rCap').textContent='Type the English.';const v=await rAsk(6);if(!rr)return;
+    const right=ok(v,a);$('rPair').innerHTML=pairHTML(s,a[0]);$('rCap').textContent=right?'Right.':(v.trim()?`Not quite: you typed “${v.trim().slice(0,20)}”.`:'Here’s the answer.');if(!await hold(2))return}}}
+ $('rPair').textContent='';$('rCap').textContent='';
+ $('rPhase').textContent='Step 3 of 4 · Break';$('rTitle').textContent='Step away';$('rText').textContent='An easy, 30-second task.';await rBreak();if(!rr)return;
+ $('rPair').textContent='One question first';$('rProg').textContent='';$('rPhase').textContent='Step 4 of 4 · Test';$('rTitle').textContent='Your prediction';$('rText').textContent='Before the test, make a guess.';
+ $('rQ').hidden=false;document.querySelectorAll('#rQ input').forEach(n=>n.checked=false);$('rQ').querySelector('input').focus();
+ await rWait('Start the test');if(!rr)return;const pr=(document.querySelector('input[name="rq"]:checked')||{}).value||'';$('rQ').hidden=true;
+ $('rTitle').textContent='Test';$('rText').textContent='Type the English for each word. No feedback this time.';
+ const sc=await testAll(items,'Test');if(!rr)return;
+ const stored=save({t:Date.now(),items,now:sc,pred:pr});
+ $('rPair').textContent='Done';$('rProg').textContent='Done.';$('rPhase').textContent='Your results';
+ $('rRes').innerHTML=bars([['Today','Seen again',sc.S,'#C9D3E3'],['','Recalled',sc.R,'#FCB316']]);
+ const d=sc.R-sc.S;let title,text;
+ const pTxt=pr==='S'?' You predicted the words you saw again would last better, as many people do.':pr==='R'?' You predicted the recalled words would last better.':pr==='E'?' You predicted no difference.':'';
+ if(sc.R>=6&&sc.S>=6){title='All 12 today';text=`You got every word today. A test a few minutes later is easy; the difference usually shows up after days.${pTxt}`}
+ else if(d>=1){title='Recall is already ahead';text=`You got ${sc.R} of 6 recalled words and ${sc.S} of 6 words you saw again.${pTxt} Even a short delay can show it. The gap usually grows with time.`}
+ else if(d<=-1){title='Seeing again is ahead, for now';text=`You got ${sc.S} of 6 words you saw again and ${sc.R} of 6 recalled words.${pTxt} That matches the 2006 study at five minutes, when rereading was ahead too. The test that matters is the later one.`}
+ else{title='Level, for now';text=`You got ${sc.R} of 6 recalled words and ${sc.S} of 6 words you saw again.${pTxt} After a few minutes the two often look alike. The gap usually opens over days.`}
+ text+=stored?' Come back in a day or more, in this browser, and take the second test without studying.':' This browser didn’t allow saving, so a second test isn’t possible here.';
+ $('rTitle').textContent=title;$('rText').textContent=text;g.onclick=null;g.textContent='Try again with new words';g.disabled=false;rr=null;showLater();g.focus()});
+$('rLaterGo').addEventListener('click',async()=>{const d=load();if(!d||rr)return;rr={};$('rLater').hidden=true;$('rGo').disabled=true;$('rRes').innerHTML='';
+ $('rScreen').scrollIntoView({block:'nearest'});$('rPhase').textContent='Second test';$('rTitle').textContent='Without studying';$('rText').textContent='Type the English for each word. No feedback.';
+ const sc=await testAll(d.items,'Second test');if(!rr)return;d.later=sc;d.tl=Date.now();save(d);
+ $('rPair').textContent='Done';$('rProg').textContent='Done.';$('rPhase').textContent='Your results';
+ $('rRes').innerHTML=bars([['First test','Seen again',d.now.S,'#C9D3E3'],['','Recalled',d.now.R,'#FCB316'],['Second test','Seen again',sc.S,'#C9D3E3'],['','Recalled',sc.R,'#FCB316']]);
+ const lostS=d.now.S-sc.S,lostR=d.now.R-sc.R,days=Math.max(1,Math.round((d.tl-d.t)/864e5));let title,text;
+ const base=`After about ${days} day${days>1?'s':''}: ${sc.R} of 6 recalled words, ${sc.S} of 6 words you saw again.`;
+ if(sc.R-sc.S>=1){title='Recall held up better';text=`${base} Each time you pulled a word out during practice, you strengthened the route back to it.`}
+ else if(sc.S-sc.R>=1){title='Seeing again held up better this time';text=`${base} With six words in each set, one or two words can swing the result. Across hundreds of studies, practice tests come out ahead of restudying on average.`}
+ else{title='Level after the delay';text=`${base} With six words in each set, the difference may be too small to show. Across hundreds of studies, practice tests come out ahead of restudying on average.`}
+ if(lostS>=0&&lostR>=0&&lostS!==lostR)text+=` You lost ${Math.max(0,lostR)} recalled word${lostR===1?'':'s'} and ${Math.max(0,lostS)} seen-again word${lostS===1?'':'s'} since the first test.`;
+ $('rTitle').textContent=title;$('rText').textContent=text;$('rGo').disabled=false;$('rGo').textContent='Try again with new words';rr=null;$('rGo').focus()});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Rereading four times against reading once and recalling three times: test five minutes later',['Rereading ahead','Recall ahead','No difference'],0,'83% for rereading against 71% for recall.'],
+ ['The same groups, tested one week later',['Recall ahead','Rereading ahead','No difference'],0,'61% for recall against 40% for rereading.'],
+ ['Which group felt more confident about remembering the passage?',['The rereaders','The group that practised recall','Both the same'],0,'Familiarity felt like knowing, though it faded faster.'],
+ ['Retrieval practice against drawing concept maps, on inference questions a week later',['Retrieval practice ahead','Concept maps ahead','No difference'],0,'Retrieval practice did better even on questions that asked for inferences.'],
+ ['Across 272 effects from 118 articles, practice tests against restudying',['Practice tests ahead','Restudying ahead','No overall difference'],0,'The benefit held in classrooms as well as labs.'],
+ ['Being shown the correct answer after a wrong answer, a week later',['Far better memory for those words','No difference','Worse memory, from confusion'],0,'Feedback after errors kept the mistakes from sticking.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: rereading wins the sprint and feels better; recall wins over days, especially with feedback.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Five minutes after studying, which group recalled more of the passage?',o:['The rereaders','The group that practised recall','Neither'],a:0,f:'83% against 71%. A week later it flipped: 61% against 40%.'},
+ {q:'Why does rereading feel more effective than it is?',o:['The text becomes familiar, and familiarity feels like knowing','It takes longer','It is harder'],a:0,f:'Recall feels harder because you notice what’s missing.'},
+ {q:'Which made the biggest difference for errors made during practice?',o:['Seeing the correct answer afterwards','Being told only that the answer was wrong','Grading the practice'],a:0,f:'Feedback with the correct answer keeps errors from sticking.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','lb10');
+})();
+</script>
+</body>
+</html>

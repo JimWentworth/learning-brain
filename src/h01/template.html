@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Habits, Not Willpower: How Study Becomes Automatic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}.bscen{font:600 clamp(19px,2.4vw,22px)/1.45 var(--body);color:#fff;max-width:40ch;min-height:5.8em;margin:0}
+.bopts{display:grid;grid-template-columns:repeat(var(--nb,3),minmax(0,1fr));gap:8px;width:100%;max-width:600px}
+@media (max-width:520px){.bopts{grid-template-columns:1fr}}
+.bopts[hidden]{display:none}
+.bopts button{min-height:52px;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer;padding:4px 8px}
+.bopts button small{display:block;font-size:13px;color:#C9D3E3;font-weight:600}
+.bopts button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.bopts button.ok{border-color:#7DD3A8;background:#173B33}.bopts button.no{border-color:#FFB38A;background:#3B2420}
+.bopts button:disabled{cursor:default}
+.bfb{font-size:18px;line-height:1.45;color:#E9EEF6;margin:0;min-height:3em;max-width:44ch}
+.bfb b.ok{color:#7DD3A8}.bfb b.no{color:#FFB38A}
+.qq{font:600 clamp(18px,2.2vw,21px)/1.45 var(--body);color:#fff;max-width:42ch;margin:0;text-align:center}
+.jb{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.jb[hidden]{display:none}
+.hctl{display:grid;gap:12px;width:100%;max-width:560px}
+.hctl[hidden]{display:none}
+.hctl fieldset{border:1px solid #3A4E72;border-radius:10px;padding:8px 12px;margin:0}
+.hctl legend{font:800 13px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#FCB316;padding:0 6px}
+.hctl label{display:flex;gap:8px;align-items:flex-start;padding:4px 0;color:#E9EEF6;font-size:16px;line-height:1.35;cursor:pointer}
+.hctl input{margin-top:3px;width:18px;height:18px;accent-color:#FCB316;flex:none}
+.hchart{width:100%;max-width:560px;height:auto;display:block}
+.hchart[hidden]{display:none}
+.gfb{font:600 17px/1.45 var(--body);color:#E9EEF6;min-height:1.5em;margin:0;text-align:center;max-width:44ch}
+.gfb b.ok{color:#7DD3A8}.gfb b.no{color:#FFB38A}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Habits of the Learner · Topic 1</div>
+      <h1 id="title">Habits, not willpower <em>Willpower starts it; habits keep it going</em></h1>
+      <p class="dek">Students who get the most done lean less on willpower and more on habits: behaviours set off by a cue, like a time or a place, rather than a fresh decision each day.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#cT">How long does a habit take?</a></span><span><a href="#bT">Habit or willpower?</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the striatum, deep inside, and the prefrontal cortex, at the front, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Habits, not willpower</b> · The Learning Brain, Habits of the Learner, episode 1</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>You might think the students who get the most done simply have more willpower. The research points somewhere else. They lean less on willpower, and more on habits.</p>
+    <p>A habit is a behaviour set off by a cue, like a time or a place, rather than by a fresh decision. In a study at University College London, reported by Phillippa Lally and colleagues in 2010, 96 volunteers repeated one daily behaviour after a fixed cue, such as after breakfast, for 12 weeks.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>66 days</strong><span>median time to near-full automaticity, for those whose data fit the model</span></div>
+      <div role="listitem"><strong>18 to 254</strong><span>days: the range, from fastest to slowest estimate</span></div>
+      <div role="listitem"><strong>1 missed day</strong><span>did not derail the process</span></div>
+      <div role="listitem"><strong>23 labs</strong><span>and more than 2,000 people found almost no “willpower runs out” effect</span></div>
+    </div>
+  </div>
+
+  <section class="night" aria-labelledby="cT">
+    <div class="col">
+      <h2 class="sec" id="cT"><span class="n">Try it</span>How long does a habit take?</h2>
+      <p>First, a guess. Then try a simple model of habit growth: pick a behaviour and how often you do it, and see when it becomes close to automatic. The model is a sketch, set to match the study’s fastest, median and slowest estimates. About 2 minutes.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="cScreen">
+          <p class="qq" id="cQ" aria-live="polite">Press Start.</p>
+          <div class="jb" id="cB" hidden role="group" aria-label="Your guess"></div>
+          <p class="gfb" id="cFb" aria-live="polite"></p>
+          <form class="hctl" id="cCtl" hidden>
+            <fieldset><legend>The behaviour</legend>
+              <label><input type="radio" name="hk" value="18">Simple: a glass of water with lunch</label>
+              <label><input type="radio" name="hk" value="66" checked>Typical: 20 minutes of study after lunch</label>
+              <label><input type="radio" name="hk" value="254">Demanding: a run before breakfast</label>
+            </fieldset>
+            <fieldset><legend>How often</legend>
+              <label><input type="radio" name="hf" value="1" checked>Every day</label>
+              <label><input type="radio" name="hf" value="0.86">Miss about one day a week</label>
+              <label><input type="radio" name="hf" value="0.5">About half the days</label>
+            </fieldset>
+          </form>
+          <svg class="hchart" id="cSvg" viewBox="0 0 560 220" hidden role="img" aria-labelledby="cSvgT"><title id="cSvgT">Habit strength over days</title></svg>
+          <p class="prog" id="cProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="cPhase">Ready</p>
+          <p class="mtitle" id="cTitle">Guess, then model</p>
+          <p class="mtext" id="cText" aria-live="polite">How long does a new daily behaviour take to become close to automatic?</p>
+          <div id="cRes"></div>
+          <div class="mrow"><button class="nbtn" id="cGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Self-control</span>Resisting less, not more</h2>
+    <p>So why does self-control predict good outcomes? Across six studies with more than 2,000 people, Brian Galla and Angela Duckworth at the University of Pennsylvania found that people with better self-control reported resisting temptation less often, not more. Their habits, including study habits, explained much of the link between self-control and good outcomes, such as being able to study even when it was hard.</p>
+    <h2 class="sec"><span class="n">The fuel tank</span>A shaky idea</h2>
+    <p>You may have heard that willpower is a tank that runs dry. Earlier studies suggested a sizeable effect. But a replication across 23 labs and more than 2,000 people found an effect close to zero. The debate goes on, so planning your day around a fuel tank is a shaky strategy.</p>
+  </div>
+
+  <section class="night" aria-labelledby="bT">
+    <div class="col">
+      <h2 class="sec" id="bT"><span class="n">Try it</span>Habit or willpower?</h2>
+      <p>Ten ways a student might try to study more. For each, decide: does it build a habit (a cue does the work), or lean on willpower (a fresh decision or a fight each time)? You’ll get feedback after each one.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="bScreen">
+          <p class="bscen" id="bScen" aria-live="polite">Press Start.</p>
+          <div class="bopts" id="bOpts" hidden role="group" aria-label="Habit or willpower?" style="--nb:2"><button type="button" data-k="H">Habit<small>a cue does the work</small></button><button type="button" data-k="W">Willpower<small>a fresh fight each time</small></button></div>
+          <p class="prog" id="bProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="bPhase">Ready</p>
+          <p class="mtitle" id="bTitle">Habit or willpower?</p>
+          <p class="bfb" id="bFb" aria-live="polite">The question is always: what starts the behaviour, a cue or a decision?</p>
+          <div id="bRes"></div>
+          <div class="mrow"><button class="nbtn" id="bGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">A caution</span>Small study, correlations</h2>
+    <p>The habit study was small, and about half the volunteers never showed a clear habit curve. The self-control findings are correlations. And more complex behaviours took longer to become automatic.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Try this</h3>
+      <p>Pick one fixed time and place for study. Attach it to something you already do, like after lunch. Start small enough to manage on a bad day. And if you miss a day, simply start again tomorrow.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Willpower gets you started. Habits keep you going.</h2>
+    <ol class="tips">
+      <li><b>One time, one place</b><span>The cue does the deciding.</span></li>
+      <li><b>Start small</b><span>Small enough for a bad day.</span></li>
+      <li><b>Missed a day?</b><span>Start again tomorrow; one miss doesn’t undo it.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1002/ejsp.674">Lally, P., van Jaarsveld, C. H. M., Potts, H. W. W., &amp; Wardle, J. (2010). How are habits formed: Modelling habit formation in the real world. <i>European Journal of Social Psychology, 40</i>(6), 998–1009.</a></li>
+        <li><a href="https://doi.org/10.1037/pspp0000026">Galla, B. M., &amp; Duckworth, A. L. (2015). More than resisting temptation: Beneficial habits mediate the relationship between self-control and positive life outcomes. <i>Journal of Personality and Social Psychology, 109</i>(3), 508–525.</a></li>
+        <li><a href="https://doi.org/10.1177/1745691616652873">Hagger, M. S., Chatzisarantis, N. L. D., et al. (2016). A multilab preregistered replication of the ego-depletion effect. <i>Perspectives on Psychological Science, 11</i>(4), 546–573.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.str.lab=[330,640];BR.R.str.al='right';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['str','pfc'],labels:['str','pfc'],labelT:{str:0.8,pfc:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- how long does a habit take? ----------
+   1) guess (21 days / about 2 months / it varies a lot); 2) model: A(n)=1-exp(-k n) per performed day,
+   k set so 95% is reached on day D (18, 66, 254) when done every day. Missed days add nothing (no reset). */
+let hr=null;
+function hChoose(opts){return new Promise(res=>{hr.res=res;const b=$('cB');b.innerHTML=opts.map(([k,t],j)=>`<button class="nbtn${j?' ghost':''}" type="button" data-v="${k}">${t}</button>`).join('');b.hidden=false;b.querySelector('button').focus()})}
+$('cB').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!hr||!hr.res)return;const r=hr.res;hr.res=null;$('cB').hidden=true;r(b.dataset.v)});
+function sim(D,f){const k=Math.log(20)/D;let n=0,acc=0,pts=[],reach=null;for(let d=1;d<=300;d++){acc+=f;if(acc>=1-1e-9){acc-=1;n++}const A=1-Math.exp(-k*n);pts.push(A);if(reach===null&&A>=0.95)reach=d}return{pts,reach}}
+function draw(){const D=+document.querySelector('input[name=hk]:checked').value,f=+document.querySelector('input[name=hf]:checked').value;const {pts,reach}=sim(D,f);
+ const X=d=>40+d/300*500,Y=a=>190-a*160;let p='';pts.forEach((a,i)=>{p+=(i?'L':'M')+X(i+1).toFixed(1)+' '+Y(a).toFixed(1)});
+ const w84=X(84);
+ $('cSvg').innerHTML=`<title id="cSvgT">Habit strength over 300 days</title><rect x="40" y="30" width="${(w84-40).toFixed(1)}" height="160" fill="#22375C"/><text x="${(w84-4).toFixed(1)}" y="44" text-anchor="end" font-size="12" fill="#C9D3E3">the 12-week study</text>`+
+  `<line x1="40" y1="190" x2="540" y2="190" stroke="#8FA3C2"/><line x1="40" y1="30" x2="40" y2="190" stroke="#8FA3C2"/><line x1="40" y1="${Y(.95)}" x2="540" y2="${Y(.95)}" stroke="#FCB316" stroke-dasharray="4 4"/><text x="536" y="${Y(.95)-5}" text-anchor="end" font-size="12" fill="#FCB316">near-automatic</text>`+
+  [0,100,200,300].map(d=>`<text x="${X(d)}" y="206" text-anchor="middle" font-size="12" fill="#C9D3E3">${d}</text>`).join('')+`<text x="290" y="219" text-anchor="middle" font-size="12" fill="#C9D3E3">days</text>`+
+  `<path d="${p}" fill="none" stroke="#7DD3A8" stroke-width="3"/>`+(reach?`<circle cx="${X(reach)}" cy="${Y(.95)}" r="5" fill="#FCB316"/>`:'');
+ const txt=reach?`Near-automatic on about day ${reach}.`:'Not near-automatic within 300 days.';
+ $('cProg').textContent=txt;
+ let note;
+ if(f===1)note=D===18?'A simple behaviour, done daily, got there in under three weeks: the fastest in the study.':D===66?'The median in the study: about two months, not three weeks.':'Demanding behaviours took far longer; the slowest estimate was about 254 days, well beyond the 12 weeks of the study.';
+ else if(f>0.8)note=`Missing about one day a week delays it (day ${reach} here, against day ${D} when done every day), but it still gets there. In the study, one missed day did not derail the process.`;
+ else note='Doing it only about half the days slows everything. In the study, people who were very inconsistent did not form habits at all, so the real picture is probably worse than this sketch.';
+ $('cText').textContent=note;
+ hr&&(hr.last={D,f,reach})}
+$('cCtl').addEventListener('change',draw);
+$('cGo').addEventListener('click',async()=>{if(hr&&hr.res)return;hr={};const g=$('cGo');g.disabled=true;g.textContent='In progress';$('cRes').innerHTML='';$('cCtl').hidden=true;$('cSvg').hidden=true;$('cProg').textContent='';
+ $('cPhase').textContent='Your guess';$('cTitle').textContent='How long?';$('cText').textContent='Pick the answer closest to your guess.';$('cFb').textContent='';
+ $('cQ').textContent='How long does a new daily behaviour take to become close to automatic?';
+ const v=await hChoose([['21','About 3 weeks'],['66','About 2 months'],['var','It varies a lot']]);if(!hr)return;
+ $('cFb').innerHTML=v==='21'?'<b class="no">That’s the popular claim,</b> but the study’s median was 66 days.':v==='66'?'<b class="ok">That’s the median,</b> 66 days. But it varied a lot: from 18 to about 254.':'<b class="ok">Right:</b> from 18 to about 254 days, with a median of 66.';
+ $('cQ').textContent='Now try the model. Change the behaviour and how often you do it.';
+ $('cPhase').textContent='The model';$('cTitle').textContent='Habit strength over time';
+ $('cCtl').hidden=false;$('cSvg').hidden=false;draw();g.textContent='Start again';g.disabled=false;$('cCtl').querySelector('input:checked').focus()});
+
+/* ---------- classifier ---------- */
+const NM={H:'Habit',W:'Willpower'};
+const CASES=[
+ ['Studying at the same desk, right after lunch, every weekday','H','Habit: a fixed time and place become the cue, so there’s nothing to decide.'],
+ ['Leaving your phone in another room before you start','H','Habit: you change the setting once, so there’s no temptation to fight.'],
+ ['After brushing your teeth each night, reviewing one page of notes','H','Habit: attached to something you already do, which acts as the cue.'],
+ ['Joining a study group that always meets on Tuesdays at four','H','Habit: the fixed meeting is a cue, and other people make it easy to keep.'],
+ ['Putting your flashcards on your pillow in the morning, so you see them at night','H','Habit: you set up the cue in advance.'],
+ ['Keeping your phone on the desk and trying not to check it when it buzzes','W','Willpower: every buzz is a fresh fight. Move the phone instead.'],
+ ['Deciding each evening whether to study tonight','W','Willpower: a fresh decision every day, which is what habits remove.'],
+ ['Promising yourself you’ll try harder next week','W','Willpower: a resolution with no cue, time or place attached.'],
+ ['Forcing yourself through four hours straight when you’re exhausted','W','Willpower: and hard to repeat. Start small enough to manage on a bad day.'],
+ ['Waiting until you feel motivated, then studying for as long as it lasts','W','Willpower: it depends on how you feel. A cue works even when you don’t feel like it.']];
+let br=null;
+function bAnswer(){return new Promise(res=>{br.res=res;const o=$('bOpts');o.hidden=false;o.querySelectorAll('button').forEach(b=>{b.disabled=false;b.classList.remove('ok','no')});o.querySelector('button').focus()})}
+$('bOpts').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!br||!br.res)return;const r=br.res;br.res=null;r(b.dataset.k)});
+function bWait(label){return new Promise(res=>{const g=$('bGo');g.textContent=label;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.disabled=true;g.textContent='In progress';res()}})}
+$('bGo').addEventListener('click',async()=>{if(br||$('bGo').onclick)return;br={};const g=$('bGo');g.disabled=true;g.textContent='In progress';$('bRes').innerHTML='';
+ const order=shuf([...CASES]);const n=order.length;let right=0;const tot={},got={},miss={};Object.keys(NM).forEach(k=>{tot[k]=0;got[k]=0;miss[k]=0});
+ $('bTitle').textContent='Habit or willpower?';
+ for(let i=0;i<n;i++){const [txt,k,ex]=order[i];tot[k]++;$('bPhase').textContent=`Case ${i+1} of ${n}`;$('bScen').textContent=txt;$('bProg').textContent='';$('bFb').textContent='';
+  const a=await bAnswer();if(!br)return;const ok=a===k;if(ok){right++;got[k]++}else miss[k]++;
+  $('bOpts').querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.k===k)b.classList.add('ok');else if(b.dataset.k===a)b.classList.add('no')});
+  $('bFb').innerHTML=(ok?'<b class="ok">Right.</b> ':`<b class="no">Not quite.</b> You chose “${NM[a]}”. `)+ex;$('bProg').textContent=`${right} of ${i+1} right so far.`;
+  if(i<n-1){await bWait('Next case');if(!br)return}}
+ $('bOpts').hidden=true;$('bScen').textContent='Done.';$('bProg').textContent='';$('bPhase').textContent='Your results';
+ $('bRes').innerHTML=`<div class="res wl2">${Object.keys(NM).map(k=>barRow(NM[k],got[k],tot[k],got[k]+' of '+tot[k],'#FCB316')).join('')}</div>`;
+ const weak=Object.keys(miss).filter(k=>miss[k]>0).map(k=>'“'+NM[k]+'”');const wj=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];const missed=weak.length===Object.keys(NM).length?(weak.length===2?'cases in both groups':'cases in every group'):'some '+wj(weak)+' cases';let title,text;
+
+ if(right>=9){title='You know the difference';text=`${right} of 10 right. Habits put the work on a cue, set up in advance. Willpower puts it on a fresh decision, every time.`}
+ else if(right>=6){title='Mostly there';text=`${right} of 10 right. You missed ${missed}. Ask: what starts the behaviour, a fixed cue or a decision in the moment?`}
+ else{title='Worth another look';text=`${right} of 10 right. A habit is set off by a cue, like a time, a place or something you already do. If it needs a fresh decision or a fight, it’s willpower.`}
+ $('bTitle').textContent=title;$('bFb').textContent=text;g.onclick=null;g.textContent='Try again';g.disabled=false;g.focus();br=null});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'In the UCL study, the median time to near-full automaticity was…',o:['66 days','21 days','A year'],a:0,f:'With a range from 18 to about 254 days.'},
+ {q:'People with better self-control reported…',o:['Resisting temptation less often','Resisting temptation more often','No difference'],a:0,f:'Their habits explained much of the link to good outcomes.'},
+ {q:'If you miss a day of a new habit…',o:['Start again tomorrow; one miss did not derail it','Start the count from zero','Give up'],a:0,f:'Very inconsistent practice is what stops a habit forming.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','h01');
+})();
+</script>
+</body>
+</html>

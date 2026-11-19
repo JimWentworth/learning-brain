@@ -1,0 +1,6 @@
+t=open('map/template.html').read()
+nav=open('nav/nav.html').read().replace('__CURRENT__','map')
+t=t.replace('__COLLCSS__',open('nav/coll.css').read()).replace('__COLLJS__',open('nav/coll.js').read())
+t=t.replace('__POPCSS__',open('nav/pop.css').read()).replace('__POPJS__',open('nav/pop.js').read())
+t=t.replace('__SRT__',open('map/srt.json').read()).replace('__BRAIN__',open('shared/brain.js').read()).replace('__NAV__',nav)
+open('map/index.html','w').write(t)

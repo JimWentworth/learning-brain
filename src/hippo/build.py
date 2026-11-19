@@ -1,0 +1,5 @@
+t=open('hippo/template.html').read()
+nav=open('nav/nav.html').read().replace('__CURRENT__','hippocampus')
+t=t.replace('__COLLCSS__',open('nav/coll.css').read()).replace('__COLLJS__',open('nav/coll.js').read())
+t=t.replace('__CSS__',open('hippo/shared.css').read()).replace('__SRT__',open('hippo/srt.json').read()).replace('__BRAIN__',open('shared/brain.js').read()).replace('__NAV__',nav)
+open('hippo/index.html','w').write(t)

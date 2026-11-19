@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Parietal Lobe: Space, Attention and Number</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+/* dots */
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+#dotC{width:min(300px,80vw);height:auto;aspect-ratio:1;display:block}
+.keys{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:8px;width:100%;max-width:520px}
+.keys[hidden]{display:none}
+@media (max-width:520px){.keys{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.keys button{appearance:none;min-height:52px;border-radius:10px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 24px var(--body);cursor:pointer}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 64px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px}
+.res b{font-variant-numeric:tabular-nums;text-align:right}
+.prog{font-size:16px;color:var(--night-muted);margin:0}
+/* number line */
+.nlbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.nltarget{font-family:var(--display);font-size:clamp(26px,3.4vw,40px);font-weight:800;margin:0 0 6px;color:var(--ink);min-height:1.3em}
+.nlwrap{padding:18px 18px 0}
+.nlline{position:relative;height:64px;cursor:crosshair;touch-action:none;border-radius:6px}
+.nlline:focus-visible{outline:3px solid #13294B;outline-offset:4px}
+.nlline::before{content:"";position:absolute;left:0;right:0;top:31px;height:3px;background:#13294B}
+.nlline::after{content:"";position:absolute;left:0;right:0;top:20px;height:25px;border-left:3px solid #13294B;border-right:3px solid #13294B}
+.nlmark{position:absolute;top:6px;width:6px;height:52px;margin-left:-3px;background:#B84300;border-radius:3px}
+.nlmark[hidden]{display:none}
+.nlends{display:flex;justify-content:space-between;font-weight:700;font-size:18px;margin:6px -10px 0}
+.small{font-size:16px;color:var(--ink-2);margin:12px 0 0}
+#nlPlot{width:100%;max-width:560px;height:auto;aspect-ratio:1.15;display:block;margin:18px auto 0}
+#nlPlot[hidden]{display:none}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+.pmsg b{display:block;font-size:19px;margin-bottom:4px}
+__POPCSS__
+__COLLCSS__
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Brain regions</div>
+      <h1 id="title">The Parietal Lobe <em>Space, attention and number</em></h1>
+      <p class="dek">At the top and back of the brain, the parietal lobe keeps track of where things are, steers attention, and gives us a feel for how many. Even our sense of number is laid out in space.</p>
+      <div class="byline"><span>About 9 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#dotT">How many dots?</a></span><span><a href="#nlT2">Place the number</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the left side of the brain, with the parietal lobe, at the top and back, glowing orange, and the intraparietal sulcus, a groove running along it, marked."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 3 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>The parietal lobe: space, attention and number</b> · The Learning Brain</span><span>Captions are on; turn them off in the player.</span></div>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>In 1978, the Milan neurologists Edoardo Bisiach and Claudio Luzzatti asked two patients, known as I.G. and N.V., to imagine standing in the Piazza del Duomo, the city’s cathedral square, which both knew well. Picturing themselves at one end, facing the cathedral, they listed buildings and shops, but almost all were on their right.</p>
+    <p>Then the patients imagined standing on the cathedral steps, looking back across the square. Now they named the buildings they had left out, and left out the ones they had just described. Nothing was wrong with their memory of the square. Whatever fell on the left of their mental picture simply dropped out.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>1978</strong><span>the Milan study showing neglect even in imagined scenes</span></div>
+      <div role="listitem"><strong>2 of 20</strong><span>viewers who saw a magician drop a cigarette in full view</span></div>
+      <div role="listitem"><strong>~4</strong><span>items most people know at a glance, without counting</span></div>
+      <div role="listitem"><strong>4 × 15 min</strong><span>of a number board game that improved preschoolers’ number skills</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Space</span>When half the world goes missing</h2>
+    <p>Both Milan patients had damage to the right side of the brain. The condition they had, unilateral neglect, most often follows damage to the right parietal lobe, although nearby areas can be involved too. Similar damage on the left usually causes milder, shorter-lived problems on the right side.</p>
+    <p>People with left neglect may eat only the food on the right half of the plate, shave only one side of the face, or copy only the right half of a drawing. Asked to mark the middle of a line, they put the mark well to the right. They are often unaware that anything is missing. The Milan study showed that neglect affects more than what people see: it affects the space of their imagination too.</p>
+
+    <h2 class="sec"><span class="n">Attention</span>A spotlight you can steer</h2>
+    <p>Neglect is a problem of attention, not of eyesight. In 2002, Maurizio Corbetta and Gordon Shulman described two partly separate attention networks. A dorsal network, which includes the intraparietal sulcus (a deep groove along the parietal lobe) and an area in the frontal lobe that controls eye movements, points attention where we choose. A ventral network, mainly on the right, acts as a circuit breaker, pulling attention toward something unexpected. Both are disrupted in neglect.</p>
+    <p>Because attention is limited, we can look straight at something and still miss it. In 2005, Gustav Kuhn and Benjamin Tatler filmed people’s eye movements as Kuhn made a cigarette “vanish” by dropping it, in full view. Only 2 of the 20 viewers saw it fall. Where people were looking at the moment of the drop made little difference. What mattered was where their attention was.</p>
+
+    <h2 class="sec"><span class="n">Number</span>A sense of how many</h2>
+    <p>Glance at three coins and you know there are three without counting. In 1949, E. L. Kaufman and colleagues named this subitizing, from the Latin for sudden. Up to about four items, each extra item adds only a little time. Beyond four, each one adds much more, because we have to count, or settle for an estimate.</p>
+    <p>The intraparietal sulcus is central to this sense of number. In 2004, Manuela Piazza, Stanislas Dehaene and colleagues showed people the same number of dots again and again, until the response there died down. When the number changed, the response bounced back, and more so for bigger changes. Later work found the same region responds to number whether it is shown as dots, digits or number words.</p>
+  </div>
+
+  <section class="night" aria-labelledby="dotT">
+    <div class="col">
+      <h2 class="sec" id="dotT"><span class="n">Try it</span>How many dots?</h2>
+      <p>Dots flash for a fifth of a second, too fast to count. Say how many you saw. 24 quick rounds, from 1 to 8 dots.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="dtScreen" tabindex="0" role="group" aria-label="Dot flash screen. After each flash, press a number key from 1 to 9, or tap a number." aria-describedby="dtProg">
+          <canvas id="dtC" width="600" height="600" aria-hidden="true" style="width:min(300px,80vw);height:auto;aspect-ratio:1;display:block"></canvas>
+          <div class="keys" id="dtKeys" hidden></div>
+          <p class="prog" id="dtProg" aria-live="polite">Press Start, then watch the centre of the box.</p>
+        </div>
+        <div>
+          <p class="phase" id="dtPhase">Ready</p>
+          <p class="mtitle" id="dtTitle">Know it or guess it?</p>
+          <p class="mtext" id="dtText" aria-live="polite">Answer as accurately as you can. If you’re not sure, guess.</p>
+          <div id="dtRes"></div>
+          <div class="mrow"><button class="nbtn" id="dtGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <p>Most people get one to four dots right almost every time, even in a fifth of a second. From five on, answers turn into estimates, often off by one or two. Small sets can be held as separate objects at once; larger ones can only be judged roughly, or counted if there is time.</p>
+    <p>If you are using a screen reader, the dot activity is not meaningful, because it depends on seeing a very brief display. The text around it describes the result.</p>
+
+    <h2 class="sec"><span class="n">The number line</span>From squashed to straight</h2>
+    <p>We also lay numbers out in space, with small numbers on one side and large ones on the other. In 2003, Robert Siegler and John Opfer asked children and adults to mark numbers on a line running from 0 to 1,000. Nearly all second graders spread the small numbers out and crowded the large ones together, a pattern that matches a logarithmic curve. Some put 150 closer to 1,000 than to 0. About half of fourth graders did the same, while sixth graders and adults spaced numbers evenly.</p>
+    <p>The same shift happens at different ages for different ranges: between preschool and kindergarten for 0 to 10, between kindergarten and second grade for 0 to 100, and between second and fourth grade for 0 to 1,000. Children’s number-line estimates go along with their maths achievement.</p>
+  </div>
+
+  <section aria-labelledby="nlT2" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="nlT2"><span class="n">Try it</span>Place the number</h2>
+      <p>Mark where each number belongs on a line from 0 to 1,000. Don’t measure, just go with your sense of it. Ten numbers.</p>
+    </div>
+    <div class="wide">
+      <div class="nlbox">
+        <p class="nltarget" id="nlT" aria-live="polite">Press Start to get your first number.</p>
+        <div class="nlwrap">
+          <div class="nlline" id="nlLine" role="slider" tabindex="-1" aria-label="Number line from 0 to 1,000" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="0" aria-valuetext="No mark yet" aria-disabled="true" aria-describedby="nlHelp"><i class="nlmark" id="nlMark" hidden></i></div>
+          <div class="nlends" aria-hidden="true"><span>0</span><span>1,000</span></div>
+        </div>
+        <p class="small" id="nlHelp">Tap or click the line, or drag the mark. With a keyboard, use the arrow keys (hold Shift for bigger steps). Then press Place it.</p>
+        <div class="qrow"><button class="pbtn" id="nlGo">Start</button><button class="pbtn sec" id="nlNext" disabled>Place it</button></div>
+        <p class="pmsg" id="nlMsg" aria-live="polite"></p>
+        <canvas id="nlPlot" width="1120" height="974" hidden role="img" aria-label="Chart of your marks"></canvas>
+        <ul class="sr-only" id="nlList"></ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Practice</span>Board games straighten the line</h2>
+    <p>Where do children get an even number line? One source is playing games where numbers march in a straight line. In 2008, Geetha Ramani and Robert Siegler had preschoolers from low-income families play a simple race game on a board with squares numbered 1 to 10. After four 15-minute sessions, the children improved at counting, naming numbers, comparing which number is bigger, and placing numbers on a number line. Children who played the same game with coloured squares instead of numbers did not improve.</p>
+    <p>The layout matters. In a related study, the same game played on a circular board did not produce the same gains. A straight row of numbers gives children a picture of numbers that are evenly spaced, each one step further along than the last.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Look where I’m pointing</h3>
+      <p>Attention decides what gets learned. A learner looking at a busy diagram may be attending to the wrong part, just like the viewers who missed the cigarette. Pointing, highlighting and removing distractions help steer attention to what matters.</p>
+    </aside>
+  </div>
+
+  <section class="pop wide" aria-labelledby="popT">
+    <div style="max-width:700px;margin:0 auto">
+      <h2 class="sec" id="popT"><span class="n">In popular culture</span>Tricks, toothpicks and board games</h2>
+      <p>A film about magicians, a famous counting scene, and a board game that turned out to teach number.</p>
+    </div>
+    <div class="poptabs" role="tablist" aria-label="Attention and number in popular culture" id="popTabs"></div>
+    <div id="popPanels"></div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Number sense is partly spatial</h2>
+    <ol class="tips">
+      <li><b>Use number lines</b><span>Number lines and rulers give children an even map of numbers to build on.</span></li>
+      <li><b>Play straight-line games</b><span>Board games with numbered squares in a row are cheap, quick practice for young children.</span></li>
+      <li><b>Point to what matters</b><span>Attention is limited. Show learners where to look, and clear away distractions.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://plato.stanford.edu/archives/sum2021/entries/mental-imagery/representational-neglect.html">Stanford Encyclopedia of Philosophy: representational neglect, including Bisiach, E., &amp; Luzzatti, C. (1978). Unilateral neglect of representational space. <i>Cortex</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2441869">Corbetta, M., Patel, G., &amp; Shulman, G. L. (2008). The reorienting system of the human brain. <i>Neuron</i>. (Builds on Corbetta &amp; Shulman, 2002, <i>Nature Reviews Neuroscience</i>.)</a></li>
+        <li><a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2014.01461/full">Barnhart, A. S., &amp; Goldinger, S. D. (2014). Blinded by magic, describing Kuhn &amp; Tatler (2005), <i>Perception</i>.</a></li>
+        <li><a href="https://www.bps.org.uk/research-digest/magic-trick-reveals-gaze-direction-and-attention-are-not-always-linked">British Psychological Society Research Digest: magic trick reveals gaze direction and attention are not always linked (Kuhn et al., 2008).</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5040510">Anobile, G., Cicchini, G. M., &amp; Burr, D. C. (2016). Number as a primary perceptual attribute, reviewing subitizing (Kaufman et al., 1949).</a></li>
+        <li><a href="https://hal.archives-ouvertes.fr/hal-00349682">Piazza, M., Izard, V., Pinel, P., Le Bihan, D., &amp; Dehaene, S. (2004). Tuning curves for approximate numerosity in the human intraparietal sulcus. <i>Neuron</i>.</a></li>
+        <li><a href="https://iris.unitn.it/handle/11572/69622">Piazza, M., et al. (2007). A magnitude code common to numerosities and number symbols in human intraparietal cortex. <i>Neuron</i>.</a></li>
+        <li><a href="https://escholarship.org/content/qt6mq38336/qt6mq38336.pdf">Summary of Siegler, R. S., &amp; Opfer, J. E. (2003), <i>Psychological Science</i>, and the age of the log-to-linear shift for different ranges.</a></li>
+        <li><a href="https://ies.ed.gov/ncee/WWC/Study/73675">What Works Clearinghouse review of Siegler, R. S., &amp; Ramani, G. B. (2008). Playing linear numerical board games promotes low-income children’s numerical development. <i>Developmental Science</i>.</a></li>
+        <li><a href="https://www.upi.com/Health_News/2008/03/28/Board-games-help-kids-learn-about-numbers/23711206759089/">UPI (2008). Board games help kids learn about numbers, on Ramani &amp; Siegler (2008), <i>Child Development</i>.</a></li>
+        <li><a href="https://tiltfactor.org/a-study-on-board-games-and-numeracy-analysis-implications-and-future-directions/">Tiltfactor: a study on board games and numeracy, including the circular-board result (Siegler &amp; Ramani, 2009).</a></li>
+        <li><a href="https://www.wgbh.org/news/2013-09-06/scientists-put-a-sixth-sense-for-numbers-on-brain-map">NPR via WGBH (2013). Scientists put a sixth sense for numbers on brain map.</a></li>
+        <li><a href="https://www.livescience.com/9065-neuroscientists-reveal-magicians-secrets.html">Live Science: neuroscientists reveal magicians’ secrets (Macknik &amp; Martinez-Conde).</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawings and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__POPJS__
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+BR.R.par.lab=[560,-60];BR.R.par.al='right';BR.R.ips.lab=[400,700];BR.R.ips.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.47,s:fitS(W,H,1.32),t,active:['par','ips'],labels:['par','ips'],labelT:{par:0.8,ips:1.1},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(1).join(' ')})();
+
+/* ---------- how many dots? ----------
+   24 trials: 1 to 8 dots, three times each, shuffled. A fixation cross for 0.6 s, the dots for 200 ms, then a blank box
+   and number buttons 1 to 9 (9 is allowed as an answer so that 8 is not the obvious top choice).
+   Results: hits per set size, plus a comparison of 1-4 with 5-8. */
+const DC=$('dtC'),DX=DC.getContext('2d');let dt=null;
+function dtClear(){DX.clearRect(0,0,600,600)}
+function dtCross(){dtClear();DX.strokeStyle='#C9D3E3';DX.lineWidth=6;DX.beginPath();DX.moveTo(280,300);DX.lineTo(320,300);DX.moveTo(300,280);DX.lineTo(300,320);DX.stroke()}
+function dtDots(n){dtClear();const pts=[];let tries=0;while(pts.length<n&&tries<3000){tries++;const a=Math.random()*Math.PI*2,r=Math.sqrt(Math.random())*220,x=300+Math.cos(a)*r,y=300+Math.sin(a)*r;if(pts.every(p=>Math.hypot(p[0]-x,p[1]-y)>90))pts.push([x,y])}
+ DX.fillStyle='#FFFFFF';pts.forEach(([x,y])=>{DX.beginPath();DX.arc(x,y,24,0,7);DX.fill()});return pts.length}
+$('dtKeys').innerHTML=[1,2,3,4,5,6,7,8,9].map(k=>`<button data-k="${k}" aria-label="${k} dot${k>1?'s':''}">${k}</button>`).join('');
+async function dtTrial(){if(dt.i>=dt.trials.length)return dtEnd();const tr=dt.trials[dt.i];
+ $('dtKeys').hidden=true;dtCross();$('dtProg').textContent=`Round ${dt.i+1} of ${dt.trials.length}`;
+ await wait(600);if(!dt)return;
+ tr.shown=dtDots(tr.n);await wait(200);if(!dt)return;dtClear();
+ $('dtKeys').hidden=false;dt.live=true;$('dtProg').textContent=`Round ${dt.i+1} of ${dt.trials.length}: how many dots?`}
+function dtAnswer(k){if(!dt||!dt.live)return;dt.live=false;const tr=dt.trials[dt.i];tr.ans=k;tr.ok=k===tr.shown;
+ $('dtKeys').hidden=true;$('dtProg').textContent=tr.ok?'Right.':`It was ${tr.shown}.`;dt.i++;setTimeout(()=>{if(dt)dtTrial()},tr.ok?400:900)}
+function dtEnd(){const T=dt.trials;const hits=n=>T.filter(t=>t.shown===n&&t.ok).length,of=n=>T.filter(t=>t.shown===n).length;
+ const S=T.filter(t=>t.shown<=4),L=T.filter(t=>t.shown>=5);const s=S.filter(t=>t.ok).length,l=L.filter(t=>t.ok).length;
+ const miss=L.filter(t=>!t.ok),low=miss.filter(t=>t.ans<t.shown).length,high=miss.length-low;
+ dtClear();$('dtProg').textContent='Done.';$('dtPhase').textContent='Your results';
+ const row=n=>{const h=hits(n),o=of(n);return `<div class="row"><span>${n} dot${n>1?'s':''}</span><div class="bar"><i style="width:${o?h/o*100:0}%;background:${n<=4?'#5FD3A8':'#FCB316'}"></i></div><b>${h} of ${o}</b></div>`};
+ $('dtRes').innerHTML=`<div class="res">${[1,2,3,4,5,6,7,8].map(row).join('')}</div>`;
+ const sp=s/S.length,lp=l/L.length;let title,text;
+ if(sp<0.75){title='Several small sets slipped by';text=`You got ${s} of ${S.length} right for 1 to 4 dots. The flash is very short, so a blink or a glance away costs a round. Try again, keeping your eyes on the cross.`}
+ else if(lp>=sp-0.1){title='Strong all the way up';text=`You got ${s} of ${S.length} right for 1 to 4 dots and ${l} of ${L.length} for 5 to 8. Most people drop off after four. You may have been grouping the dots, for example seeing 3 and 3 as 6. Did 7 feel as instant as 3?`}
+ else{title='Instant up to about four';text=`You got ${s} of ${S.length} right for 1 to 4 dots, but ${l} of ${L.length} for 5 to 8. That is the usual pattern: small sets are known at a glance, larger ones only estimated.`}
+ if(miss.length>=2&&sp>=0.75){const m=low>=miss.length*2/3?' When you missed a larger set, you usually guessed too low.':high>=miss.length*2/3?' When you missed a larger set, you usually guessed too high.':' Your misses on larger sets went both ways, as estimates do.';text+=m}
+ $('dtTitle').textContent=title;$('dtText').textContent=text;$('dtGo').textContent='Try again';$('dtGo').disabled=false;$('dtGo').focus();dt=null}
+$('dtGo').addEventListener('click',()=>{const trials=[];for(let n=1;n<=8;n++)for(let k=0;k<3;k++)trials.push({n});
+ dt={trials:shuffle(trials),i:0,live:false};$('dtRes').innerHTML='';$('dtGo').disabled=true;$('dtPhase').textContent='Running';$('dtTitle').textContent='Watch the centre';$('dtText').textContent='Then choose how many dots you saw.';$('dtScreen').focus();dtTrial()});
+$('dtKeys').addEventListener('click',e=>{const b=e.target.closest('button');if(b)dtAnswer(+b.dataset.k)});
+$('dtScreen').addEventListener('keydown',e=>{if(/^[1-9]$/.test(e.key)){e.preventDefault();dtAnswer(+e.key)}});
+
+/* ---------- place the number (0 to 1,000) ----------
+   Ten numbers, shuffled, no feedback until the end. Each mark is compared with two maps:
+   even (the mark should sit at the number itself) and squashed (a logarithmic map, 1000 * log10(n) / 3,
+   which puts 150 near 725). The map with the smaller average distance is the closer fit.
+   If both average distances exceed 150, the marks are called scattered. */
+const NUMS=[5,18,56,100,150,246,366,606,722,938];
+const logPos=n=>1000*Math.log10(n)/3;
+let nl=null;const line=$('nlLine'),mark=$('nlMark');
+function nlSet(v){if(!nl||nl.done)return;v=Math.round(Math.min(1000,Math.max(0,v)));nl.cur=v;mark.hidden=false;mark.style.left=(v/10)+'%';
+ line.setAttribute('aria-valuenow',v);line.setAttribute('aria-valuetext',`${Math.round(v/10)} percent of the way along`);$('nlNext').disabled=false}
+function nlShow(){const n=nl.order[nl.i];nl.cur=null;mark.hidden=true;line.setAttribute('aria-valuenow','0');line.setAttribute('aria-valuetext','No mark yet');$('nlNext').disabled=true;
+ $('nlT').textContent=`${nl.i+1} of ${nl.order.length}: where does ${n} go?`}
+function frac(e){const r=line.getBoundingClientRect();return (e.clientX-r.left)/r.width*1000}
+line.addEventListener('pointerdown',e=>{if(!nl||nl.done)return;e.preventDefault();line.focus();line.setPointerCapture(e.pointerId);nl.drag=true;nlSet(frac(e))});
+line.addEventListener('pointermove',e=>{if(nl&&nl.drag)nlSet(frac(e))});
+['pointerup','pointercancel'].forEach(ev=>line.addEventListener(ev,()=>{if(nl)nl.drag=false}));
+line.addEventListener('keydown',e=>{if(!nl||nl.done)return;const st=e.shiftKey?50:10;let v=nl.cur;
+ const k=e.key;if(['ArrowRight','ArrowUp','ArrowLeft','ArrowDown','PageUp','PageDown','Home','End'].includes(k)){e.preventDefault();
+  if(v===null){v=500;if(k==='Home')v=0;if(k==='End')v=1000;nlSet(v);return}
+  if(k==='ArrowRight'||k==='ArrowUp')v+=st;else if(k==='ArrowLeft'||k==='ArrowDown')v-=st;else if(k==='PageUp')v+=100;else if(k==='PageDown')v-=100;else if(k==='Home')v=0;else v=1000;nlSet(v)}
+ else if(k==='Enter'&&nl.cur!==null){e.preventDefault();nlPlace()}});
+function nlPlace(){if(!nl||nl.cur===null||nl.done)return;nl.res.push([nl.order[nl.i],nl.cur]);nl.i++;if(nl.i>=nl.order.length)return nlEnd();nlShow();line.focus()}
+$('nlNext').addEventListener('click',nlPlace);
+$('nlGo').addEventListener('click',()=>{nl={order:shuffle(NUMS.slice()),i:0,res:[],cur:null,done:false};$('nlMsg').innerHTML='';$('nlPlot').hidden=true;$('nlList').innerHTML='';
+ line.setAttribute('tabindex','0');line.setAttribute('aria-disabled','false');$('nlGo').textContent='Start over';nlShow();line.focus()});
+function nlEnd(){nl.done=true;mark.hidden=true;$('nlNext').disabled=true;line.setAttribute('tabindex','-1');line.setAttribute('aria-disabled','true');line.setAttribute('aria-valuenow','0');line.setAttribute('aria-valuetext','No mark yet');
+ const R=nl.res.slice().sort((a,b)=>a[0]-b[0]);
+ const dLin=R.reduce((s,[n,v])=>s+Math.abs(v-n),0)/R.length,dLog=R.reduce((s,[n,v])=>s+Math.abs(v-logPos(n)),0)/R.length;
+ const p150=R.find(r=>r[0]===150)[1];
+ let head,body;
+ if(Math.min(dLin,dLog)>150){head='Scattered marks';body=`Your marks were on average ${Math.round(dLin)} away from the right spot, and didn’t follow either pattern closely. Try again, taking a moment to picture where each number sits.`}
+ else if(dLin<=dLog){head='An even map';body=`Your marks were on average ${Math.round(dLin)} away from the right spot (${(dLin/10).toFixed(1)}% of the line), ${dLin<dLog/2?'much ':''}closer to the even line than to the squashed one. That’s the adult pattern.`}
+ else{head='A squashed map';body=`Your marks were closer to the squashed curve than to the even line: small numbers spread out, large ones crowded together. That’s the pattern most second graders show on a line this long.`}
+ body+=` You put 150 at about ${p150}. An even map puts it at 150; a squashed map puts it near ${Math.round(logPos(150))}.`;
+ $('nlT').textContent='Your marks';$('nlMsg').innerHTML=`<b>${head}</b>${body}`;
+ $('nlList').innerHTML=R.map(([n,v])=>`<li>${n}: you marked ${v}</li>`).join('');
+ const c=$('nlPlot');c.hidden=false;c.setAttribute('aria-label',`Chart of your 10 marks against the true numbers. ${head}. Details follow as a list.`);nlPlot(c,R);$('nlGo').textContent='Try again';$('nlGo').focus()}
+function nlPlot(c,R){const g=c.getContext('2d'),W=1120,H=974,L=150,T=40,PW=900,PH=760;g.clearRect(0,0,W,H);
+ const X=v=>L+v/1000*PW,Y=v=>T+PH-v/1000*PH;g.font='600 30px '+BODY;g.textAlign='center';g.fillStyle='#3D4A5C';
+ g.strokeStyle='#C9D1DC';g.lineWidth=2;for(let v=0;v<=1000;v+=250){g.beginPath();g.moveTo(X(v),Y(0));g.lineTo(X(v),Y(1000));g.moveTo(X(0),Y(v));g.lineTo(X(1000),Y(v));g.stroke();g.fillText(v,X(v),Y(0)+40);g.textAlign='right';g.fillText(v,X(0)-14,Y(v)+10);g.textAlign='center'}
+ g.fillStyle='#13294B';g.font='700 30px '+BODY;g.fillText('The number',X(500),H-20);g.save();g.translate(36,Y(500));g.rotate(-Math.PI/2);g.fillText('Your mark',0,0);g.restore();
+ g.lineWidth=5;g.strokeStyle='#1F7A4D';g.beginPath();g.moveTo(X(0),Y(0));g.lineTo(X(1000),Y(1000));g.stroke();
+ g.setLineDash([14,10]);g.strokeStyle='#B84300';g.beginPath();for(let n=1;n<=1000;n+=3){const x=X(n),y=Y(logPos(n));n===1?g.moveTo(x,y):g.lineTo(x,y)}g.stroke();g.setLineDash([]);
+ g.textAlign='left';g.font='700 28px '+BODY;g.fillStyle='#1F7A4D';g.fillText('Even',X(800)+14,Y(760));g.fillStyle='#B84300';g.fillText('Squashed',X(330)-10,Y(870)-18);
+ R.forEach(([n,v])=>{g.fillStyle='#13294B';g.beginPath();g.arc(X(n),Y(v),13,0,7);g.fill()});
+ g.fillStyle='#13294B';g.beginPath();g.arc(X(40),Y(1000)+40,13,0,7);g.fill();g.fillText('Your marks',X(40)+24,Y(1000)+50)}
+
+/* ---------- in popular culture ---------- */
+renderPop([
+ {id:'magic',title:'Stage magic and misdirection',sub:'Now You See Me (2013) and real magic',kind:'Film and stage',films:[['Now You See Me (2013)','https://www.imdb.com/title/tt1670345/']],verdict:['mixed','Real psychology, movie stunts'],
+  desc:'In Now You See Me, a team of stage magicians pull off heists in the middle of their shows. The film’s tagline is that the closer you look, the less you’ll see.',
+  right:['Misdirection is real and powerful. In Kuhn and Tatler’s study, only 2 of 20 viewers saw a cigarette dropped in full view.','Looking is not the same as attending. In a follow-up, where people’s eyes were at the moment of the drop didn’t predict whether they saw it.','Neuroscientists Stephen Macknik and Susana Martinez-Conde have worked with magicians to study how they steer attention.'],
+  wrong:['Looking more closely usually helps. In a related study, telling people what kind of trick to expect made them better at spotting the method.','The film’s biggest stunts rely on film effects and plot, not on tricks that would work on a live audience.'],
+  src:'Kuhn & Tatler (2005); Kuhn et al. (2008); Macknik & Martinez-Conde (2010).'},
+ {id:'rain',title:'The toothpick scene',sub:'Rain Man (1988)',kind:'Film',films:[['Rain Man (1988)','https://www.imdb.com/title/tt0095953/']],verdict:['mixed','Real ability, Hollywood scale'],
+  desc:'A waitress drops a box of toothpicks. Raymond, played by Dustin Hoffman, glances at the floor and says “82, 82, 82”, then gives the total, 246, without counting.',
+  right:['Everyone has a sense of number that works without counting. For small sets, up to about four, we know the exact number at a glance.','In 2013, researchers reported in Science that this number sense is organised in patches of the parietal cortex.'],
+  wrong:['For most people, exact numbers at a glance stop at about four. Beyond that, a glance gives only an estimate, and estimates of large sets are rough.','The scene is a dramatic shortcut. Instantly counting hundreds of scattered objects is not how the number sense works.'],
+  src:'Kaufman et al. (1949); NPR (2013).'},
+ {id:'chutes',title:'Chutes and Ladders',sub:'Also called Snakes and Ladders',kind:'Board game',films:[],verdict:['good','Better maths than it looks'],
+  desc:'A board game where players roll a die and move along numbered squares, climbing ladders and sliding down chutes. It has been played for generations.',
+  right:['Games like this put numbers in a straight, evenly spaced row. In Ramani and Siegler’s studies, playing a race game numbered 1 to 10 for an hour in total improved preschoolers’ number skills.','Researchers have since tested Chutes and Ladders itself, numbered 1 to 100, with older children.'],
+  wrong:['It is the numbers that do the work, not the game itself. The same race game with coloured squares didn’t help.','Layout matters: a circular version of the game did not produce the same gains.'],
+  src:'Ramani & Siegler (2008); Siegler & Ramani (2009); Institute of Education Sciences.'}],'popTabs','popPanels');
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'In the Milan study, what did the patients leave out when they pictured the square?',o:['Whatever was on their left from the imagined viewpoint','The cathedral','Anything they had seen recently'],a:0,f:'From either end of the square, what fell on the left of their mental picture dropped out.'},
+ {q:'About how many items can most people know at a glance, without counting?',o:['About 4','About 10','About 25'],a:0,f:'This is subitizing. Beyond about four, we count or estimate.'},
+ {q:'What did the coloured version of the board game do for children’s number skills?',o:['The same as the numbered version','Nothing: they didn’t improve','Made them worse'],a:1,f:'The numbers in a straight row did the work, not the game itself.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','par');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Hippocampus as a Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__CSS__
+.hero h1{font-size:clamp(44px,6vw,84px)}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--ink);margin:24px 0}
+@media (max-width:760px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.facts div{padding:16px 16px 14px 0}
+.facts strong{display:block;font-family:var(--display);font-weight:900;font-size:clamp(34px,4.4vw,54px);line-height:1;color:var(--accent-ink);letter-spacing:-.02em}
+.facts span{font-size:16px;color:var(--ink-2)}
+.tips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:2px solid var(--ink);padding:0;margin:0}
+@media (max-width:760px){.tips{grid-template-columns:minmax(0,1fr)}}
+.tips li{list-style:none;padding:20px 20px 20px 0;border-right:1px solid var(--rule)}
+.tips li:last-child{border-right:0}
+.tips b{display:block;font-family:var(--display);font-size:26px;line-height:1.15;margin-bottom:6px}
+.tips span{font-size:17px;color:var(--ink-2)}
+/* read the map */
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.mapgrid{grid-template-columns:minmax(0,1fr)}}
+.arena{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;aspect-ratio:1.25/1;touch-action:manipulation}
+.arena canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:8px}
+.arena canvas:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.cells{list-style:none;padding:0;margin:0 0 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cells li{display:flex;align-items:center;gap:10px;font-size:17px;color:var(--night-muted);padding:6px 10px;border:1.5px solid var(--night-line);border-radius:8px}
+.cells li i{width:18px;height:18px;border-radius:50%;border:3px solid currentColor;flex:none}
+.cells li.on{color:#fff;border-color:#C9D3E3;font-weight:700}
+.cells li.on i{background:currentColor}
+.mapgrid .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.mapgrid .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.mapgrid .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.mapgrid .mtext b.ok{color:#3CC9B8}.mapgrid .mtext b.no{color:#F08CBE}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.gbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:transparent;color:#fff;border:2px solid #8FA3C2}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscore{font-size:16px;color:var(--night-muted);margin-top:12px}
+/* memory palace */
+.palace{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:24px;margin-top:22px}
+.palace .step{font:800 14px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent-ink);margin:0 0 6px}
+.palace h3{font-family:var(--display);font-size:clamp(24px,2.6vw,30px);line-height:1.2;margin:0 0 10px}
+.palace p{font-size:18px;line-height:1.55;margin:0 0 14px}
+.palace .word{font-family:var(--display);font-weight:900;font-size:clamp(48px,8vw,88px);line-height:1;color:var(--ink);margin:18px 0 6px}
+.palace .room{font:700 18px var(--body);color:var(--accent-ink);letter-spacing:.06em;text-transform:uppercase}
+.palace .cue{font-size:18px;color:var(--ink-2);margin-top:8px}
+.pbar{height:8px;background:var(--rule);border-radius:4px;overflow:hidden;margin:16px 0 10px}
+.pbar i{display:block;height:100%;background:var(--accent-ink);width:0}
+.palace .pbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.palace .pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.palace .pbtn:disabled{opacity:.5;cursor:default}
+.palace .prow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.palace label.opt{display:flex;gap:10px;align-items:center;font-size:17px;margin:6px 0 14px}
+.palace label.opt input{width:22px;height:22px;accent-color:var(--accent-ink)}
+.rgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin:8px 0 14px}
+@media (max-width:600px){.rgrid{grid-template-columns:minmax(0,1fr)}}
+.rgrid label{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;align-items:center;font:600 16px var(--body);color:var(--ink-2)}
+.rgrid input{min-height:44px;border:1.5px solid #8C99AD;border-radius:8px;padding:0 10px;font:400 18px var(--body);color:var(--ink);background:#F4F6F9;width:100%;box-sizing:border-box}
+.rgrid input.r{border-color:#1E9E8D;background:#E3F6F3}.rgrid input.w{border-color:#C7457F;background:#FBE9F1}
+.count{font-family:var(--display);font-weight:900;font-size:64px;color:var(--accent-ink);line-height:1}
+.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:10px 0 16px}
+@media (max-width:600px){.cmp{grid-template-columns:minmax(0,1fr)}}
+.cmp div{border-top:3px solid var(--ink);padding-top:10px}
+.cmp b{display:block;font-family:var(--display);font-size:22px;margin-bottom:6px}
+.cmp .big{font-family:var(--display);font-weight:900;font-size:56px;line-height:1;color:var(--ink)}
+.cmp .big small{font-size:22px;color:var(--ink-2);font-weight:600}
+.cmp span{display:block;font-size:16px;color:var(--ink-2);margin-top:4px}
+.trio{width:100%;border-collapse:collapse;margin:16px 0 8px;font-size:17px}
+.trio th,.trio td{border-bottom:1px solid var(--rule);padding:10px 8px;text-align:left;vertical-align:top}
+.trio thead th{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.trio .up{color:#0B5D52;font-weight:700}.trio .eq{color:var(--ink-2);font-weight:700}
+__POPCSS__
+__COLLCSS__
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Brain regions</div>
+      <h1 id="title">The Hippocampus as a Map <em>Where you are, and what you remember</em></h1>
+      <p class="dek">Some cells deep in the brain fire only in one particular place. Together they make a map, and that map can hold far more than streets.</p>
+      <div class="byline"><span>About 9 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#mapT">Read the map</a></span><span><a href="#palT">Build a memory palace</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the brain from the side, with the hippocampus glowing orange deep inside the temporal lobe."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2½ minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>The hippocampus as a map</b> · The Learning Brain</span><span>Captions are on; turn them off in the player.</span></div>
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>In 1971, John O’Keefe was recording from single cells in the hippocampus of rats as they explored. One cell fired only when the rat was in one particular spot. When the rat moved elsewhere, that cell went quiet and other cells fired instead.</p>
+    <p>He called them place cells. Each covers a different patch of space, and together they work like a map: the pattern of active cells shows where the animal is. In 2014, O’Keefe shared the Nobel Prize with May-Britt and Edvard Moser, who found grid cells in the neighbouring entorhinal cortex.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>1971</strong><span>place cells first described</span></div>
+      <div role="listitem"><strong>2014</strong><span>Nobel Prize for the brain’s positioning system</span></div>
+      <div role="listitem"><strong>25,000</strong><span>London streets a taxi driver learns</span></div>
+      <div role="listitem"><strong>26 → 62</strong><span>words recalled after six weeks of memory-palace practice</span></div>
+    </div>
+  </div>
+
+  <section class="night" aria-labelledby="mapT">
+    <div class="col">
+      <h2 class="sec" id="mapT"><span class="n">Try it</span>Read the map</h2>
+      <p>First, record from six place cells while a rat explores. Each dot marks where the rat was when a cell fired, so the dots build up a map of where each cell fires. Then the rat is hidden. Using only which cells are firing, work out where it is.</p>
+    </div>
+    <div class="wide">
+      <div class="mapgrid">
+        <div class="arena"><canvas id="arena" tabindex="0" role="application" aria-label="Box seen from above. In the decoding rounds, tap or click where you think the rat is, or use the arrow keys to move the marker and Enter to choose." aria-describedby="mtext"></canvas></div>
+        <div>
+          <p class="phase" id="mphase">Step 1 of 2 · Record</p>
+          <p class="mtitle" id="mtitle">Watch the cells fire</p>
+          <ul class="cells" id="cells" aria-label="Place cells"></ul>
+          <p class="mtext" id="mtext" aria-live="polite">Press Record. The rat wanders for about 14 seconds while dots build up.</p>
+          <div class="mrow" id="mrow"><button class="nbtn" id="mgo">Record</button></div>
+          <p class="mscore" id="mscore"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">The human map</span>London’s taxi drivers</h2>
+    <p>To get a licence, London taxi drivers must learn “the Knowledge”: about 25,000 streets and thousands of landmarks. Training takes three to four years, and many trainees never pass.</p>
+    <p>Earlier studies by Eleanor Maguire found that qualified drivers had more grey matter at the back of the hippocampus than other people. But were they born that way? To find out, Maguire and Katherine Woollett scanned 79 trainees before and after training, along with 31 people who didn’t train.</p>
+    <table class="trio">
+      <caption class="sr">Change in grey matter at the back of the hippocampus after training</caption>
+      <thead><tr><th scope="col">Group</th><th scope="col">Back of the hippocampus</th></tr></thead>
+      <tbody>
+        <tr><td>39 trainees who qualified</td><td class="up">More grey matter than before</td></tr>
+        <tr><td>Trainees who failed</td><td class="eq">No such change</td></tr>
+        <tr><td>People who never trained</td><td class="eq">No such change</td></tr>
+      </tbody>
+    </table>
+    <p>Before training, the groups looked the same, so the change came from learning the city. There was a cost too: the qualified drivers did worse than the others at recalling complex visual information.</p>
+  </div>
+
+  <p class="pull">The memory palace borrows a map you already have <em>to hold things you don’t.</em></p>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Borrowing the map</span>The method of loci</h2>
+    <p>An old story tells of the Greek poet Simonides, who left a banquet moments before the roof fell in. He could name the victims by remembering where each had been sitting. Places, it seems, are good hooks for memory.</p>
+    <p>In the method of loci (“loci” is Latin for places), you picture things you want to remember at points along a route you know well, then walk the route in your mind to recall them. In a study of top memory competitors, Maguire and colleagues found they were not more intelligent and their brains were not built differently. Nine of the ten used this method, and their scans showed spatial-memory areas at work, including the hippocampus.</p>
+    <p>Ordinary people can learn it. In a 2017 study, people practised for six weeks and went from recalling 26 words of a 72-word list to 62. Four months later, they still recalled far more than before.</p>
+  </div>
+
+  <section aria-labelledby="palT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="palT"><span class="n">Try it</span>Build a memory palace</h2>
+      <p>You will learn two lists of eight words for the same time each. Learn the first by reading. Learn the second by placing each word in a room of your own home. Then compare how many you recall.</p>
+      <div class="palace" id="palace" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="pop wide" aria-labelledby="popT">
+    <div style="max-width:700px;margin:0 auto">
+      <h2 class="sec" id="popT"><span class="n">In popular culture</span>The mind palace</h2>
+      <p>The memory palace has moved from ancient Greece to television and best-seller lists. Here is how two well-known versions compare with the science.</p>
+    </div>
+    <div class="poptabs" role="tablist" aria-label="The memory palace in popular culture" id="popTabs"></div>
+    <div id="popPanels"></div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Use the map you have</h2>
+    <ol class="tips">
+      <li><b>Hang it on a structure</b><span>Link new ideas to something you know well, such as a familiar route, the order of a process, or the layout of a diagram.</span></li>
+      <li><b>Walk it again</b><span>Recall by walking through the structure in your head. Each walk is practice at pulling the memories back out.</span></li>
+      <li><b>Give it time</b><span>Deep learning reshapes the brain slowly. London’s taxi drivers needed three to four years.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://www.nobelprize.org/prizes/medicine/2014/press-release/">Nobel Assembly at Karolinska Institutet (2014). The Nobel Prize in Physiology or Medicine 2014: press release.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/5124915/">O’Keefe, J., &amp; Dostrovsky, J. (1971). The hippocampus as a spatial map. <i>Brain Research</i>.</a></li>
+        <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3268356">Woollett, K., &amp; Maguire, E. A. (2011). Acquiring “the Knowledge” of London’s layout drives structural brain changes. <i>Current Biology</i>.</a></li>
+        <li><a href="https://pubmed.ncbi.nlm.nih.gov/12483214/">Maguire, E. A., et al. (2003). Routes to remembering: the brains behind superior memory. <i>Nature Neuroscience</i>.</a></li>
+        <li><a href="https://www.sciencedaily.com/releases/2017/03/170308131236.htm">Dresler, M., et al. (2017). Mnemonic training reshapes brain networks to support superior memory. <i>Neuron</i> (summary).</a></li>
+        <li><a href="https://www.mcgill.ca/oss/article/critical-thinking-history/ancient-memory-technique-still-puzzles-scientists">McGill Office for Science and Society. Ancient memory technique still puzzles scientists.</a></li>
+        <li><a href="https://www.npr.org/2011/02/23/134003962/Moonwalking-With-Einstein">NPR (2011). Moonwalking with Einstein: interview with Joshua Foer.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawings, the box of place cells and the memory-palace task are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__POPJS__
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+
+/* hero */
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.47,s:fitS(W,H,1.32),t,active:['hip'],labels:['hip','tem'],labelT:{hip:0.8,tem:1.2},draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560)),deep:0.45})});
+
+/* video captions + transcript */
+(function(){const v=document.getElementById('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ document.getElementById('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(1).join(' ')})();
+
+/* ---------- read the map: place cells ----------
+   Six circular place fields (hidden). Step 1: the rat wanders; a cell fires (dot) on some frames while the rat is inside its field.
+   Step 2: five rounds. The rat is hidden; only the set of firing cells is shown. The reader guesses a spot.
+   Feedback compares the cells that WOULD fire at the guessed spot with the cells that ARE firing, and shades every spot consistent with them. */
+const FCOL=['#FF5F05','#3CC9B8','#58C4E8','#FCB316','#F08CBE','#C9B6FF'];
+const FIELDS=[[0.2,0.24],[0.56,0.2],[0.84,0.38],[0.24,0.7],[0.56,0.6],[0.82,0.8]],RAD=0.2; // fractions of width (x) and height (y); radius as fraction of width
+let mW=0,mH=0,phase='record',spikes=[],recT=-1,REC=14,round=0,target=null,guess=null,cursor=[0.5,0.5],score=0,revealed=false;
+const ac=document.getElementById('arena'),cellsUL=document.getElementById('cells'),mtext=document.getElementById('mtext'),mtitle=document.getElementById('mtitle'),mphase=document.getElementById('mphase'),mrow=document.getElementById('mrow'),mscore=document.getElementById('mscore');
+cellsUL.innerHTML=FCOL.map((c,i)=>`<li style="color:${c}"><i></i><span style="color:inherit">Cell ${i+1}</span></li>`).join('');
+const cellEls=[...cellsUL.children];cellEls.forEach(li=>li.querySelector('span').style.color='');
+const toPx=([fx,fy])=>[fx*mW,fy*mH],R=()=>RAD*mW;
+const active=p=>FIELDS.map(f=>Math.hypot((p[0]-f[0])*mW,(p[1]-f[1])*mH)<R());
+const setKey=a=>a.map(b=>b?1:0).join('');
+function ratPath(u){return[0.5+0.44*Math.sin(u*0.62+0.35*Math.sin(u*0.23)),0.5+0.42*Math.sin(u*0.87+1.1+0.3*Math.cos(u*0.19))]} // sweeps the whole box (Lissajous-like)
+let rs=7;const rnd=()=>{rs=(rs*16807)%2147483647;return rs/2147483647};
+function showCells(a){cellEls.forEach((li,i)=>li.classList.toggle('on',!!a[i]))}
+function names(a){const L=a.map((v,i)=>v?'Cell '+(i+1):null).filter(Boolean);return L.length?L.length>1?L.slice(0,-1).join(', ')+' and '+L[L.length-1]:L[0]:'no cells'}
+function makeSpikes(upto){spikes=[];for(let k=0;k<=upto*30;k++){const p=ratPath(k/30*2.4);active(p).forEach((on,i)=>{if(on&&rnd()<0.45)spikes.push([p,i])})}}
+const mapStage=stage('arena',({W,H,t,x})=>{mW=W;mH=H;
+ // spikes (the map the reader builds)
+ if(phase==='record'&&recT>=0){const el=RM?REC:Math.min(REC,(performance.now()-recT)/1000);if(!RM&&el<REC&&Math.floor(el*30)!==spikes._n){const n=Math.floor(el*30);for(let k=(spikes._n||0)+1;k<=n;k++){const p=ratPath(k/30*2.4);const a=active(p);a.forEach((on,i)=>{if(on&&rnd()<0.45)spikes.push([p,i])})}spikes._n=n}
+  const p=ratPath(el*2.4);const a=active(p);showCells(a);
+  if(el>=REC&&phase==='record'&&!spikes.done){spikes.done=1;setTimeout(endRecord,0)}
+  drawSpikes(x);drawRat(x,p)} else drawSpikes(x);
+ if(phase==='decode'||phase==='done'){
+  if(revealed&&target){const key=setKey(active(target));x.fillStyle='rgba(233,238,246,0.16)';const st=Math.max(6,W/70);for(let gx=st/2;gx<W;gx+=st)for(let gy=st/2;gy<H;gy+=st){if(setKey(active([gx/W,gy/H]))===key)x.fillRect(gx-st/2,gy-st/2,st,st)}}
+  if(phase==='done'){FIELDS.forEach((f,i)=>{const q=toPx(f);x.strokeStyle=FCOL[i];x.lineWidth=3;x.setLineDash([8,7]);x.beginPath();x.arc(q[0],q[1],R(),0,7);x.stroke();x.setLineDash([])})}
+  if(phase==='decode'&&!revealed){const q=toPx(cursor);x.strokeStyle='#FCB316';x.lineWidth=3;x.beginPath();x.arc(q[0],q[1],12,0,7);x.moveTo(q[0]-20,q[1]);x.lineTo(q[0]+20,q[1]);x.moveTo(q[0],q[1]-20);x.lineTo(q[0],q[1]+20);x.stroke()}
+  if(revealed&&guess){const g=toPx(guess);x.strokeStyle='#FCB316';x.lineWidth=3;x.beginPath();x.arc(g[0],g[1],12,0,7);x.stroke();drawRat(x,target);const tq=toPx(target);x.strokeStyle='rgba(233,238,246,0.6)';x.setLineDash([5,5]);x.beginPath();x.moveTo(g[0],g[1]);x.lineTo(tq[0],tq[1]);x.stroke();x.setLineDash([])}}
+ x.fillStyle='#AEB9CC';x.font=`600 ${Math.max(15,Math.round(W/44))}px ${BODY}`;x.textBaseline='top';x.fillText(phase==='record'?'Seen from above':phase==='done'?'Dashed circles: where each cell fires':'Where is the rat?',12,10)});
+function drawSpikes(x){spikes.forEach(([p,i])=>{const q0=toPx(p),o=Math.max(2.5,mW/220),q=[q0[0]+Math.cos(i*1.05)*o,q0[1]+Math.sin(i*1.05)*o];x.fillStyle=FCOL[i];x.globalAlpha=0.85;x.beginPath();x.arc(q[0],q[1],Math.max(2.6,mW/200),0,7);x.fill()});x.globalAlpha=1}
+function drawRat(x,p){const q=toPx(p);x.fillStyle='#E9EEF6';x.strokeStyle='#0D1C35';x.lineWidth=3;x.beginPath();x.arc(q[0],q[1],Math.max(9,mW/48),0,7);x.fill();x.stroke()}
+function btns(html){mrow.innerHTML=html}
+function startRecord(){phase='record';spikes=[];spikes._n=0;rs=7;recT=performance.now();if(RM){makeSpikes(REC);spikes.done=0}
+ mtext.textContent='Recording. Watch which cell lights up as the rat moves, and where its dots land.';btns('<button class="nbtn" disabled>Recording…</button>');mapStage.kick()}
+function endRecord(){recT=-1;showCells([]);mapStage.kick();mtitle.textContent='Your map is ready';mtext.textContent='Each colour of dots shows where one cell fires. Some patches overlap: there, two cells fire at once. Now use this map to find the hidden rat.';
+ btns('<button class="nbtn" id="mdec">Start finding the rat</button><button class="gbtn" id="mrec">Record again</button>');document.getElementById('mdec').onclick=startDecode;document.getElementById('mrec').onclick=startRecord}
+const ROUNDS=5;
+function pickTarget(){for(let k=0;k<200;k++){const p=[0.08+rnd()*0.84,0.1+rnd()*0.8];const n=active(p).filter(Boolean).length;if(n>=1&&(round%2===0?n===1:n===2))return p}return[0.5,0.4]}
+function startDecode(){phase='decode';round=0;score=0;mphase.textContent='Step 2 of 2 · Decode';nextRound()}
+function nextRound(){round++;target=pickTarget();guess=null;revealed=false;cursor=[0.5,0.5];const a=active(target);showCells(a);
+ mtitle.textContent=`Round ${round} of ${ROUNDS}: where is the rat?`;mtext.innerHTML=`Firing now: <b>${names(a)}</b>. Every other cell is silent. Tap where you think the rat is.`;
+ btns('');mscore.textContent=`Score: ${score} of ${round-1}`;mapStage.kick();ac.focus({preventScroll:true})}
+function submit(p){if(phase!=='decode'||revealed)return;guess=p;revealed=true;const want=active(target),got=active(p);const ok=setKey(want)===setKey(got);if(ok)score++;
+ const extra=got.map((v,i)=>v&&!want[i]?i:-1).filter(i=>i>=0),missing=want.map((v,i)=>v&&!got[i]?i:-1).filter(i=>i>=0);
+ const nm=L=>L.map(i=>'Cell '+(i+1)).join(' and ');let why='';
+ if(!ok){const parts=[];if(missing.length)parts.push(`${nm(missing)} would be silent`);if(extra.length)parts.push(`${nm(extra)} would also fire`);why=` At your spot, ${parts.join(', and ')}.`}
+ mtext.innerHTML=(ok?'<b class="ok">Right region.</b> Your spot fits the cells that were firing.':'<b class="no">Not quite.</b>'+why)+' The shaded area shows every spot that matches this pattern; the white dot is the rat.';
+ mscore.textContent=`Score: ${score} of ${round}`;
+ btns(round<ROUNDS?'<button class="nbtn" id="mnext">Next round</button>':'<button class="nbtn" id="mfin">See the cells’ fields</button>');
+ const b=document.getElementById(round<ROUNDS?'mnext':'mfin');b.onclick=round<ROUNDS?nextRound:finish;b.focus({preventScroll:true});mapStage.kick()}
+function finish(){phase='done';revealed=false;showCells([]);mtitle.textContent=`You found the rat in ${score} of ${ROUNDS} rounds`;
+ mtext.textContent='No single cell told you where the rat was. The combination of firing cells did. Where two fields overlap, the pattern pins the rat down more tightly. A real hippocampus has thousands of place cells, so its map is far more precise than this one.';
+ mscore.textContent='';btns('<button class="gbtn" id="mrec2">Start again</button>');document.getElementById('mrec2').onclick=()=>{mphase.textContent='Step 1 of 2 · Record';mtitle.textContent='Watch the cells fire';startRecord()};mapStage.kick()}
+ac.addEventListener('click',e=>{if(phase!=='decode'||revealed)return;const r=ac.getBoundingClientRect();submit([(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height])});
+ac.addEventListener('keydown',e=>{if(phase!=='decode'||revealed)return;const d=0.04;const k={ArrowLeft:[-d,0],ArrowRight:[d,0],ArrowUp:[0,-d],ArrowDown:[0,d]}[e.key];
+ if(k){e.preventDefault();cursor=[sat(cursor[0]+k[0]),sat(cursor[1]+k[1])];mapStage.kick()}else if(e.key==='Enter'||e.key===' '){e.preventDefault();submit(cursor.slice())}});
+document.getElementById('mgo').onclick=startRecord;
+
+/* ---------- build a memory palace ----------
+   Two lists of eight concrete nouns, studied for the same time per word, separated from recall by a 15-second counting task.
+   Scoring: a word counts if it matches any target (case, spaces and a final s ignored); "in order" counts matches in the right position. */
+const LA=['anchor','candle','violin','tomato','ladder','pillow','rocket','wallet'],LB=['banana','kettle','guitar','carrot','umbrella','blanket','trumpet','compass'];
+const PREP=['at','in','in','in','on','in','in','at'];
+const ROOMS=['Front door','Hallway','Living room','Kitchen','Stairs','Bathroom','Bedroom','Window'];
+const pal=document.getElementById('palace');let secs=4,timer=null,paused=false,res={},started=false;
+const norm=s=>s.toLowerCase().replace(/[^a-z]/g,'').replace(/s$/,'');
+function scoreList(list,answers){const want=list.map(norm);let hit=0,ord=0;const used=new Set();answers.forEach((a,i)=>{const n=norm(a);if(!n)return;const j=want.indexOf(n);if(j>=0&&!used.has(j)){used.add(j);hit++;if(j===i)ord++}});return{hit,ord}}
+function view(html){pal.innerHTML=html;const f=pal.querySelector('[data-focus]');if(f&&started)f.focus({preventScroll:true});started=true}
+function intro(){view(`<p class="step">Before you start</p><h3>Two lists, same time each</h3><p>Each word appears for a few seconds. Afterwards you will count backwards for 15 seconds, then type what you remember. Do list 1 by reading, and list 2 with the palace.</p>
+ <label class="opt"><input type="checkbox" id="slow"> Give me more time: 8 seconds per word instead of 4</label><div class="prow"><button class="pbtn" id="p1" data-focus>Start list 1</button></div>`);
+ document.getElementById('p1').onclick=()=>{secs=document.getElementById('slow').checked?8:4;study('A')}}
+function study(which){const list=which==='A'?LA:LB;let i=0,left=secs;paused=false;
+ function draw(){const w=list[i],room=ROOMS[i];view(`<p class="step">List ${which==='A'?1:2} · word ${i+1} of 8</p>`+(which==='A'?`<p class="word">${w}</p><p class="cue">Read it. Repeat it to yourself if you like.</p>`:`<p class="room">${room}</p><p class="word">${w}</p><p class="cue">Picture ${/^[aeiou]/.test(w)?'an':'a'} ${w} ${PREP[i]} the ${room.toLowerCase()} of your own home. Make it big, strange or funny.</p>`)+
+  `<div class="pbar"><i id="pb"></i></div><div class="prow"><button class="pbtn sec" id="pp">${paused?'Resume':'Pause'}</button></div>`);document.getElementById('pp').onclick=()=>{paused=!paused;document.getElementById('pp').textContent=paused?'Resume':'Pause'}}
+ draw();clearInterval(timer);let el=0;timer=setInterval(()=>{if(paused)return;el+=0.1;const pb=document.getElementById('pb');if(pb)pb.style.width=Math.min(100,el/secs*100)+'%';if(el>=secs){el=0;i++;if(i>=8){clearInterval(timer);distract(which)}else draw()}},100)}
+function distract(which){let left=15;view(`<p class="step">Pause</p><h3>Count backwards from 100 in threes</h3><p>Out loud or in your head: 100, 97, 94… This stops you holding the words in mind just by repeating them.</p><p class="count" id="cd">15</p><div class="prow"><button class="pbtn" id="dn" disabled>Recall the words</button><button class="pbtn sec" id="sk">Skip the wait</button></div>`);
+ const go=()=>{clearInterval(timer);recall(which)};document.getElementById('dn').onclick=go;document.getElementById('sk').onclick=go;
+ clearInterval(timer);timer=setInterval(()=>{left--;const cd=document.getElementById('cd');if(cd)cd.textContent=Math.max(0,left);if(left<=0){clearInterval(timer);const b=document.getElementById('dn');if(b){b.disabled=false;b.focus()}}},1000)}
+function recall(which){const pal2=which==='B';view(`<p class="step">List ${pal2?2:1} · recall</p><h3>${pal2?'Walk through your home':'Type every word you remember'}</h3><p>${pal2?'Go room by room in your mind. What did you put there?':'In order if you can. Leave a box empty if you can’t remember.'}</p>
+ <div class="rgrid">${ROOMS.map((r,i)=>`<label>${pal2?r:(i+1)+'.'}<input type="text" autocomplete="off" autocapitalize="none" spellcheck="false" ${i===0?'data-focus':''} aria-label="${pal2?r:'Word '+(i+1)}"></label>`).join('')}</div>
+ <div class="prow"><button class="pbtn" id="ck">Check my answers</button></div>`);
+ document.getElementById('ck').onclick=()=>{const inputs=[...pal.querySelectorAll('.rgrid input')],ans=inputs.map(x=>x.value),list=pal2?LB:LA;res[which]=scoreList(list,ans);
+  const want=list.map(norm);inputs.forEach((x,i)=>{const n=norm(x.value);if(!n)return;x.classList.add(want.includes(n)?'r':'w');x.readOnly=true});
+  const r=res[which];const box=document.createElement('div');box.innerHTML=`<p style="margin-top:14px"><b>${r.hit} of 8</b> recalled, ${r.ord} in the right position. The list was: ${list.join(', ')}.</p><div class="prow"><button class="pbtn" id="nx" data-focus>${pal2?'Compare the two lists':'Now list 2, with the palace'}</button></div>`;
+  document.getElementById('ck').remove();pal.appendChild(box);const nx=document.getElementById('nx');nx.focus({preventScroll:true});nx.onclick=pal2?compare:palaceIntro}}
+function palaceIntro(){view(`<p class="step">List 2 · set up your palace</p><h3>Picture your own home</h3><p>Imagine walking in through the front door, along the hallway, into the living room and kitchen, up the stairs, into the bathroom and bedroom, and over to a window. That is your route. Each new word goes in the next place along it.</p><div class="prow"><button class="pbtn" id="p2" data-focus>Start list 2</button></div>`);document.getElementById('p2').onclick=()=>study('B')}
+function compare(){const a=res.A,b=res.B,d=b.hit-a.hit;
+ const msg=d>0?`You recalled ${d} more with the palace.`:d===0?'You recalled the same number both ways.':`You recalled ${-d} fewer with the palace this time.`;
+ view(`<p class="step">Your results</p><h3>${msg}</h3><div class="cmp"><div><b>List 1: reading</b><p class="big">${a.hit}<small> of 8</small></p><span>${a.ord} in the right position</span></div><div><b>List 2: memory palace</b><p class="big">${b.hit}<small> of 8</small></p><span>${b.ord} in the right position</span></div></div>
+ <p>The palace usually helps most with order, because the route itself tells you what comes next. One try is a small test, and the method gets stronger with practice: in the 2017 study, six weeks took people from 26 to 62 words out of 72.</p><p style="font-size:16px;color:var(--ink-2)">In this short version the room names were shown at recall. With practice, you supply the route yourself.</p>
+ <div class="prow"><button class="pbtn sec" id="again" data-focus>Try again</button></div>`);document.getElementById('again').onclick=intro}
+intro();
+
+/* ---------- in popular culture ---------- */
+renderPop([
+ {id:'sherlock',title:'Sherlock',sub:'TV, 2010–2017',kind:'BBC crime drama',films:[['Sherlock (2010)','https://www.imdb.com/title/tt1475582/']],verdict:['mixed','Real method, magic speed'],
+  desc:'In this modern retelling of the Sherlock Holmes stories, Holmes retreats into his “mind palace,” an imagined building where he stores everything he knows, and finds the clue he needs in seconds.',
+  right:['The mind palace is a real memory method, the method of loci, used by most memory champions.','Placing information in imagined locations really does improve recall.'],
+  wrong:['It is shown as a gift of rare geniuses. Ordinary people can learn it with practice.','Holmes searches a vast library of everything he knows in seconds. The method works best for ordered lists and needs routes you have practised.','Arthur Conan Doyle’s original Holmes spoke of a “brain attic,” not a mind palace.'],
+  src:'McGill Office for Science and Society; Dresler et al. (2017).'},
+ {id:'foer',title:'Moonwalking with Einstein',sub:'Book, 2011',kind:'Nonfiction by Joshua Foer',films:[],verdict:['good','A true story'],
+  desc:'Journalist Joshua Foer went to report on the USA Memory Championship. A year of training in memory palaces later, he won it, in 2006, and wrote about the experience.',
+  right:['A person with an ordinary memory trained his way to a national title, which matches what the research shows.','It explains the method clearly, with its long history.'],
+  wrong:['It can make the method sound like a shortcut. Foer trained for a year, and he has said the techniques only work if you remember to use them.'],
+  more:[['Joshua Foer interview (NPR)','https://www.npr.org/2011/02/23/134003962/Moonwalking-With-Einstein']],
+  src:'NPR (2011).'}],'popTabs','popPanels');
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'What did John O’Keefe find in 1971?',o:['Cells that fire when a rat is in a particular place','Cells that store a rat’s memories of food','A brain area that grows with exercise'],a:0,f:'He called them place cells. Together, the active cells show where the animal is.'},
+ {q:'In the taxi-driver study, who gained grey matter at the back of the hippocampus?',o:['Everyone who started training','Only the trainees who qualified','People who never trained'],a:1,f:'The trainees who qualified changed; those who failed and those who never trained did not.'},
+ {q:'Brain scans of memory champions showed that they…',o:['were more intelligent than others','had brains built differently','used spatial memory, including the hippocampus'],a:2,f:'Nine of the ten used the method of loci, which draws on spatial memory.'}];
+const box=document.getElementById('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+
+renderColl('coll','hipmap');
+})();
+</script>
+</body>
+</html>

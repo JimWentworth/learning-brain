@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learning to See Like an Expert: Perceptual Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+
+.ptabs{display:flex;gap:6px;margin:18px 0 0;border-bottom:2px solid var(--night-line);flex-wrap:wrap}
+.ptabs button{appearance:none;background:transparent;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;color:#C9D3E3;font:700 18px var(--body);padding:10px 16px 8px;cursor:pointer;min-height:48px}
+.ptabs button[aria-selected="true"]{color:#fff;border-bottom-color:var(--orange)}
+.ptabs button:hover{color:#fff}
+.ptabs button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.ppanel{padding-top:6px}
+.ppanel:focus-visible{outline:3px solid #FCB316;outline-offset:4px}
+.ppanel[hidden]{display:none}
+.iguide{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;margin-top:22px}
+@media (max-width:760px){.iguide{grid-template-columns:minmax(0,1fr)}}
+.iguide h3{font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin:0 0 8px}
+.iguide ol,.iguide ul{margin:0 0 18px;padding-left:1.3em;color:#E9EEF6;font-size:17px;line-height:1.5}
+.iguide li{margin:0 0 8px}
+.iguide p{color:#E9EEF6;font-size:17px;line-height:1.5;margin:0 0 16px}
+.iguide .itime{display:inline-block;background:#1B2E50;border:1px solid var(--night-line);border-radius:16px;padding:3px 12px;font-weight:700;color:#fff;margin:0 0 14px}
+.icard{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:18px 20px}
+.pscreen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.pscreen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.pchoices{display:flex;gap:10px;flex-wrap:wrap}
+.pchoices[hidden]{display:none}
+.pchoices button{appearance:none;min-height:48px;padding:6px 18px;text-align:left;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer}
+.pchoices button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.pchoices button.ok{border-color:#7DD3A8;background:#173B33}.pchoices button.no{border-color:#FFB38A;background:#3B2420}
+.pchoices button:disabled{cursor:default}
+.mtext b.ok{color:#7DD3A8}.mtext b.no{color:#FFB38A}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.res .row{display:grid;grid-template-columns:150px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6;margin:6px 0}
+@media (max-width:520px){.res .row{grid-template-columns:100px minmax(0,1fr) 76px}}
+.res .bar{height:14px;background:#1B2E50;border-radius:7px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:7px}
+.res b{text-align:right;font-variant-numeric:tabular-nums}
+
+__COLLCSS__
+</style>
+<style>.xvnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Perception · Topic 9</div>
+      <h1 id="title">Learning to see <em>like an expert</em></h1>
+      <p class="dek">Experts don’t just know more; they see differently. A radiologist sees the shadow, a chemist sees the functional group, a musician hears the chord. That kind of seeing can be trained, with many quick examples and feedback.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#tryT">Try it first</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the visual cortex, at the back, and the fusiform area, underneath, where expert recognition of faces, words and objects develops, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<main id="main">
+<article>
+  <section class="night" aria-labelledby="tryT" style="margin-top:0">
+    <div class="col">
+      <h2 class="sec" id="tryT"><span class="n">Try it first</span>Kel or Rin?</h2>
+      <p>Two families of made-up creatures. No rule given, just quick examples and feedback. Watch your accuracy change.</p>
+    </div>
+    <div class="wide">
+      <div class="ptabs" role="tablist" aria-label="Versions of this activity">
+        <button type="button" role="tab" id="tabS" aria-controls="panS" aria-selected="true">For students</button>
+        <button type="button" role="tab" id="tabI" aria-controls="panI" aria-selected="false" tabindex="-1">For instructors</button>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panS" aria-labelledby="tabS" tabindex="0">
+        <div class="lab">
+          <div class="pscreen" id="sScreen">
+            <svg id="plSvg" viewBox="0 0 300 220" width="100%" style="max-width:420px;display:block;background:#fff;border-radius:6px" role="img" aria-labelledby="plD">
+              <desc id="plD">A made-up creature drawn as an outline with two bumps, a dot, and some stripes. Each one belongs to the family Kel or the family Rin.</desc>
+              <g id="plG"></g>
+            </svg>
+            <p class="prog" id="plCap" aria-live="polite"></p>
+          </div>
+          <div>
+            <p class="phase" id="sPhase">Ready</p>
+            <p class="mtitle" id="sTitle">Kel or Rin?</p>
+            <p class="mtext" id="sText" aria-live="polite">You’ll see 24 made-up creatures from two families, Kel and Rin. Nobody will tell you the rule. Guess, use the feedback, and see how fast your eye learns.</p>
+            <div class="pchoices" id="sCh" role="group" aria-label="Your answer" hidden></div>
+            <div id="sRes"></div>
+            <div class="mrow"><button class="nbtn" id="sGo" type="button">Start</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panI" aria-labelledby="tabI" tabindex="0" hidden>
+        <div class="iguide">
+          <div>
+            <span class="itime">About 10 minutes</span>
+            <h3>Run it in class</h3>
+            <ol><li>Students do the 24 trials on their own devices. Ask them not to discuss the rule yet.</li><li>Ask for a show of hands: who got better from the first block to the last? Who can state the rule?</li><li>Reveal the rule. Discuss: some people improved before they could say what they were seeing.</li><li>Ask what the “Kel or Rin” of your subject is: the distinction experts see at a glance and beginners must learn.</li></ol>
+          </div>
+          <div class="icard">
+            <h3>Ask the room</h3>
+            <ul><li>When did you start to get it right? Could you say why?</li><li>What did you have to learn to ignore?</li><li>What do experts in our field see instantly that you still have to work out?</li></ul>
+            <h3>Connect it to your course</h3>
+            <p>Build short classification drills from your subject: twenty quick examples, each with immediate feedback, mixing categories and varying the irrelevant features. Is this graph linear or exponential? Which reaction type is this? Which artist painted this?</p>
+            <h3>Good to know</h3><p>The creatures are random, so a few people find the rule in the first block and others not at all. Both are useful to discuss.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col lede">
+    <p>Perceptual learning is the improvement in picking up information that comes from practice. Philip Kellman and colleagues argue it is one of the most important parts of expertise in almost any field, including mathematics, and one of the most neglected in teaching.</p>
+    <p>Most teaching explains facts and procedures. Perceptual learning works differently: it gives many short examples and asks learners to recognise, classify or match them, with feedback, until the key structure jumps out.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>Many, fast</strong><span>short classification trials with feedback: the core of a perceptual learning module</span></div>
+      <div role="listitem"><strong>Lasting</strong><span>gains in algebra and fractions from perceptual learning modules</span></div>
+      <div role="listitem"><strong>Mixed</strong><span>examples of different painters taught their styles better than blocked ones</span></div>
+      <div role="listitem"><strong>Fooled</strong><span>learners still rated blocked study as better, after doing worse with it</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">In mathematics</span>Seeing structure</h2>
+    <p>Kellman, Christine Massey and colleagues built perceptual learning modules for algebra and fractions. Instead of solving full problems, students made many quick judgements, for example matching an equation to its transformation or a fraction to its picture. The modules focus learning on recognising and discriminating key structures, and students using them showed significant and lasting gains.</p>
+    <h2 class="sec"><span class="n">Mix the examples</span>Painters, interleaved</h2>
+    <p>Nate Kornell and Robert Bjork had people learn the styles of 12 little-known painters from six paintings each. Paintings shown interleaved with other artists’ work led to better recognition of new paintings than paintings shown in blocks by artist. Yet participants rated blocking as more effective, even after their own test results showed the opposite. A high-powered replication in 2014 found the same advantage for interleaving.</p>
+    <h2 class="sec"><span class="n">Why mixing helps</span>Differences, not just similarities</h2>
+    <p>Learning a category means learning what separates it from its neighbours. Seeing examples from different categories side by side draws attention to the differences that matter, and away from features that vary but don’t count, like the colour and angle of the creatures above.</p>
+    <h2 class="sec"><span class="n">For learning</span>Train the eye, not only the rule</h2>
+    <p>Telling students the rule helps, but it doesn’t make them see quickly. Experts got there through thousands of examples. Short, mixed, feedback-rich drills compress some of that experience into minutes.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Check your intuition</span>Predict the findings</h2>
+      <p>For each study on this page, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Experts see. Give students the examples that train seeing.</h2>
+    <ol class="tips">
+      <li><b>Many short examples</b><span>Twenty quick classifications beat two long explanations for this.</span></li>
+      <li><b>Mix the categories</b><span>Interleave so the differences stand out.</span></li>
+      <li><b>Vary what doesn’t matter</b><span>So students learn to ignore it.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li>Kellman, P. J., Massey, C., Roth, Z., Burke, T., Zucker, J., Sawa, A., Aguero, K. E., &amp; Wise, J. A. (2008). Perceptual learning and the technology of expertise: Studies in fraction learning and algebra. <i>Pragmatics &amp; Cognition, 16</i>(2), 356–405.</li>
+        <li><a href="https://doi.org/10.1111/j.1756-8765.2009.01053.x">Kellman, P. J., Massey, C. M., &amp; Son, J. Y. (2010). Perceptual learning modules in mathematics: Enhancing students’ pattern recognition, structure extraction, and fluency. <i>Topics in Cognitive Science, 2</i>(2), 285–305.</a></li>
+        <li><a href="https://doi.org/10.1111/j.1467-9280.2008.02127.x">Kornell, N., &amp; Bjork, R. A. (2008). Learning concepts and categories: Is spacing the “enemy of induction”? <i>Psychological Science, 19</i>(6), 585–592.</a></li>
+        <li><a href="https://doi.org/10.3389/fpsyg.2014.00259">Verkoeijen, P. P. J. L., &amp; Bouwmeester, S. (2014). Is spacing really the “friend of induction”? <i>Frontiers in Psychology, 5</i>, 259.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">Kel and Rin are made-up creatures generated for this activity. The brain drawing is a simplified illustration.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.ffa.lab=[520,770];BR.R.ffa.al='left';BR.R.v1.lab=[960,-60];BR.R.v1.al='right';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['ffa','v1'],labels:['ffa','v1'],labelT:{ffa:0.8,v1:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+
+
+
+/* ---------- tabs ---------- */
+(function(){const tl=document.querySelector('.ptabs');if(!tl)return;const tabs=[...tl.querySelectorAll('[role=tab]')];
+ function sel(t,focus){tabs.forEach(b=>{const on=b===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;$(b.getAttribute('aria-controls')).hidden=!on});if(focus)t.focus()}
+ tabs.forEach((b,i)=>{b.addEventListener('click',()=>sel(b));b.addEventListener('keydown',e=>{let j=null;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;if(j!==null){e.preventDefault();sel(tabs[j],true)}})})})();
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?Math.min(100,val/mx*100):0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+let RUN=null;
+function ask(opts,lab){return new Promise(res=>{const c=$('sCh');c.setAttribute('aria-label',lab||'Your answer');c.innerHTML=opts.map((t,j)=>`<button type="button" data-v="${j}">${t}</button>`).join('');c.hidden=false;RUN.res=res;c.querySelector('button').focus()})}
+$('sCh').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!RUN||!RUN.res||b.disabled)return;const r=RUN.res;RUN.res=null;$('sCh').querySelectorAll('button').forEach(x=>x.disabled=true);r(+b.dataset.v)});
+function mark(right,chosen){$('sCh').querySelectorAll('button').forEach((b,j)=>{if(j===right)b.classList.add('ok');else if(j===chosen)b.classList.add('no')})}
+function hideCh(){$('sCh').hidden=true;$('sCh').innerHTML=''}
+function nextBtn(label){return new Promise(res=>{const g=$('sGo');g.textContent=label;g.hidden=false;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.hidden=true;res()}})}
+function say(phase,title,text){if(phase!=null)$('sPhase').textContent=phase;if(title!=null)$('sTitle').textContent=title;if(text!=null)$('sText').innerHTML=text}
+function startRun(fn){$('sGo').addEventListener('click',async()=>{if(RUN)return;RUN={};const g=$('sGo');g.hidden=true;$('sRes').innerHTML='';try{await fn()}finally{hideCh();g.onclick=null;g.textContent='Try again';g.hidden=false;g.disabled=false;RUN=null}})}
+
+/* ---------- Kel or Rin ---------- */
+const COLS=['#13294B','#3E6B9E','#B8430A','#2E6B4F'];
+function creature(kel){const rot=Math.random()*360,sc=0.8+Math.random()*0.4,col=COLS[Math.floor(Math.random()*4)],st=Math.floor(Math.random()*4),flip=Math.random()<.5;
+ const big=[0,0,44],small=[52,0,27];const tgt=kel?small:big;const jitter=()=>(Math.random()-.5)*8;
+ let s=`<g transform="translate(130,110) rotate(${rot}) scale(${sc}${flip?',-'+sc:''})"><circle cx="${big[0]}" cy="${big[1]}" r="${big[2]}" fill="#F1F4F9" stroke="${col}" stroke-width="5"/><circle cx="${small[0]}" cy="${small[1]}" r="${small[2]}" fill="#F1F4F9" stroke="${col}" stroke-width="5"/><circle cx="${big[0]}" cy="${big[1]}" r="${big[2]-2.5}" fill="#F1F4F9"/>`;
+ for(let i=0;i<st;i++)s+=`<line x1="${-30+i*14}" y1="${-30}" x2="${-30+i*14}" y2="${-12}" stroke="${col}" stroke-width="4"/>`;
+ s+=`<circle cx="${tgt[0]+(kel?6:-10)+jitter()}" cy="${tgt[1]+12+jitter()}" r="7" fill="${col}"/></g>`;return s}
+startRun(async()=>{const N=24;const seq=shuf([...Array(N/2).fill(true),...Array(N/2).fill(false)]);const hit=[];
+ say('Practice','Kel or Rin?','Make your best guess. You’ll get feedback straight away.');
+ for(let i=0;i<N;i++){$('plG').innerHTML=creature(seq[i]);$('plCap').textContent=`${i+1} of ${N}`;
+  const a=await ask(['Kel','Rin'],'Kel or Rin?');if(!RUN)return;const ok=(a===0)===seq[i];hit.push(ok);mark(seq[i]?0:1,a);
+  say(`Block ${Math.floor(i/6)+1} of 4`,ok?'Right':'Not quite',(ok?'<b class="ok">Right.</b> ':'<b class="no">Not quite.</b> ')+`That one was ${seq[i]?'Kel':'Rin'}.`);
+  await sw(ok?550:1100);if(!RUN)return;hideCh()}
+ $('plCap').textContent='';$('plG').innerHTML='';
+ const blocks=[0,1,2,3].map(b=>hit.slice(b*6,b*6+6).filter(Boolean).length);
+ $('sRes').innerHTML='<div class="res">'+blocks.map((v,b)=>barRow(`Block ${b+1}`,v,6,`${v} of 6`,'#FCB316')).join('')+'</div>';
+ say('Your learning curve','What was the rule?','Before the answer: which feature decides the family?');
+ const r=await ask(['Where the dot sits','The colour','The number of stripes','I couldn’t tell'],'What decides the family?');if(!RUN)return;mark(0,r);
+ const gain=blocks[3]-blocks[0];
+ say('The rule','Kel: the dot is in the small bump',`Rin has the dot in the big bump. Colour, size, angle and stripes were random. `+(gain>0?`You went from ${blocks[0]} to ${blocks[3]} of 6. `:'')+'Many people improve before they can state the rule. That is perceptual learning: the eye picks up the feature that matters, with examples and feedback rather than explanation.')});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Did students using perceptual learning modules for algebra and fractions show lasting gains?',['Yes, significant and persisting','No difference','Only short-term'],0,'Kellman and colleagues.'],
+ ['When learning painters’ styles, which worked better?',['Interleaving different artists','Blocking each artist','No difference'],0,'Kornell and Bjork, 2008.'],
+ ['Which did those learners rate as more effective?',['Blocking','Interleaving','Neither'],0,'Even after their own test results showed the opposite.'],
+ ['Did a high-powered 2014 replication find the interleaving advantage?',['Yes, a medium-sized one','No','It reversed'],0,'With a web-based sample.'],
+ ['What does a perceptual learning module ask learners to do?',['Recognise, classify or match many quick examples','Read a long explanation','Memorise a list'],0,'With feedback on each one.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: seeing like an expert is learned from many varied examples with feedback.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Perceptual learning means…',o:['Getting better at picking up information through practice','Memorising definitions','Learning only with pictures'],a:0,f:'Experts see structure beginners miss.'},
+ {q:'Kornell and Bjork found painters’ styles were learned better when paintings were…',o:['Interleaved with other artists','Blocked by artist','Shown once'],a:0,f:'Yet learners preferred blocking.'},
+ {q:'A perceptual learning module mostly consists of…',o:['Many quick classifications with feedback','A long lecture','One worked example'],a:0,f:'Recognise, discriminate, match.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','p09');
+})();
+</script>
+</body>
+</html>

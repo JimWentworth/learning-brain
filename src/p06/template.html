@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestalt: How the Brain Groups a Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+
+.ptabs{display:flex;gap:6px;margin:18px 0 0;border-bottom:2px solid var(--night-line);flex-wrap:wrap}
+.ptabs button{appearance:none;background:transparent;border:0;border-bottom:4px solid transparent;margin-bottom:-2px;color:#C9D3E3;font:700 18px var(--body);padding:10px 16px 8px;cursor:pointer;min-height:48px}
+.ptabs button[aria-selected="true"]{color:#fff;border-bottom-color:var(--orange)}
+.ptabs button:hover{color:#fff}
+.ptabs button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.ppanel{padding-top:6px}
+.ppanel:focus-visible{outline:3px solid #FCB316;outline-offset:4px}
+.ppanel[hidden]{display:none}
+.iguide{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;margin-top:22px}
+@media (max-width:760px){.iguide{grid-template-columns:minmax(0,1fr)}}
+.iguide h3{font:800 15px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin:0 0 8px}
+.iguide ol,.iguide ul{margin:0 0 18px;padding-left:1.3em;color:#E9EEF6;font-size:17px;line-height:1.5}
+.iguide li{margin:0 0 8px}
+.iguide p{color:#E9EEF6;font-size:17px;line-height:1.5;margin:0 0 16px}
+.iguide .itime{display:inline-block;background:#1B2E50;border:1px solid var(--night-line);border-radius:16px;padding:3px 12px;font-weight:700;color:#fff;margin:0 0 14px}
+.icard{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:18px 20px}
+.pscreen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.pscreen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.pchoices{display:flex;gap:10px;flex-wrap:wrap}
+.pchoices[hidden]{display:none}
+.pchoices button{appearance:none;min-height:48px;padding:6px 18px;text-align:left;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer}
+.pchoices button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.pchoices button.ok{border-color:#7DD3A8;background:#173B33}.pchoices button.no{border-color:#FFB38A;background:#3B2420}
+.pchoices button:disabled{cursor:default}
+.mtext b.ok{color:#7DD3A8}.mtext b.no{color:#FFB38A}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.res .row{display:grid;grid-template-columns:150px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6;margin:6px 0}
+@media (max-width:520px){.res .row{grid-template-columns:100px minmax(0,1fr) 76px}}
+.res .bar{height:14px;background:#1B2E50;border-radius:7px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:7px}
+.res b{text-align:right;font-variant-numeric:tabular-nums}
+
+__COLLCSS__
+</style>
+<style>.xvnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Perception · Topic 6</div>
+      <h1 id="title">Gestalt: <em>how the brain groups a page</em></h1>
+      <p class="dek">Before you read a single word, your brain has already decided what goes with what: things that are close, alike, boxed together or connected. Every slide and handout is grouped this way, whether you planned it or not.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#tryT">Try it first</a></span><span><a href="#brT">Predict the findings</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the occipital lobe, at the back, and the parietal lobe, at the top, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<main id="main">
+<article>
+  <section class="night" aria-labelledby="tryT" style="margin-top:0">
+    <div class="col">
+      <h2 class="sec" id="tryT"><span class="n">Try it first</span>What goes together?</h2>
+      <p>Dots, boxes and lines. For each layout, say what you see as a group, before you think about it.</p>
+    </div>
+    <div class="wide">
+      <div class="ptabs" role="tablist" aria-label="Versions of this activity">
+        <button type="button" role="tab" id="tabS" aria-controls="panS" aria-selected="true">For students</button>
+        <button type="button" role="tab" id="tabI" aria-controls="panI" aria-selected="false" tabindex="-1">For instructors</button>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panS" aria-labelledby="tabS" tabindex="0">
+        <div class="lab">
+          <div class="pscreen" id="sScreen">
+            <svg id="gsSvg" viewBox="0 0 520 280" width="100%" style="max-width:540px;display:block;background:#fff;border-radius:6px" role="img" aria-labelledby="gsD">
+              <desc id="gsD">A small arrangement of shapes. The text beside it describes each arrangement.</desc>
+              <g id="gsG"></g>
+            </svg>
+            <p class="prog" id="gsCap" aria-live="polite"></p>
+          </div>
+          <div>
+            <p class="phase" id="sPhase">Ready</p>
+            <p class="mtitle" id="sTitle">What goes together?</p>
+            <p class="mtext" id="sText" aria-live="polite">Seven quick layouts. For each, answer with your first impression: what does your eye group together?</p>
+            <div class="pchoices" id="sCh" role="group" aria-label="Your answer" hidden></div>
+            <div id="sRes"></div>
+            <div class="mrow"><button class="nbtn" id="sGo" type="button">Start</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="ppanel" role="tabpanel" id="panI" aria-labelledby="tabI" tabindex="0" hidden>
+        <div class="iguide">
+          <div>
+            <span class="itime">About 10 minutes</span>
+            <h3>Run it in class</h3>
+            <ol><li>Project the student version. For each layout, count “one, two, three” and have everyone call out what they see as grouped.</li><li>After each one, name the principle shown: proximity, similarity, common region, connection or closure.</li><li>At the last layout, ask which version of the labelled diagram is easier to read, and why.</li><li>Then show one of your own slides and ask: what will students group together here? Is that what you meant?</li></ol>
+          </div>
+          <div class="icard">
+            <h3>Ask the room</h3>
+            <ul><li>Which layouts did everyone agree on immediately?</li><li>Where did spacing and colour pull in different directions?</li><li>On your last handout, what would a reader group together?</li></ul>
+            <h3>Connect it to your course</h3>
+            <p>Use grouping deliberately: put labels next to what they label, leave space between unrelated items, and use boxes or shading to show what belongs together.</p>
+            <h3>Good to know</h3><p>There is no single right answer for every layout; the “most people” answers come from long-standing demonstrations, and individuals vary.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col lede">
+    <p>In 1912, Max Wertheimer published a paper on apparent motion that is widely seen as the start of Gestalt psychology. He and his colleagues went on to describe how the visual system organises a scene into groups and figures before we think about it: things that are close together, alike, enclosed together, or connected tend to be seen as belonging together.</p>
+    <p>A century later, a major review by Johan Wagemans and colleagues concluded that the questions the Gestalt psychologists raised, about how structure emerges in perception, still drive research today.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>1912</strong><span>Wertheimer’s paper that launched Gestalt psychology</span></div>
+      <div role="listitem"><strong>5 cues</strong><span>shown above: proximity, similarity, common region, connection and closure</span></div>
+      <div role="listitem"><strong>d = 0.85</strong><span>average benefit of integrating related words and pictures, in Ginns’s 2006 meta-analysis</span></div>
+      <div role="listitem"><strong>Near</strong><span>labels next to the parts beat labels in a separate legend</span></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Automatic</span>Grouping happens first</h2>
+    <p>You don’t choose to see the dots in the first layout as columns. Grouping is part of how the visual system builds a scene, and it shapes what we notice and compare. When two cues conflict, such as spacing and colour, the stronger one tends to win.</p>
+    <h2 class="sec"><span class="n">On the page</span>Layout makes a claim</h2>
+    <p>Whatever is close together on a slide will be read as related. A caption that sits nearer to the wrong picture, or a label floating between two parts, sends a message you didn’t mean to send.</p>
+    <h2 class="sec"><span class="n">The evidence</span>Keep related things together</h2>
+    <p>Research on multimedia learning tests this directly. When a diagram’s labels are placed next to the parts, rather than in a separate key, learners don’t have to search back and forth. Paul Ginns’s 2006 meta-analysis of this split-attention effect found a large average benefit for integrated designs (d = 0.85), and a 2018 meta-analysis by Noah Schroeder and Ada Cenkci also supported placing related words and pictures close together.</p>
+  </div>
+
+  <section aria-labelledby="brT" style="margin:24px 0 40px">
+    <div class="col">
+      <h2 class="sec" id="brT"><span class="n">Check your intuition</span>Predict the findings</h2>
+      <p>For each study on this page, predict what was found. Then check.</p>
+    </div>
+    <div class="wide">
+      <form class="pgrid" id="pGrid"></form>
+      <div class="qrow"><button class="pbtn" id="pCheck" type="button">Check my predictions</button><button class="pbtn" id="pReset" type="button" hidden>Try again</button></div>
+      <p class="pmsg" id="pSum" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Layout says what goes with what. Make it say what you mean.</h2>
+    <ol class="tips">
+      <li><b>Labels on the parts</b><span>Not in a legend the eye must hunt for.</span></li>
+      <li><b>Space separates</b><span>Leave a clear gap between things that don’t belong together.</span></li>
+      <li><b>Box what belongs</b><span>A shaded panel groups more strongly than spacing.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1037/a0029333">Wagemans, J., Elder, J. H., Kubovy, M., Palmer, S. E., Peterson, M. A., Singh, M., &amp; von der Heydt, R. (2012). A century of Gestalt psychology in visual perception: I. Perceptual grouping and figure–ground organization. <i>Psychological Bulletin, 138</i>(6), 1172–1217.</a></li>
+        <li><a href="https://doi.org/10.1016/j.learninstruc.2006.10.001">Ginns, P. (2006). Integrating information: A meta-analysis of the spatial contiguity and temporal contiguity effects. <i>Learning and Instruction, 16</i>(6), 511–525.</a></li>
+        <li><a href="https://doi.org/10.1007/s10648-018-9435-9">Schroeder, N. L., &amp; Cenkci, A. T. (2018). Spatial contiguity and spatial split-attention effects in multimedia learning environments: A meta-analysis. <i>Educational Psychology Review, 30</i>(3), 679–701.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The layouts are classic grouping demonstrations, drawn for this page. The brain drawing is a simplified illustration.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.occ.lab=[960,770];BR.R.occ.al='right';BR.R.par.lab=[560,-70];BR.R.par.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['occ','par'],labels:['occ','par'],labelT:{occ:0.8,par:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+
+
+
+/* ---------- tabs ---------- */
+(function(){const tl=document.querySelector('.ptabs');if(!tl)return;const tabs=[...tl.querySelectorAll('[role=tab]')];
+ function sel(t,focus){tabs.forEach(b=>{const on=b===t;b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;$(b.getAttribute('aria-controls')).hidden=!on});if(focus)t.focus()}
+ tabs.forEach((b,i)=>{b.addEventListener('click',()=>sel(b));b.addEventListener('keydown',e=>{let j=null;if(e.key==='ArrowRight')j=(i+1)%tabs.length;else if(e.key==='ArrowLeft')j=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')j=0;else if(e.key==='End')j=tabs.length-1;if(j!==null){e.preventDefault();sel(tabs[j],true)}})})})();
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?Math.min(100,val/mx*100):0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+let RUN=null;
+function ask(opts,lab){return new Promise(res=>{const c=$('sCh');c.setAttribute('aria-label',lab||'Your answer');c.innerHTML=opts.map((t,j)=>`<button type="button" data-v="${j}">${t}</button>`).join('');c.hidden=false;RUN.res=res;c.querySelector('button').focus()})}
+$('sCh').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!RUN||!RUN.res||b.disabled)return;const r=RUN.res;RUN.res=null;$('sCh').querySelectorAll('button').forEach(x=>x.disabled=true);r(+b.dataset.v)});
+function mark(right,chosen){$('sCh').querySelectorAll('button').forEach((b,j)=>{if(j===right)b.classList.add('ok');else if(j===chosen)b.classList.add('no')})}
+function hideCh(){$('sCh').hidden=true;$('sCh').innerHTML=''}
+function nextBtn(label){return new Promise(res=>{const g=$('sGo');g.textContent=label;g.hidden=false;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.hidden=true;res()}})}
+function say(phase,title,text){if(phase!=null)$('sPhase').textContent=phase;if(title!=null)$('sTitle').textContent=title;if(text!=null)$('sText').innerHTML=text}
+function startRun(fn){$('sGo').addEventListener('click',async()=>{if(RUN)return;RUN={};const g=$('sGo');g.hidden=true;$('sRes').innerHTML='';try{await fn()}finally{hideCh();g.onclick=null;g.textContent='Try again';g.hidden=false;g.disabled=false;RUN=null}})}
+
+/* ---------- grouping ---------- */
+const N='#13294B',O='#FF5F05';
+const dot=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||13}" fill="${c||N}"/>`;
+function grid(fx,fy,nx,ny,col){let s='';for(let i=0;i<nx;i++)for(let j=0;j<ny;j++)s+=dot(fx(i),fy(j),col?col(i,j):N);return s}
+const L=[
+ {svg:grid(i=>90+i*110,j=>50+j*36,4,6),q:'What do you see?',o:['Four columns','Six rows','One block of dots'],a:0,p:'Proximity',f:'The dots are closer vertically than horizontally, so most people see columns. Spacing alone creates groups.'},
+ {svg:grid(i=>80+i*60,j=>50+j*40,7,5,(i,j)=>j%2?O:N),q:'What do you see?',o:['Rows','Columns','One block of dots'],a:0,p:'Similarity',f:'The spacing is even, but colour alternates by row, so most people see rows. Alike things group together.'},
+ {svg:`<rect x="110" y="95" width="140" height="90" rx="14" fill="#FFE3D1"/><rect x="290" y="95" width="140" height="90" rx="14" fill="#FFE3D1"/>`+[60,130,230,300,400,470].map(x=>dot(x,140)).join(''),q:'Which dots go together?',o:['The pairs inside the shaded boxes','The pairs that are closest together','None: it is just a row'],a:0,p:'Common region',f:'The closest dots are actually split by the box edges. In demonstrations like this, most people group by the boxes: a shared region is a strong cue, which is why shaded panels work on slides.'},
+ {svg:`<g stroke="${N}" stroke-width="6"><line x1="60" y1="140" x2="185" y2="140"/><line x1="335" y1="140" x2="460" y2="140"/></g>`+[60,135,185,335,385,460].map(x=>dot(x,140)).join('')+dot(260,140),q:'What goes together?',o:['The dots joined by lines','The dots closest together','Every dot is separate'],a:0,p:'Connection',f:'A connecting line groups things even across a gap. Arrows and lines on a diagram are strong claims about what goes together.'},
+ {svg:(()=>{const pts=[[260,62],[165,226],[355,226]],cx=260,cy=171,r=36;return pts.map(([x,y])=>{const c=Math.atan2(cy-y,cx-x),h=Math.PI/6,p=t=>[x+r*Math.cos(t),y+r*Math.sin(t)];const p1=p(c+h),p2=p(c-h);return `<path d="M${x} ${y} L${p1[0].toFixed(1)} ${p1[1].toFixed(1)} A${r} ${r} 0 1 1 ${p2[0].toFixed(1)} ${p2[1].toFixed(1)} Z" fill="${N}"/>`}).join('')})(),q:'What do you see in the middle?',o:['A white triangle','Nothing: three cut circles','A white circle'],a:0,p:'Closure',f:'No triangle is drawn: the brain completes the edges from the gaps. We fill in shapes that aren’t fully there, the same way we fill gaps in the blind spot.'},
+ {svg:grid(i=>70+i*54,j=>60+j*80,8,3,(i,j)=>i<4?N:O).replace(/cx="(\d+)"/g,(m,x)=>`cx="${+x+(+x>250?40:0)}"`),q:'What do you see?',o:['Two groups: left and right','Eight columns','Three rows'],a:0,p:'Proximity and similarity together',f:'Here spacing and colour agree, so the two groups are unmistakable. When cues agree, grouping is fast and certain. Design slides so they agree.'},
+ {svg:`<text x="110" y="34" font-family="Source Sans 3,sans-serif" font-size="18" font-weight="800" text-anchor="middle" fill="${N}">A</text><text x="330" y="34" font-family="Source Sans 3,sans-serif" font-size="18" font-weight="800" text-anchor="middle" fill="${N}">B</text>`+
+  `<g transform="translate(50,60)"><circle cx="60" cy="70" r="46" fill="#FFE3D1" stroke="${N}" stroke-width="3"/><circle cx="60" cy="70" r="14" fill="${O}"/><text x="68" y="40" font-family="Source Sans 3,sans-serif" font-size="18" fill="${N}">1</text><text x="78" y="76" font-family="Source Sans 3,sans-serif" font-size="18" fill="${N}">2</text><text x="-10" y="170" font-family="Source Sans 3,sans-serif" font-size="18" fill="${N}">1 Membrane</text><text x="-10" y="194" font-family="Source Sans 3,sans-serif" font-size="18" fill="${N}">2 Nucleus</text></g>`+
+  `<g transform="translate(270,60)"><circle cx="60" cy="70" r="46" fill="#FFE3D1" stroke="${N}" stroke-width="3"/><circle cx="60" cy="70" r="14" fill="${O}"/><line x1="102" y1="52" x2="124" y2="36" stroke="${N}" stroke-width="2"/><text x="128" y="40" font-family="Source Sans 3,sans-serif" font-size="18" fill="${N}">Membrane</text><line x1="74" y1="74" x2="124" y2="112" stroke="${N}" stroke-width="2"/><text x="128" y="118" font-family="Source Sans 3,sans-serif" font-size="18" fill="${N}">Nucleus</text></g>`,
+  q:'Which diagram is easier to read?',o:['B: labels on the parts','A: numbered key below','No difference'],a:0,p:'Spatial contiguity',f:'In B the eye doesn’t have to jump between number and key. Meta-analyses of the split-attention effect find that placing words next to the parts they describe helps learning.'}];
+startRun(async()=>{let right=0;const caps=[];
+ for(let i=0;i<L.length;i++){const it=L[i];$('gsG').innerHTML=it.svg;$('gsCap').textContent='';
+  say(`Layout ${i+1} of ${L.length}`,it.q,'Answer with your first impression.');
+  const a=await ask(it.o,it.q);if(!RUN)return;mark(it.a,a);if(a===it.a)right++;
+  $('gsCap').textContent=it.p;
+  say(null,it.p,(a===it.a?'<b class="ok">Most people agree.</b> ':'<b class="no">Most people see it differently.</b> ')+it.f);
+  if(i<L.length-1){await nextBtn('Next layout');if(!RUN)return;hideCh()}}
+ say('What happened',`${right} of ${L.length} matched most people`,'Grouping happens before you think about it, and it happens to your students when they look at your slides. Use it on purpose: closeness, shared colour, a shaded box or a line all say “these belong together”.')});
+
+/* ---------- predict the findings ---------- */
+const PI=[
+ ['Gestalt psychology is usually dated from a 1912 paper on…',['Apparent motion','Colour vision','Memory'],0,'By Max Wertheimer.'],
+ ['In Ginns’s 2006 meta-analysis, how big was the average benefit of integrating related words and pictures?',['Large (d = 0.85)','Tiny (d = 0.05)','Negative'],0,'The split-attention or spatial contiguity effect.'],
+ ['Did the 2018 meta-analysis by Schroeder and Cenkci support placing related words and pictures close together?',['Yes','No','It found harm'],0,'Integrated designs helped learning.'],
+ ['A century after Gestalt began, Wagemans and colleagues concluded its questions were…',['Still driving research','Settled long ago','Abandoned'],0,'Grouping and figure–ground remain active topics.'],
+ ['When spacing and colour suggest different groups, what tends to happen?',['The stronger cue wins','Both are ignored','Colour always wins'],0,'So make cues agree when you design a page.']];
+const NP=PI.length;
+$('pGrid').innerHTML=PI.map(([q,o],i)=>`<div class="prow"><p class="it" id="pq${i}">${i+1}. ${q}</p><fieldset aria-labelledby="pq${i}"><legend>${q}</legend>${shuf(o.map((t,j)=>[t,j])).map(([t,j])=>`<label><input type="radio" name="p${i}" value="${j}">${t}</label>`).join('')}</fieldset><p class="ex" id="px${i}" hidden></p></div>`).join('');
+$('pCheck').addEventListener('click',()=>{let right=0,ans=0;PI.forEach(([q,o,a,ex],i)=>{const sel=document.querySelector(`input[name="p${i}"]:checked`);let lead;
+  if(!sel)lead=`<b class="no">Not answered.</b> ${o[a]}. `;else{ans++;const ok=+sel.value===a;if(ok)right++;lead=ok?`<b>Right.</b> `:`<b class="no">Not quite.</b> ${o[a]}. `}
+  const x=$('px'+i);x.innerHTML=lead+ex;x.hidden=false});
+ document.querySelectorAll('#pGrid input').forEach(n=>n.disabled=true);
+ $('pSum').textContent=(ans===0?'You didn’t make any predictions, so here are the answers. ':`You got ${right} of ${ans} prediction${ans>1?'s':''} right${ans<NP?` (${NP-ans} left blank)`:''}. `)+'The pattern: the brain groups before it reads, so layout teaches too.';
+ $('pCheck').hidden=true;$('pReset').hidden=false;$('pReset').focus()});
+$('pReset').addEventListener('click',()=>{document.querySelectorAll('#pGrid input').forEach(n=>{n.disabled=false;n.checked=false});document.querySelectorAll('#pGrid .ex').forEach(x=>{x.hidden=true;x.innerHTML=''});$('pSum').textContent='';$('pReset').hidden=true;$('pCheck').hidden=false;document.querySelector('#pGrid input').focus()});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'Dots close together are seen as a group. This is…',o:['Proximity','Similarity','Closure'],a:0,f:'Spacing creates groups.'},
+ {q:'Where should a diagram’s labels go?',o:['Next to the parts they name','In a key below','On the next slide'],a:0,f:'The spatial contiguity principle.'},
+ {q:'Gestalt psychology began with a paper by…',o:['Max Wertheimer, 1912','Hermann von Helmholtz, 1866','Richard Mayer, 2001'],a:0,f:'On apparent motion.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','p06');
+})();
+</script>
+</body>
+</html>

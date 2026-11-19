@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crutch or Tutor: How AI Practice Can Help or Harm Learning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,300;1,9..144,600&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+__BASECSS__
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:28px;align-items:start;margin-top:22px}
+@media (max-width:900px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab .phase{font-size:15px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--orange);margin:0 0 6px}
+.lab .mtitle{font-family:var(--display);font-size:clamp(22px,2.3vw,28px);line-height:1.2;color:#fff;margin:0 0 10px}
+.lab .mtext{font-size:17px;line-height:1.5;color:#E9EEF6;margin:0 0 14px}
+.nbtn{appearance:none;min-height:48px;padding:0 22px;border-radius:24px;font:700 18px var(--body);cursor:pointer;background:var(--orange);color:#13294B;border:0}
+.nbtn:disabled{background:#3A4E72;color:#C9D3E3;cursor:default}
+.nbtn.ghost{background:transparent;color:#fff;border:2px solid #8FA3C2}
+.nbtn[hidden]{display:none}
+.mrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.mscreen{background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+#mC{width:100%;max-width:520px;height:auto;aspect-ratio:1;display:block;touch-action:none;border-radius:6px;cursor:grab}
+#mC.drag{cursor:none}
+#mC:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.prog{font-size:16px;color:var(--night-muted);margin:0;text-align:center}
+.res{display:grid;gap:8px;margin:4px 0 14px}
+.res .row{display:grid;grid-template-columns:70px minmax(0,1fr) 120px;gap:10px;align-items:center;font-size:16px;color:#E9EEF6}
+.res .bar{height:16px;background:#1B2E50;border-radius:8px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:8px;background:#FCB316}
+.res b{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}
+/* predictions */
+.pgrid{margin-top:22px;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:#fff}
+.prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 18px;border-top:1px solid var(--rule)}
+.prow:first-child{border-top:0}
+.prow .it{font-size:18px;line-height:1.4;margin:0}
+.prow fieldset{border:0;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.prow legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.prow label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid #5A6B82;border-radius:22px;font-weight:700;font-size:16px;cursor:pointer}
+.prow input{width:20px;height:20px;accent-color:#13294B}
+.prow .ex{grid-column:1/-1;margin:2px 0 0;font-size:17px;line-height:1.5}
+.prow .ex b{color:#1F5C3F}
+.prow .ex b.no{color:#A3262F}
+.prow .ex[hidden]{display:none}
+@media (max-width:700px){.prow{grid-template-columns:minmax(0,1fr)}}
+.qrow{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.pbtn{appearance:none;min-height:48px;padding:0 20px;border-radius:24px;font:700 17px var(--body);cursor:pointer;background:var(--ink);color:#fff;border:0}
+.pbtn[hidden]{display:none}
+.pmsg{font-size:17px;line-height:1.5;margin:14px 0 0}
+
+.screen{position:relative;background:var(--night-2);border:1px solid var(--night-line);border-radius:8px;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px}
+.screen:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys[hidden]{display:none}
+.keys button{appearance:none;min-width:150px;min-height:56px;border-radius:12px;border:2px solid #8FA3C2;background:#13294B;color:#fff;font:800 20px var(--body);cursor:pointer}
+.keys button small{display:block;font:600 13px var(--body);color:#C9D3E3}
+.lbox{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:22px;margin-top:22px}
+.lres{display:grid;gap:10px;margin:14px 0 0;max-width:600px}
+.lres .row{display:grid;grid-template-columns:190px minmax(0,1fr) 90px;gap:10px;align-items:center;font-size:16px}
+@media (max-width:520px){.lres .row{grid-template-columns:120px minmax(0,1fr) 80px}}
+.lres .bar{height:16px;background:#E3E8EF;border-radius:8px;overflow:hidden}.lres .bar i{display:block;height:100%;border-radius:8px}
+.lres b{text-align:right;font-variant-numeric:tabular-nums}
+.pmsg b.h{display:block;font-size:19px;margin-bottom:4px}
+.pbtn.sec{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.pbtn:disabled{background:#C9D1DC;color:#3D4A5C;cursor:default}
+.fw{font-family:var(--body);font-weight:700;color:#fff;text-align:center;min-height:64px;display:flex;align-items:center;justify-content:center;line-height:1.15;font-size:36px;flex-direction:column;gap:6px}
+.fw small{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#C9D3E3;font-weight:800}
+.fin{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%}
+.fin[hidden]{display:none}
+.fin textarea{width:100%;max-width:440px;min-height:120px;padding:10px 12px;font:600 19px/1.4 var(--body);border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;resize:vertical}
+.fin textarea::placeholder{color:#AEBBD0}
+.fin textarea:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.tbar{width:100%;max-width:420px;height:8px;background:#1B2E50;border-radius:4px;overflow:hidden}.tbar i{display:block;height:100%;background:#FCB316}
+.brk{width:110px;height:110px;border-radius:50%;background:#3A4E72;border:4px solid #8FA3C2;cursor:pointer}
+.brk.on{background:#FF8A3D}
+.brk[hidden]{display:none}
+.brk:focus-visible{outline:3px solid #FCB316;outline-offset:3px}
+.res.wl2 .row{grid-template-columns:170px minmax(0,1fr) 90px}
+@media (max-width:520px){.res.wl2 .row{grid-template-columns:110px minmax(0,1fr) 76px}}
+.res .gh{font-size:15px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#C9D3E3;margin:6px 0 0}.bscen{font:600 clamp(19px,2.4vw,22px)/1.45 var(--body);color:#fff;max-width:40ch;min-height:5.8em;margin:0}
+.bopts{display:grid;grid-template-columns:repeat(var(--nb,3),minmax(0,1fr));gap:8px;width:100%;max-width:600px}
+@media (max-width:520px){.bopts{grid-template-columns:1fr}}
+.bopts[hidden]{display:none}
+.bopts button{min-height:52px;border-radius:10px;border:2px solid #8FA3C2;background:#0F2240;color:#fff;font:700 17px/1.2 var(--body);cursor:pointer;padding:4px 8px}
+.bopts button small{display:block;font-size:13px;color:#C9D3E3;font-weight:600}
+.bopts button:focus-visible{outline:3px solid #FCB316;outline-offset:2px}
+.bopts button.ok{border-color:#7DD3A8;background:#173B33}.bopts button.no{border-color:#FFB38A;background:#3B2420}
+.bopts button:disabled{cursor:default}
+.bfb{font-size:18px;line-height:1.45;color:#E9EEF6;margin:0;min-height:3em;max-width:44ch}
+.bfb b.ok{color:#7DD3A8}.bfb b.no{color:#FFB38A}
+.qq{font:600 clamp(18px,2.2vw,21px)/1.45 var(--body);color:#fff;max-width:42ch;margin:0}
+.jb{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.jb[hidden]{display:none}
+.gfb{font:600 17px/1.45 var(--body);color:#E9EEF6;min-height:1.5em;margin:0;text-align:center;max-width:42ch}
+.gfb b.ok{color:#7DD3A8}.gfb b.no{color:#FFB38A}
+__COLLCSS__
+</style>
+<style>.vnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the article</a>
+__NAV__
+
+<header class="hero" aria-labelledby="title">
+  <div class="hero-inner">
+    <div>
+      <div class="label">The Learning Brain · Generative AI · Topic 4</div>
+      <h1 id="title">Crutch or tutor <em>Producing the answer is what teaches</em></h1>
+      <p class="dek">With AI in hand, students did far better in practice. Take it away, and those who had used a standard chatbot did worse than students who never had it. A tutor that gave hints did not.</p>
+      <div class="byline"><span>About 7 minutes to read</span><span><a href="#watchT">Watch the video</a></span><span><a href="#eT">Predict the exam</a></span><span><a href="#bT">Crutch or tutor?</a></span></div>
+    </div>
+    <div class="hero-brain"><canvas id="heroBrain" role="img" aria-label="Drawing of the side of the brain with the hippocampus, deep inside, and the prefrontal cortex, at the front, glowing orange and labelled."></canvas></div>
+  </div>
+</header>
+
+<section class="watch" aria-labelledby="watchT">
+  <div class="wide">
+    <h2 class="label" id="watchT" style="margin-bottom:14px">Watch · 2 minutes</h2>
+    <div class="frame"><video id="ep" controls playsinline preload="metadata" poster="poster.jpg" src="episode.mp4"></video></div>
+    <div class="meta"><span><b>Crutch or tutor</b> · The Learning Brain, Generative AI, episode 4</span><span>Captions are on; turn them off in the player.</span></div>
+    
+    <details class="transcript"><summary>Read the transcript</summary><p id="transcript"></p></details>
+  </div>
+</section>
+
+<main id="main">
+<article>
+  <div class="col lede">
+    <p>Nearly a thousand high-school students in Turkey practised maths with one of two AI tutors, or with no AI at all. One tutor was a standard chat interface, like ChatGPT. The other was prompted to give hints, not answers. Hamsa Bastani and colleagues reported the results in 2025.</p>
+    <p>During practice, both tutors helped a lot. Then the AI was taken away for the exam.</p>
+  </div>
+
+  <div class="wide">
+    <div class="facts" role="list">
+      <div role="listitem"><strong>~1,000</strong><span>high-school maths students in a field experiment</span></div>
+      <div role="listitem"><strong>+48%</strong><span>in practice with a standard chat, and +127% with the hint-giving tutor</span></div>
+      <div role="listitem"><strong>−17%</strong><span>on the exam without AI, for students who had practised with the standard chat</span></div>
+      <div role="listitem"><strong>About the same</strong><span>as students who never had AI, for those who had the hint-giving tutor</span></div>
+    </div>
+  </div>
+
+  <section class="night" aria-labelledby="eT">
+    <div class="col">
+      <h2 class="sec" id="eT"><span class="n">Try it</span>Predict the exam</h2>
+      <p>Three quick predictions about the study, then see the results. About 1 minute.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="eScreen">
+          <p class="qq" id="eQ" aria-live="polite">Press Start.</p>
+          <div class="jb" id="eB" hidden role="group" aria-label="Your prediction"></div>
+          <p class="gfb" id="eFb" aria-live="polite"></p>
+          <p class="prog" id="eProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="ePhase">Ready</p>
+          <p class="mtitle" id="eTitle">Practice, then the exam</p>
+          <p class="mtext" id="eText" aria-live="polite">Each group is compared with students who practised without AI.</p>
+          <div id="eRes"></div>
+          <div class="mrow"><button class="nbtn" id="eGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Why</span>A crutch skips the effort that builds skill</h2>
+    <p>The logs suggested why. Without guardrails, many students used the AI as a crutch: they asked for the answer and copied it. The effort that builds skill never happened.</p>
+    <p>This is the testing and generation effects from Series 2, run in reverse. Retrieving and generating answers build lasting memories because they take effort. Getting the answer is easy. Producing it is what teaches.</p>
+  </div>
+
+  <section class="night" aria-labelledby="bT">
+    <div class="col">
+      <h2 class="sec" id="bT"><span class="n">Try it</span>Crutch or tutor?</h2>
+      <p>Ten ways a student might use an AI while practising. For each, decide: is the AI doing the thinking (a crutch), or making the student do it (a tutor)? You’ll get feedback after each one.</p>
+    </div>
+    <div class="wide">
+      <div class="lab">
+        <div class="screen" id="bScreen">
+          <p class="bscen" id="bScen" aria-live="polite">Press Start.</p>
+          <div class="bopts" id="bOpts" hidden role="group" aria-label="Crutch or tutor?" style="--nb:2"><button type="button" data-k="C">Crutch<small>the AI does the thinking</small></button><button type="button" data-k="T">Tutor<small>the student does the thinking</small></button></div>
+          <p class="prog" id="bProg" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="phase" id="bPhase">Ready</p>
+          <p class="mtitle" id="bTitle">Crutch or tutor?</p>
+          <p class="bfb" id="bFb" aria-live="polite">The question is always: who produced the answer?</p>
+          <div id="bRes"></div>
+          <div class="mrow"><button class="nbtn" id="bGo">Start</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">A caution</span>One school, one subject</h2>
+    <p>This was one school and one subject, covering about 15% of the curriculum, with a model from 2023, and the students were in high school, not university. And the hint-giving tutor prevented the harm, but it did not raise exam scores.</p>
+    <aside class="box" aria-labelledby="exT">
+      <h3 id="exT">Make students do the climbing</h3>
+      <p>If students use AI in practice, give them a tutor that hints rather than solves. Grade the process, not just the answer. And always include some practice without AI, so you and they can see what they can do alone.</p>
+    </aside>
+  </div>
+
+  <div class="wide">
+    <h2 class="sec" style="max-width:700px;margin-left:auto;margin-right:auto"><span class="n">Why it matters for learning</span>Only producing the answer builds the skill</h2>
+    <ol class="tips">
+      <li><b>A tutor that hints</b><span>Not one that solves.</span></li>
+      <li><b>Grade the process</b><span>Not just the answer.</span></li>
+      <li><b>Some practice without AI</b><span>So everyone can see what students can do alone.</span></li>
+    </ol>
+  </div>
+
+  <div class="col">
+    <h2 class="sec"><span class="n">Your turn</span>Check what stuck</h2>
+    <p>Answer from memory, without scrolling back.</p>
+    <div class="quiz" id="quiz"></div>
+  </div>
+
+  <div class="wide lbmore" id="lbmore"></div>
+
+  <footer class="sources">
+    <div class="col">
+      <p class="label" style="color:var(--ink-2)">Sources</p>
+      <ol>
+        <li><a href="https://doi.org/10.1073/pnas.2422633122">Bastani, H., Bastani, O., Sungu, A., Ge, H., Kabakcı, Ö., &amp; Mariman, R. (2025). Generative AI without guardrails can harm learning: Evidence from high school mathematics. <i>Proceedings of the National Academy of Sciences, 122</i>(26), e2422633122.</a></li>
+      </ol>
+      <p style="font-size:16px;color:var(--ink-2)">The brain drawing and both activities are simplified illustrations, not the original experiments.</p>
+    </div>
+  </footer>
+</article>
+</main>
+
+<script>
+const EP_SRT = __SRT__;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ctx=null, GA=1;
+const ORANGE='#FF5F05', BODY='"Source Sans 3","Segoe UI",system-ui,sans-serif';
+const sat=x=>Math.min(1,Math.max(0,x)),lerp=(a,b,t)=>a+(b-a)*t,ez=x=>{x=sat(x);return x*x*(3-2*x)};const ga=a=>{ctx.globalAlpha=sat(a)*GA};
+</script>
+<script>
+__BRAIN__
+</script>
+<script>
+__COLLJS__
+(()=>{
+function stage(id,draw,{animate=true}={}){const c=document.getElementById(id);const x=c.getContext('2d');let W=0,H=0,t0=performance.now(),raf=0,vis=true;
+ function size(){const d=Math.min(2,devicePixelRatio||1);W=c.clientWidth;H=c.clientHeight;c.width=Math.round(W*d);c.height=Math.round(H*d);x.setTransform(d,0,0,d,0,0)}
+ function frame(now){ctx=x;GA=1;x.save();x.clearRect(0,0,W,H);draw({W,H,t:RM?999:Math.max(0,(now-t0)/1000),x});x.restore();if(animate&&!RM&&vis)raf=requestAnimationFrame(frame);else raf=0}
+ const kick=()=>{if(!raf)raf=requestAnimationFrame(frame)};size();kick();addEventListener('resize',()=>{size();kick()});
+ if('IntersectionObserver'in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis)kick()}).observe(c);
+ return{c,x,kick,get W(){return W},get H(){return H}}}
+const fitS=(W,H,m=1.25)=>Math.min(W/(1000*m),H/(700*m*1.16));
+const $=id=>document.getElementById(id);
+
+BR.R.pfc.lab=[40,-60];BR.R.pfc.al='left';BR.R.hip.lab=[640,770];BR.R.hip.al='left';
+stage('heroBrain',({W,H,t})=>{brainDraw({cx:W*0.5,cy:H*0.46,s:fitS(W,H,1.32),t,active:['hip','pfc'],labels:['hip','pfc'],labelT:{hip:0.8,pfc:1.0},deep:0.5,draw:RM?1:ez(t/1.6),glow:RM?1:0.75+0.25*Math.sin(t*1.6),labSize:Math.max(16,Math.round(15*W/560))})});
+
+(function(){const v=$('ep');try{const vtt='WEBVTT\n\n'+EP_SRT.replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g,'$1.$2');const tr=document.createElement('track');tr.kind='captions';tr.srclang='en';tr.label='English';tr.default=true;tr.src=URL.createObjectURL(new Blob([vtt],{type:'text/vtt'}));v.appendChild(tr);v.addEventListener('loadedmetadata',()=>{if(v.textTracks[0])v.textTracks[0].mode='showing'},{once:true})}catch(e){}
+ $('transcript').textContent=EP_SRT.split(/\n\s*\n/).map(b=>b.split('\n').slice(2).join(' ')).filter(Boolean).slice(3).join(' ')})();
+
+
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const sw=ms=>new Promise(r=>setTimeout(r,ms));
+function ed1(a,b){if(a===b)return true;if(Math.abs(a.length-b.length)>1)return false;let i=0,j=0,d=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue}if(++d>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++}}return d+(a.length-i)+(b.length-j)<=1}
+const match=(t,w)=>t===w||t===w+'s'||t===w+'es'||(w.length>=5&&ed1(t,w));
+const toks=v=>[...new Set(v.toLowerCase().split(/[^a-z]+/).filter(Boolean))];
+const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${mx?val/mx*100:0}%;background:${c}"></i></div><b>${lab}</b></div>`;
+
+/* ---------- predict the exam ----------
+   3 predictions, each with 3 options. Then the results as bars relative to the no-AI group (100). */
+const EQ=[
+ ['During practice, which tutor raised scores more?',['The standard chat','The hint-giving tutor','About the same'],1,'The hint-giving tutor: +127%, against +48% for the standard chat.'],
+ ['On the exam without AI, students who had practised with the standard chat scored…',['Higher than the no-AI group','About the same','Lower'],2,'Lower: 17% below students who never had AI.'],
+ ['And students who had practised with the hint-giving tutor scored…',['Higher than the no-AI group','About the same','Lower'],1,'About the same as students who never had AI.']];
+let er=null;
+function eChoose(opts){return new Promise(res=>{er.res=res;const b=$('eB');b.innerHTML=opts.map((t,j)=>`<button class="nbtn${j?' ghost':''}" type="button" data-v="${j}">${t}</button>`).join('');b.hidden=false;b.querySelector('button').focus()})}
+$('eB').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!er||!er.res)return;const r=er.res;er.res=null;$('eB').hidden=true;r(+b.dataset.v)});
+function eNext(label){return new Promise(res=>{const g=$('eGo');g.textContent=label;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.disabled=true;g.textContent='In progress';res()}})}
+$('eGo').addEventListener('click',async()=>{if(er||$('eGo').onclick)return;er={};const g=$('eGo');g.disabled=true;g.textContent='In progress';$('eRes').innerHTML='';
+ const got=[];$('ePhase').textContent='Predict';$('eTitle').textContent='Your prediction';$('eText').textContent='Pick one answer.';
+ for(let i=0;i<3;i++){const [q,o,a,ex]=EQ[i];$('eProg').textContent=`Prediction ${i+1} of 3`;$('eQ').textContent=q;$('eFb').textContent='';
+  const c=await eChoose(o);if(!er)return;got.push(c===a);
+  $('eFb').innerHTML=(c===a?'<b class="ok">Right.</b> ':'<b class="no">Not quite.</b> ')+ex;
+  if(i<2){await eNext('Next prediction');if(!er)return}}
+ $('eQ').textContent='Done.';$('eProg').textContent='';$('ePhase').textContent='The results';
+ $('eRes').innerHTML=`<div class="res wl2"><p class="gh">Practice, with AI (no-AI group = 100)</p>${barRow('No AI',100,230,'100','#C9D3E3')}${barRow('Standard chat',148,230,'+48%','#FCB316')}${barRow('Hint-giving tutor',227,230,'+127%','#7DD3A8')}<p class="gh">Exam, without AI</p>${barRow('No AI',100,230,'100','#C9D3E3')}${barRow('Standard chat',83,230,'−17%','#FCB316')}${barRow('Hint-giving tutor',100,230,'about the same','#7DD3A8')}</div>`;
+ const n=got.filter(Boolean).length;let title,text;
+ if(!got[1]){title='The harm is the surprise';text=`You got ${n} of 3. It is easy to expect AI practice to help, or at worst do nothing. But the students who had used the standard chat did worse on their own than students who never had AI. Doing well in practice is not the same as learning.`}
+ else if(n===3){title='You saw it coming';text='All 3 right. Practice scores rose with both tutors, but only the students who had to produce their own answers kept up once the AI was gone. Doing well in practice is not the same as learning.'}
+ else if(!got[0]){title='Hints helped more in practice, too';text=`You got ${n} of 3. Holding back the answer did not hurt practice scores: the hint-giving tutor raised scores more than the standard chat. And on the exam, it did no harm.`}
+ else{title='Hints prevented harm, but no more';text=`You got ${n} of 3. Students from the hint-giving tutor scored about the same as students who never had AI. It protected learning, but this time it did not add to it.`}
+ $('eTitle').textContent=title;$('eText').textContent=text;g.textContent='Try again';g.disabled=false;g.focus();er=null});
+
+/* ---------- classifier ---------- */
+const NM={C:'Crutch',T:'Tutor'};
+const CASES=[
+ ['“Solve question 4 for me.”','C','Crutch: the AI produces the answer, so the student skips the effort that builds the skill.'],
+ ['“I got 12 but the key says 15. Point to the step where my working went wrong, but don’t fix it.”','T','Tutor: the student did the work, and now has to find and fix the error themselves.'],
+ ['“Give me a hint for the first step only.”','T','Tutor: a hint leaves the student to do the rest of the thinking.'],
+ ['Pasting in the whole worksheet and copying the answers back out','C','Crutch: this is what many students did with the standard chat, and they scored lower on the exam.'],
+ ['“Quiz me on these formulas, and don’t show the answer until I’ve tried.”','T','Tutor: this is retrieval practice, with the AI holding the answers back.'],
+ ['Asking for the full solution as soon as a problem looks hard','C','Crutch: the struggle is where the learning happens. Try first, then ask for a hint.'],
+ ['Asking the AI to explain an answer, reading it, nodding, and moving on','C','Crutch: reading an explanation feels like understanding, but the student produced nothing. Try a similar problem alone next.'],
+ ['“I think x = 3. Tell me only whether it’s right.”','T','Tutor: the student produced the answer, and gets quick feedback on it.'],
+ ['Reading a worked example, then trying a similar problem alone','T','Tutor: the example shows the method, and the student then has to produce it.'],
+ ['Asking the AI to write the steps of a proof the student will be examined on','C','Crutch: the student is meant to learn to produce those steps.']];
+let br=null;
+function bAnswer(){return new Promise(res=>{br.res=res;const o=$('bOpts');o.hidden=false;o.querySelectorAll('button').forEach(b=>{b.disabled=false;b.classList.remove('ok','no')});o.querySelector('button').focus()})}
+$('bOpts').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!br||!br.res)return;const r=br.res;br.res=null;r(b.dataset.k)});
+function bWait(label){return new Promise(res=>{const g=$('bGo');g.textContent=label;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.disabled=true;g.textContent='In progress';res()}})}
+$('bGo').addEventListener('click',async()=>{if(br||$('bGo').onclick)return;br={};const g=$('bGo');g.disabled=true;g.textContent='In progress';$('bRes').innerHTML='';
+ const order=shuf([...CASES]);const n=order.length;let right=0;const tot={},got={},miss={};Object.keys(NM).forEach(k=>{tot[k]=0;got[k]=0;miss[k]=0});
+ $('bTitle').textContent='Crutch or tutor?';
+ for(let i=0;i<n;i++){const [txt,k,ex]=order[i];tot[k]++;$('bPhase').textContent=`Case ${i+1} of ${n}`;$('bScen').textContent=txt;$('bProg').textContent='';$('bFb').textContent='';
+  const a=await bAnswer();if(!br)return;const ok=a===k;if(ok){right++;got[k]++}else miss[k]++;
+  $('bOpts').querySelectorAll('button').forEach(b=>{b.disabled=true;if(b.dataset.k===k)b.classList.add('ok');else if(b.dataset.k===a)b.classList.add('no')});
+  $('bFb').innerHTML=(ok?'<b class="ok">Right.</b> ':`<b class="no">Not quite.</b> You chose “${NM[a]}”. `)+ex;$('bProg').textContent=`${right} of ${i+1} right so far.`;
+  if(i<n-1){await bWait('Next case');if(!br)return}}
+ $('bOpts').hidden=true;$('bScen').textContent='Done.';$('bProg').textContent='';$('bPhase').textContent='Your results';
+ $('bRes').innerHTML=`<div class="res wl2">${Object.keys(NM).map(k=>barRow(NM[k],got[k],tot[k],got[k]+' of '+tot[k],'#FCB316')).join('')}</div>`;
+ const weak=Object.keys(miss).filter(k=>miss[k]>0).map(k=>'“'+NM[k]+'”');const wj=a=>a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];const missed=weak.length===Object.keys(NM).length?(weak.length===2?'cases in both groups':'cases in every group'):'some '+wj(weak)+' cases';let title,text;
+
+ if(right>=9){title='You can tell them apart';text=`${right} of 10 right. The test is simple: who produced the answer? If the student did, the AI is a tutor. If the AI did, it’s a crutch.`}
+ else if(right>=6){title='Mostly there';text=`${right} of 10 right. You missed ${missed}. Ask: who produced the answer? Reading an AI’s explanation can feel like learning, but only producing it teaches.`}
+ else{title='Worth another look';text=`${right} of 10 right. Ask, each time: who produced the answer? Hints, quizzes and checks of the student’s own work are tutoring. Answers to copy are a crutch.`}
+ $('bTitle').textContent=title;$('bFb').textContent=text;g.onclick=null;g.textContent='Try again';g.disabled=false;g.focus();br=null});
+
+/* ---------- quiz ---------- */
+const Q=[
+ {q:'During practice, students with the standard chat…',o:['Did better than students without AI','Did worse','Did the same'],a:0,f:'Scores rose by 48%; with the hint-giving tutor, by 127%.'},
+ {q:'On the exam without AI, students who had practised with the standard chat…',o:['Scored 17% lower than students who never had AI','Scored higher','Scored the same'],a:0,f:'Many had used the AI as a crutch, copying answers.'},
+ {q:'What did the hint-giving tutor do for exam scores?',o:['Prevented the harm, but did not raise them','Raised them by 127%','Lowered them'],a:0,f:'Students scored about the same as those who never had AI.'}];
+const box=$('quiz');let right=0,done=0;
+Q.forEach((it,i)=>{const d=document.createElement('div');d.className='q';d.innerHTML=`<p class="qt" id="q${i}">${i+1}. ${it.q}</p><div class="opts" role="group" aria-labelledby="q${i}">${it.o.map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><p class="fb" aria-live="polite"></p>`;box.appendChild(d);
+ d.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(d.dataset.done)return;d.dataset.done=1;done++;const j=+b.dataset.j,ok=j===it.a;if(ok)right++;b.classList.add(ok?'right':'wrong');if(!ok)d.querySelector(`[data-j="${it.a}"]`).classList.add('right');d.querySelector('.fb').textContent=(ok?'Correct. ':'Not quite. The answer is highlighted. ')+it.f;
+  if(done===Q.length){const s=document.createElement('p');s.className='score';s.setAttribute('aria-live','polite');s.textContent=`${right} of ${Q.length} from memory.`;box.appendChild(s)}})});
+renderColl('coll','a04');
+})();
+</script>
+</body>
+</html>
