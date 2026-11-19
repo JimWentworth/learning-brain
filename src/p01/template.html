@@ -95,7 +95,7 @@ __BASECSS__
 @media (max-width:520px){.res .row{grid-template-columns:100px minmax(0,1fr) 76px}}
 .res .bar{height:14px;background:#1B2E50;border-radius:7px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:7px}
 .res b{text-align:right;font-variant-numeric:tabular-nums}
-
+.vidwrap{max-width:860px;margin:0 auto;border-radius:8px;overflow:hidden;background:#000}.vidwrap video{display:block;width:100%;height:auto}.ytsteps{max-width:860px;margin:18px auto 0;padding-left:1.4em;font-size:18px;line-height:1.5}.ytsteps li{margin:6px 0}.vtrans{max-width:860px;margin:14px auto 0}
 __COLLCSS__
 </style>
 <style>.xvnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
@@ -121,7 +121,7 @@ __NAV__
   <section class="night" aria-labelledby="tryT" style="margin-top:0">
     <div class="col">
       <h2 class="sec" id="tryT"><span class="n">Try it first</span>Which square is lighter?</h2>
-      <p>Two squares on a checkerboard, one in shadow. Decide which is lighter, then test your answer.</p>
+      <p>A short video: two squares on a checkerboard, one in shadow. Decide which is lighter, then watch the test.</p>
     </div>
     <div class="wide">
       <div class="ptabs" role="tablist" aria-label="Versions of this activity">
@@ -129,41 +129,25 @@ __NAV__
         <button type="button" role="tab" id="tabI" aria-controls="panI" aria-selected="false" tabindex="-1">For instructors</button>
       </div>
       <div class="ppanel" role="tabpanel" id="panS" aria-labelledby="tabS" tabindex="0">
-        <div class="lab">
-          <div class="pscreen" id="sScreen">
-            <svg id="cbSvg" viewBox="0 0 520 380" width="100%" style="max-width:520px;display:block" role="img" aria-labelledby="cbDesc">
-              <desc id="cbDesc">A checkerboard seen at an angle, with an orange cylinder standing on it. The cylinder casts a soft shadow over part of the board. Square A is a dark square in full light. Square B is a light square inside the shadow. Both are exactly the same grey, but B looks much lighter.</desc>
-              <defs>
-                <radialGradient id="cbSh" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#000" stop-opacity=".47"/><stop offset=".6" stop-color="#000" stop-opacity=".47"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
-                <linearGradient id="cbCyl" x1="0" x2="1"><stop offset="0" stop-color="#B8430A"/><stop offset=".45" stop-color="#FF7A2E"/><stop offset="1" stop-color="#9C3606"/></linearGradient>
-                <mask id="cbMask"><rect width="520" height="380" fill="#fff"/><g id="cbHoles" fill="#000"></g></mask>
-              </defs>
-              <rect width="520" height="380" fill="#9AA6B8"/>
-              <g id="cbBoard"></g>
-              <ellipse id="cbShadow" fill="url(#cbSh)"/>
-              <g id="cbCylinder"></g>
-              <g id="cbLabels" font-family="Source Sans 3, sans-serif" font-weight="800" font-size="26" text-anchor="middle"></g>
-              <g id="cbBars" display="none"></g>
-              <rect id="cbCover" width="520" height="380" fill="#9AA6B8" mask="url(#cbMask)" display="none"/>
-            </svg>
-            <p class="prog" id="cbNote" aria-live="polite"></p>
-          </div>
-          <div>
-            <p class="phase" id="sPhase">Ready</p>
-            <p class="mtitle" id="sTitle">Which square is lighter?</p>
-            <p class="mtext" id="sText" aria-live="polite">Look at the squares marked A and B. You’ll answer three quick questions.</p>
-            <div class="pchoices" id="sCh" role="group" aria-label="Your answer" hidden></div>
-            <div id="sRes"></div>
-            <div class="mrow"><button class="nbtn" id="sGo" type="button">Start</button><button class="nbtn ghost" id="cbHide" type="button" hidden aria-pressed="false">Hide the scene</button><button class="nbtn ghost" id="cbBar" type="button" hidden aria-pressed="false">Show the bars</button></div>
-          </div>
+        <div class="vidwrap">
+          <video controls playsinline preload="metadata" poster="poster.jpg" aria-describedby="vidHow">
+            <source src="episode.mp4" type="video/mp4">
+            <track kind="captions" src="captions.vtt" srclang="en" label="English" default>
+          </video>
         </div>
+        <ol class="ytsteps" id="vidHow">
+          <li><b>Watch and decide.</b> When the video asks which square is lighter, pause it and choose before it goes on.</li>
+          <li><b>Watch the reveal.</b> The board is covered, then the squares are joined with a bar of the same grey.</li>
+          <li><b>Look once more.</b> Now that you know, does B still look lighter?</li>
+        </ol>
+        <details class="transcript vtrans"><summary>Read the transcript</summary><p>Perception is a best guess. Here’s a checkerboard, with a cylinder standing on it. The cylinder casts a shadow across the board. Look at the two squares marked A and B. Which one is lighter? Decide before we go on. Most people say B. It looks much lighter than A. Now let’s cover everything except the two squares. Without the board and the shadow, A and B look the same. Because they are the same. Exactly the same grey. Bring the scene back, and join the squares with a bar of that same grey. Follow the bar from A to B. There’s no edge where the colour changes. Even now that you know, B probably still looks lighter. Knowing the answer doesn’t switch the effect off. The same amount of light reaches your eye from both squares. But your brain sees that B is in shadow. So it infers that B is a light square in dim light, and A is a dark square in bright light. It reports what the surfaces are probably like, not how much light reaches your eye. That’s perception. A best guess, built from context, and from what usually happens in the world. Usually, it’s a very good guess. Your students make guesses like this whenever they look at a new diagram or graph. You already know what matters. Their eyes are still guessing. So tell them what to look at. Based on Edward Adelson’s checker-shadow illusion, from 1995.</p></details>
       </div>
       <div class="ppanel" role="tabpanel" id="panI" aria-labelledby="tabI" tabindex="0" hidden>
         <div class="iguide">
           <div>
             <span class="itime">About 10 minutes</span>
             <h3>Run it in class</h3>
-            <ol><li>Project the student version full screen. Ask everyone to decide privately which square, A or B, is lighter. Then take a show of hands.</li><li>Press “Cover the scene” and vote again. With the board and shadow covered, the two squares look the same.</li><li>Show the bars that join A and B. Ask: now that you know, does B still look lighter in the full picture?</li><li>In pairs, students explain what their brain assumed about the light and the shadow.</li><li>Bridge to your subject: where might a beginner “see” something different from what you see?</li></ol>
+            <ol><li>Play the video full screen. When it asks which square is lighter, pause it, ask everyone to decide privately, then take a show of hands.</li><li>Play on: the board is covered, and the two squares look the same. Then a bar of the same grey joins them.</li><li>Pause after the reveal and ask: now that you know, does B still look lighter in the full picture?</li><li>In pairs, students explain what their brain assumed about the light and the shadow.</li><li>Bridge to your subject: where might a beginner “see” something different from what you see?</li></ol>
           </div>
           <div class="icard">
             <h3>Ask the room</h3>
@@ -239,7 +223,7 @@ __NAV__
         <li><a href="https://doi.org/10.1098/rstb.1997.0095">Gregory, R. L. (1997). Knowledge in perception and illusion. <i>Philosophical Transactions of the Royal Society B, 352</i>, 1121–1127.</a></li>
         <li>Gregory, R. L. (1970). <i>The intelligent eye</i>. Weidenfeld and Nicolson.</li>
       </ol>
-      <p style="font-size:16px;color:var(--ink-2)">The checkerboard above is our own drawing in the style of Adelson’s illusion; squares A and B are set to exactly the same grey. The brain drawing is a simplified illustration.</p>
+      <p style="font-size:16px;color:var(--ink-2)">The checkerboard in the video is our own drawing in the style of Adelson’s illusion; squares A and B are set to exactly the same grey. The narration uses a synthetic voice. The brain drawing is a simplified illustration.</p>
     </div>
   </footer>
 </article>
@@ -280,50 +264,6 @@ const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="ba
 const sw=ms=>new Promise(r=>setTimeout(r,ms));
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 
-let RUN=null;
-function ask(opts,lab){return new Promise(res=>{const c=$('sCh');c.setAttribute('aria-label',lab||'Your answer');c.innerHTML=opts.map((t,j)=>`<button type="button" data-v="${j}">${t}</button>`).join('');c.hidden=false;RUN.res=res;c.querySelector('button').focus()})}
-$('sCh').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!RUN||!RUN.res||b.disabled)return;const r=RUN.res;RUN.res=null;$('sCh').querySelectorAll('button').forEach(x=>x.disabled=true);r(+b.dataset.v)});
-function mark(right,chosen){$('sCh').querySelectorAll('button').forEach((b,j)=>{if(j===right)b.classList.add('ok');else if(j===chosen)b.classList.add('no')})}
-function hideCh(){$('sCh').hidden=true;$('sCh').innerHTML=''}
-function nextBtn(label){return new Promise(res=>{const g=$('sGo');g.textContent=label;g.hidden=false;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.hidden=true;res()}})}
-function say(phase,title,text){if(phase!=null)$('sPhase').textContent=phase;if(title!=null)$('sTitle').textContent=title;if(text!=null)$('sText').innerHTML=text}
-function startRun(fn){$('sGo').addEventListener('click',async()=>{if(RUN)return;RUN={};const g=$('sGo');g.hidden=true;$('sRes').innerHTML='';try{await fn()}finally{hideCh();g.onclick=null;g.textContent='Try again';g.hidden=false;g.disabled=false;RUN=null}})}
-
-/* ---------- checker shadow ---------- */
-const NS='http://www.w3.org/2000/svg';const LIGHT='rgb(217,217,217)',DARK='rgb(115,115,115)';
-const P={tl:[120,70],tr:[400,70],bl:[30,330],br:[490,330]},N=5;
-const lerp2=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
-function pt(u,v){const vv=v*v*0.35+v*0.65;const L=lerp2(P.tl,P.bl,vv),R=lerp2(P.tr,P.br,vv);return lerp2(L,R,u)}
-function cell(i,j){return[pt(j/N,i/N),pt((j+1)/N,i/N),pt((j+1)/N,(i+1)/N),pt(j/N,(i+1)/N)]}
-const ctr=q=>[(q[0][0]+q[1][0]+q[2][0]+q[3][0])/4,(q[0][1]+q[1][1]+q[2][1]+q[3][1])/4];
-const A=[1,2],B=[3,1];
-(function draw(){const g=$('cbBoard');let s='';for(let i=0;i<N;i++)for(let j=0;j<N;j++){const q=cell(i,j);s+=`<polygon points="${q.map(p=>p.join(',')).join(' ')}" fill="${(i+j)%2?DARK:LIGHT}"/>`}g.innerHTML=s;
- const cb=ctr(cell(...B));const sh=$('cbShadow');sh.setAttribute('cx',cb[0]+28);sh.setAttribute('cy',cb[1]-4);sh.setAttribute('rx',150);sh.setAttribute('ry',86);
- const cx=cb[0]+150,cy=cb[1]+40;$('cbCylinder').innerHTML=`<rect x="${cx-34}" y="${cy-150}" width="68" height="150" fill="url(#cbCyl)"/><ellipse cx="${cx}" cy="${cy}" rx="34" ry="11" fill="#9C3606"/><ellipse cx="${cx}" cy="${cy-150}" rx="34" ry="11" fill="#FF9A5C"/>`;
- const ca=ctr(cell(...A));$('cbLabels').innerHTML=`<text x="${ca[0]}" y="${ca[1]+9}" fill="#fff">A</text><text x="${cb[0]}" y="${cb[1]+9}" fill="#13294B">B</text>`;
- const qa=cell(...A),qb=cell(...B);$('cbHoles').innerHTML=[qa,qb].map(q=>`<polygon points="${q.map(p=>p.join(',')).join(' ')}"/>`).join('');
- const w=16,x1=ca[0]-w/2,y1=ca[1]+16,y2=cb[1]+w/2,xL=cb[0]+16;$('cbBars').innerHTML=`<rect x="${x1}" y="${y1}" width="${w}" height="${y2-y1}" fill="${DARK}"/><rect x="${xL}" y="${cb[1]-w/2}" width="${x1+w-xL}" height="${w}" fill="${DARK}"/>`;
- // labels stay readable when the scene is hidden
-})();
-function setHide(on){$('cbCover').setAttribute('display',on?'inline':'none');$('cbHide').setAttribute('aria-pressed',on);$('cbHide').textContent=on?'Show the scene':'Hide the scene';$('cbNote').textContent=on?'Everything except A and B is covered.':''}
-function setBars(on){$('cbBars').setAttribute('display',on?'inline':'none');$('cbBar').setAttribute('aria-pressed',on);$('cbBar').textContent=on?'Hide the bars':'Show the bars'}
-$('cbHide').addEventListener('click',()=>setHide($('cbCover').getAttribute('display')==='none'));
-$('cbBar').addEventListener('click',()=>setBars($('cbBars').getAttribute('display')==='none'));
-startRun(async()=>{setHide(false);setBars(false);$('cbHide').hidden=true;$('cbBar').hidden=true;
- say('Question 1 of 3','Which square looks lighter?','Trust your eyes. Don’t reason it out.');
- const a1=await ask(['A','B','They look the same'],'Which square looks lighter?');if(!RUN)return;
- const first=a1===1?'You said B, like most people.':a1===0?'You said A. Most people see B as lighter.':'You said they look the same. Most people see B as clearly lighter.';
- say(null,null,first+' Next, the board and the shadow will be covered.');hideCh();
- await nextBtn('Cover the scene');setHide(true);
- say('Question 2 of 3','Now which looks lighter?','Only squares A and B are showing.');
- const a2=await ask(['A','B','They look the same'],'Now which looks lighter?');if(!RUN)return;mark(2,a2);
- say(null,null,(a2===2?'<b class="ok">Right.</b> ':'<b class="no">Look again.</b> ')+'They are exactly the same grey. On screen, both are set to the same colour value.');
- await nextBtn('Show the whole picture');hideCh();setHide(false);setBars(true);
- say('Question 3 of 3','Now that you know, does B still look lighter?','The grey bars join A and B. They are the same colour as both squares.');
- const a3=await ask(['Yes, still lighter','No, they look the same now'],'Does B still look lighter?');if(!RUN)return;
- say('What happened',a3===0?'Knowing doesn’t switch it off':'Most people still see a difference',
-  'Your brain worked out that B sits in shadow, so it reported B as a light surface in dim light. That inference runs automatically: knowing the answer rarely changes what you see. A student looking at a new diagram is making inferences like this too, using whatever they already know.');
- $('cbHide').hidden=false;$('cbBar').hidden=false});
 
 /* ---------- predict the findings ---------- */
 const PI=[

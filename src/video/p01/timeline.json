@@ -1,0 +1,227 @@
+{
+ "total": 103.136,
+ "scenes": [
+  {
+   "id": "title",
+   "t0": 0,
+   "lines": [
+    {
+     "text": "Perception is a best guess.",
+     "start": 0.6,
+     "end": 2.213
+    }
+   ],
+   "t1": 3.638
+  },
+  {
+   "id": "board",
+   "t0": 3.638,
+   "lines": [
+    {
+     "text": "Here's a checkerboard, with a cylinder standing on it.",
+     "start": 3.863,
+     "end": 6.898
+    },
+    {
+     "text": "The cylinder casts a shadow across the board.",
+     "start": 7.178,
+     "end": 9.737
+    },
+    {
+     "text": "Look at the two squares marked A and B.",
+     "start": 10.017,
+     "end": 12.113
+    }
+   ],
+   "t1": 12.738
+  },
+  {
+   "id": "ask",
+   "t0": 12.738,
+   "lines": [
+    {
+     "text": "Which one is lighter?",
+     "start": 12.963,
+     "end": 14.181
+    },
+    {
+     "text": "Decide before we go on.",
+     "start": 14.461,
+     "end": 16.084
+    }
+   ],
+   "t1": 19.709
+  },
+  {
+   "id": "most",
+   "t0": 19.709,
+   "lines": [
+    {
+     "text": "Most people say B.",
+     "start": 19.934,
+     "end": 21.371
+    },
+    {
+     "text": "It looks much lighter than A.",
+     "start": 21.651,
+     "end": 23.105
+    }
+   ],
+   "t1": 23.83
+  },
+  {
+   "id": "cover",
+   "t0": 23.83,
+   "lines": [
+    {
+     "text": "Now let's cover everything except the two squares.",
+     "start": 24.055,
+     "end": 26.907
+    },
+    {
+     "text": "Without the board and the shadow, A and B look the same.",
+     "start": 27.187,
+     "end": 30.51
+    },
+    {
+     "text": "Because they are the same.",
+     "start": 30.79,
+     "end": 32.144
+    },
+    {
+     "text": "Exactly the same grey.",
+     "start": 32.424,
+     "end": 34.022
+    }
+   ],
+   "t1": 35.247
+  },
+  {
+   "id": "bars",
+   "t0": 35.247,
+   "lines": [
+    {
+     "text": "Bring the scene back, and join the squares with a bar of that same grey.",
+     "start": 35.472,
+     "end": 39.762
+    },
+    {
+     "text": "Follow the bar from A to B.",
+     "start": 40.042,
+     "end": 41.855
+    },
+    {
+     "text": "There's no edge where the colour changes.",
+     "start": 42.135,
+     "end": 44.428
+    }
+   ],
+   "t1": 45.653
+  },
+  {
+   "id": "still",
+   "t0": 45.653,
+   "lines": [
+    {
+     "text": "Even now that you know, B probably still looks lighter.",
+     "start": 45.878,
+     "end": 49.308
+    },
+    {
+     "text": "Knowing the answer doesn't switch the effect off.",
+     "start": 49.588,
+     "end": 52.177
+    }
+   ],
+   "t1": 53.402
+  },
+  {
+   "id": "why",
+   "t0": 53.402,
+   "lines": [
+    {
+     "text": "The same amount of light reaches your eye from both squares.",
+     "start": 53.627,
+     "end": 57.26
+    },
+    {
+     "text": "But your brain sees that B is in shadow.",
+     "start": 57.54,
+     "end": 59.952
+    },
+    {
+     "text": "So it infers that B is a light square in dim light, and A is a dark square in bright light.",
+     "start": 60.232,
+     "end": 65.911
+    },
+    {
+     "text": "It reports what the surfaces are probably like, not how much light reaches your eye.",
+     "start": 66.191,
+     "end": 71.472
+    }
+   ],
+   "t1": 72.697
+  },
+  {
+   "id": "guess",
+   "t0": 72.697,
+   "lines": [
+    {
+     "text": "That's perception.",
+     "start": 72.922,
+     "end": 74.038
+    },
+    {
+     "text": "A best guess, built from context, and from what usually happens in the world.",
+     "start": 74.318,
+     "end": 79.442
+    },
+    {
+     "text": "Usually, it's a very good guess.",
+     "start": 79.722,
+     "end": 81.834
+    }
+   ],
+   "t1": 82.859
+  },
+  {
+   "id": "class",
+   "t0": 82.859,
+   "lines": [
+    {
+     "text": "Your students make guesses like this whenever they look at a new diagram or graph.",
+     "start": 83.084,
+     "end": 88.38
+    },
+    {
+     "text": "You already know what matters.",
+     "start": 88.66,
+     "end": 90.371
+    },
+    {
+     "text": "Their eyes are still guessing.",
+     "start": 90.651,
+     "end": 92.346
+    },
+    {
+     "text": "So tell them what to look at.",
+     "start": 92.626,
+     "end": 94.219
+    }
+   ],
+   "t1": 95.444
+  },
+  {
+   "id": "end",
+   "t0": 95.444,
+   "lines": [
+    {
+     "text": "Based on Edward Adelson's checker-shadow illusion, from 1995.",
+     "start": 95.669,
+     "end": 100.886
+    }
+   ],
+   "t1": 103.136
+  }
+ ]
+}

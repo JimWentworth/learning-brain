@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#13294B}
+body{position:relative;font-family:"Source Sans 3",sans-serif;color:#fff}
+.abs{position:absolute}
+#brand{left:80px;top:60px;font:500 34px Montserrat,sans-serif;color:#E9EEF6}
+#head{left:0;right:0;top:56px;text-align:center;font:700 60px Montserrat,sans-serif;letter-spacing:-.01em}
+#title{left:0;right:0;top:390px;text-align:center}
+#title .k{font:600 40px Montserrat,sans-serif;color:#E9EEF6;letter-spacing:.02em}
+#title .t{font:800 116px/1.05 Montserrat,sans-serif;color:#FF5F05;margin-top:22px}
+#boardWrap{left:440px;top:196px;width:1040px;height:760px;transform-origin:0 0}
+#boardWrap svg{width:1040px;height:760px;display:block;border-radius:18px}
+#side{left:1530px;top:300px;width:330px}
+.pill{display:flex;align-items:center;justify-content:center;height:96px;margin:0 0 22px;border:3px solid #C9D3E3;border-radius:48px;font:700 44px Montserrat,sans-serif;color:#fff}
+.pill.on{background:#FF5F05;border-color:#FF5F05}
+#count{margin:36px auto 0;width:150px;height:150px;position:relative}
+#count svg{position:absolute;inset:0}
+#count b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 72px Montserrat,sans-serif}
+#why{left:1080px;top:230px;width:780px}
+.row{margin:0 0 46px}
+.row h3{margin:0 0 16px;font:700 30px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#FF9A5C}
+.sw{display:inline-block;width:92px;height:92px;border-radius:10px;vertical-align:middle;border:3px solid #fff}
+.eq{display:flex;align-items:center;gap:22px;font:700 40px Montserrat,sans-serif}
+.eq span.l{font:700 40px Montserrat,sans-serif;width:40px;text-align:center}
+.g2{display:grid;grid-template-columns:auto 1fr;gap:18px 22px;align-items:center;font:600 38px/1.2 "Source Sans 3",sans-serif}
+#big{left:160px;right:160px;top:330px;text-align:center}
+#big .a{font:800 104px/1.08 Montserrat,sans-serif;color:#FF5F05}
+#big .b{font:500 50px/1.35 "Source Sans 3",sans-serif;color:#E9EEF6;margin-top:34px}
+#cls{left:0;top:0;width:1920px;height:1080px}
+#end{left:200px;right:200px;top:360px;text-align:center}
+#end .a{font:700 54px/1.3 Montserrat,sans-serif}
+#end .b{font:400 40px/1.45 "Source Sans 3",sans-serif;color:#E9EEF6;margin-top:30px}
+</style></head>
+<body>
+<div id="brand" class="abs">The Learning Brain</div>
+<div id="title" class="abs"><div class="k">Perception · Topic 1</div><div class="t">Perception is<br>a best guess</div></div>
+<div id="head" class="abs"></div>
+<div id="boardWrap" class="abs">
+<svg viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <radialGradient id="cbSh" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#000" stop-opacity=".47"/><stop offset=".6" stop-color="#000" stop-opacity=".47"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+  <linearGradient id="cbCyl" x1="0" x2="1"><stop offset="0" stop-color="#B8430A"/><stop offset=".45" stop-color="#FF7A2E"/><stop offset="1" stop-color="#9C3606"/></linearGradient>
+  <mask id="cbMask"><rect width="520" height="380" fill="#fff"/><g id="cbHoles" fill="#000"></g></mask>
+ </defs>
+ <rect width="520" height="380" fill="#9AA6B8"/>
+ <g id="cbBoard"></g>
+ <ellipse id="cbShadow" fill="url(#cbSh)"/>
+ <g id="cbCylinder"></g>
+ <ellipse id="shHi" fill="none" stroke="#FF5F05" stroke-width="3" stroke-dasharray="9 7"/>
+ <g id="cbBars"><rect id="barV"/><rect id="barH"/></g>
+ <rect id="cbCover" width="520" height="380" fill="#9AA6B8" mask="url(#cbMask)"/>
+ <g id="cbLabels" font-family="Source Sans 3, sans-serif" font-weight="800" font-size="26" text-anchor="middle"></g>
+ <circle id="dot" r="13" fill="none" stroke="#FF5F05" stroke-width="4"/>
+</svg>
+</div>
+<div id="side" class="abs"><div class="pill" id="pA">A</div><div class="pill" id="pB">B</div><div class="pill" id="pS">Same</div>
+ <div id="count"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="66" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="9"/><circle id="ring" cx="75" cy="75" r="66" fill="none" stroke="#FF5F05" stroke-width="9" stroke-linecap="round" transform="rotate(-90 75 75)" stroke-dasharray="414.7" stroke-dashoffset="0"/></svg><b id="cnum">3</b></div></div>
+<div id="why" class="abs">
+ <div class="row" id="w1"><h3>Light reaching your eye</h3><div class="eq"><span class="l">A</span><span class="sw" style="background:rgb(115,115,115)"></span><span>=</span><span class="sw" style="background:rgb(115,115,115)"></span><span class="l">B</span></div></div>
+ <div class="row" id="w2"><h3>What the brain notices</h3><div class="g2"><span class="sw" style="background:radial-gradient(circle at 50% 50%,rgba(0,0,0,.47) 0 45%,rgba(0,0,0,0) 72%),rgb(217,217,217)"></span><span>B is in a shadow</span></div></div>
+ <div class="row" id="w3"><h3>The brain’s best guess</h3><div class="g2"><span class="sw" style="background:rgb(115,115,115)"></span><span><b>A</b>: a dark square in bright light</span><span class="sw" style="background:rgb(217,217,217)"></span><span><b>B</b>: a light square in dim light</span></div></div>
+</div>
+<div id="big" class="abs"><div class="a">Perception is a best guess</div><div class="b">built from context, and from what usually happens in the world</div></div>
+<svg id="cls" class="abs" viewBox="0 0 1920 1080">
+ <g id="graph" transform="translate(560,250)">
+  <rect x="0" y="0" width="800" height="520" rx="16" fill="#1C3966"/>
+  <line x1="90" y1="440" x2="740" y2="440" stroke="#C9D3E3" stroke-width="4"/>
+  <line x1="90" y1="440" x2="90" y2="70" stroke="#C9D3E3" stroke-width="4"/>
+  <polyline points="90,380 220,330 350,350 480,260 610,280 740,200" fill="none" stroke="#8C99AD" stroke-width="6" stroke-linejoin="round"/>
+  <polyline points="90,410 220,400 350,370 480,380 610,330 740,340" fill="none" stroke="#8C99AD" stroke-width="6" stroke-linejoin="round"/>
+  <polyline id="key" points="90,300 220,250 350,190 480,170 610,120 740,95" fill="none" stroke="#8C99AD" stroke-width="6" stroke-linejoin="round"/>
+  <g id="qs" font-family="Montserrat" font-weight="800" font-size="64" fill="#FCB316"><text x="170" y="210">?</text><text x="560" y="420">?</text><text x="420" y="110">?</text></g>
+  <g id="arrow"><line x1="900" y1="40" x2="770" y2="90" stroke="#FF5F05" stroke-width="10" stroke-linecap="round"/><path d="M752 97 L790 66 L794 104 Z" fill="#FF5F05"/></g>
+ </g>
+ <text id="say" x="960" y="900" text-anchor="middle" font-family="Montserrat" font-weight="800" font-size="76" fill="#fff">Say what to look at.</text>
+</svg>
+<div id="end" class="abs"><div class="a">Based on the checker-shadow illusion<br>by Edward H. Adelson, MIT, 1995</div><div class="b">The checkerboard in this video is our own drawing.<br>Squares A and B are exactly the same grey.</div></div>
+<script>
+const $=id=>document.getElementById(id);
+/* ---- board geometry (same as the page's activity) ---- */
+const LIGHT='rgb(217,217,217)',DARK='rgb(115,115,115)';
+const P={tl:[120,70],tr:[400,70],bl:[30,330],br:[490,330]},N=5;
+const lerp2=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+function pt(u,v){const vv=v*v*0.35+v*0.65;const L=lerp2(P.tl,P.bl,vv),R=lerp2(P.tr,P.br,vv);return lerp2(L,R,u)}
+function cell(i,j){return[pt(j/N,i/N),pt((j+1)/N,i/N),pt((j+1)/N,(i+1)/N),pt(j/N,(i+1)/N)]}
+const ctr=q=>[(q[0][0]+q[1][0]+q[2][0]+q[3][0])/4,(q[0][1]+q[1][1]+q[2][1]+q[3][1])/4];
+const A=[1,2],B=[3,1];const ca=ctr(cell(...A)),cb=ctr(cell(...B));
+let s='';for(let i=0;i<N;i++)for(let j=0;j<N;j++){const q=cell(i,j);s+=`<polygon points="${q.map(p=>p.join(',')).join(' ')}" fill="${(i+j)%2?DARK:LIGHT}"/>`}$('cbBoard').innerHTML=s;
+const sh=$('cbShadow');sh.setAttribute('cx',cb[0]+28);sh.setAttribute('cy',cb[1]-4);sh.setAttribute('rx',150);sh.setAttribute('ry',86);
+const hi=$('shHi');hi.setAttribute('cx',cb[0]+28);hi.setAttribute('cy',cb[1]-4);hi.setAttribute('rx',118);hi.setAttribute('ry',66);
+const cx=cb[0]+150,cy=cb[1]+40;$('cbCylinder').innerHTML=`<rect x="${cx-34}" y="${cy-150}" width="68" height="150" fill="url(#cbCyl)"/><ellipse cx="${cx}" cy="${cy}" rx="34" ry="11" fill="#9C3606"/><ellipse cx="${cx}" cy="${cy-150}" rx="34" ry="11" fill="#FF9A5C"/>`;
+$('cbLabels').innerHTML=`<text x="${ca[0]}" y="${ca[1]+9}" fill="#fff">A</text><text x="${cb[0]}" y="${cb[1]+9}" fill="#13294B">B</text>`;
+$('cbHoles').innerHTML=[cell(...A),cell(...B)].map(q=>`<polygon points="${q.map(p=>p.join(',')).join(' ')}"/>`).join('');
+const bw=16,x1=ca[0]-bw/2,y1=ca[1]+16,y2=cb[1]+bw/2,xL=cb[0]+16,xR=x1+bw;
+for(const r of [$('barV'),$('barH')])r.setAttribute('fill',DARK);
+/* ---- timeline ---- */
+let TL=null;const SC={};
+fetch('timeline.json').then(r=>r.json()).then(j=>{TL=j;j.scenes.forEach(s=>SC[s.id]=s);window.ready=true});
+const E=(id,i)=>SC[id].lines[i].start, EE=(id,i)=>SC[id].lines[i].end, T0=id=>SC[id].t0, T1=id=>SC[id].t1;
+const cl=x=>Math.max(0,Math.min(1,x)), ez=x=>{x=cl(x);return x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2};
+const fin=(t,a,d=.4)=>cl((t-a)/d), win=(t,a,b,d=.4)=>Math.min(fin(t,a,d),1-fin(t,b-d,d));
+function op(el,v){$(el).style.opacity=v;$(el).style.visibility=v<=0.001?'hidden':'visible'}
+function heading(t){const H=[[E('board',2),'Look at squares A and B'],[E('ask',0),'Which square is lighter?'],[E('most',0),'Most people say B'],[E('cover',0),'Cover everything else'],[E('cover',2),'The same grey'],[E('bars',0),'Join them with the same grey'],[E('bars',2),'No edge, no change'],[E('still',0),'Knowing doesn’t switch it off'],[E('why',0),'Why B looks lighter'],[T0('guess'),null]];
+ let k=-1;for(let i=0;i<H.length;i++)if(t>=H[i][0])k=i;
+ if(k<0||!H[k][1]){op('head',0);return}
+ const nx=k+1<H.length?H[k+1][0]:1e9;$('head').textContent=H[k][1];op('head',Math.min(fin(t,H[k][0],.35),1-fin(t,nx-.25,.25)))}
+window.renderFrame=function(t){
+ op('brand',Math.max(win(t,0,T1('title')),win(t,T0('end'),1e9)));
+ op('title',win(t,0.15,T1('title')));
+ heading(t);
+ // board
+ const bOn=win(t,T0('board'),T1('why')-.1,.6);op('boardWrap',bOn);
+ const m=ez(fin(t,T0('why'),.9));const sc=1-.18*m;$('boardWrap').style.transform=`translate(${-340*m}px,${40*m}px) scale(${sc})`;
+ op('cbLabels',fin(t,E('board',2)));
+ $('cbCover').style.opacity=win(t,E('cover',0)+.8,E('bars',0)+.5,.7);
+ const bv=ez(fin(t,E('bars',0)+1.2,1.0)),bh=ez(fin(t,E('bars',0)+2.2,1.0));const bo=1-fin(t,T0('still')-.2,.5);
+ $('barV').setAttribute('x',x1);$('barV').setAttribute('y',y1);$('barV').setAttribute('width',bw);$('barV').setAttribute('height',(y2-y1)*bv);
+ $('barH').setAttribute('y',cb[1]-bw/2);$('barH').setAttribute('height',bw);$('barH').setAttribute('width',(xR-xL)*bh);$('barH').setAttribute('x',xR-(xR-xL)*bh);
+ $('cbBars').style.opacity=bo;
+ // travelling ring along the bar
+ const dp=fin(t,E('bars',1)+.2,2.4);const dOn=win(t,E('bars',1),E('bars',1)+2.9,.3);
+ const L1=y2-y1-bw/2,L2=xR-bw/2-xL,u=dp*(L1+L2);let dx,dy;if(u<L1){dx=x1+bw/2;dy=y1+u}else{dx=x1+bw/2-(u-L1);dy=cb[1]}
+ $('dot').setAttribute('cx',dx);$('dot').setAttribute('cy',dy);$('dot').style.opacity=dOn;
+ $('shHi').style.opacity=win(t,E('why',1),T1('why')-.3);
+ // pills + countdown
+ op('side',win(t,E('ask',0)+.3,T1('most')));
+ $('pB').className='pill'+(t>=E('most',0)?' on':'');
+ const c0=EE('ask',1)+.35,cp=(t-c0)/3;op('count',cp>=0&&cp<1?Math.min(1,fin(t,c0,.2)):0);
+ $('cnum').textContent=Math.max(1,3-Math.floor(cp*3));$('ring').setAttribute('stroke-dashoffset',414.7*cl(cp));
+ // why panel
+ op('why',win(t,E('why',0),T1('why')));op('w1',fin(t,E('why',0)+.3));op('w2',fin(t,E('why',1)));op('w3',fin(t,E('why',2)));
+ // guess
+ op('big',win(t,T0('guess')+.2,T1('guess')));$('big').querySelector('.b').style.opacity=fin(t,E('guess',1));
+ // class
+ op('cls',win(t,T0('class')+.2,T1('class')));op('qs',win(t,E('class',0)+.6,E('class',3),.3));
+ const kp=fin(t,E('class',3),.4);$('key').setAttribute('stroke',kp>0?'#FF5F05':'#8C99AD');$('key').setAttribute('stroke-width',6+6*kp);
+ op('arrow',kp);op('say',kp);
+ op('end',fin(t,T0('end')+.2,.6));
+};
+</script>
+</body></html>
