@@ -95,7 +95,7 @@ __BASECSS__
 @media (max-width:520px){.res .row{grid-template-columns:100px minmax(0,1fr) 76px}}
 .res .bar{height:14px;background:#1B2E50;border-radius:7px;overflow:hidden}.res .bar i{display:block;height:100%;border-radius:7px}
 .res b{text-align:right;font-variant-numeric:tabular-nums}
-
+.ytwrap{position:relative;aspect-ratio:16/9;max-width:860px;margin:0 auto;background:#000;border-radius:8px;overflow:hidden}.ytwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.ytsteps{max-width:860px;margin:18px auto 0;padding-left:1.4em;font-size:18px;line-height:1.5}.ytsteps li{margin:6px 0}.ytlink{max-width:860px;margin:10px auto 0;font-size:16px}.ytlink a{color:inherit}
 __COLLCSS__
 </style>
 <style>.xvnote{margin:14px 0 0;padding:10px 14px;border-left:4px solid #FF5F05;background:rgba(255,255,255,.06);color:var(--night-ink);font-size:17px;line-height:1.5;max-width:68ch}.vnote b{color:#FCB316}</style>
@@ -120,8 +120,8 @@ __NAV__
 <article>
   <section class="night" aria-labelledby="tryT" style="margin-top:0">
     <div class="col">
-      <h2 class="sec" id="tryT"><span class="n">Try it first</span>Read my lips</h2>
-      <p>Six silent words, drawn as mouth shapes. Some you can read from the lips. Some you can’t.</p>
+      <h2 class="sec" id="tryT"><span class="n">Try it first</span>Hear it with your eyes</h2>
+      <p>A short video of the McGurk effect. Watch it, then listen again with your eyes closed.</p>
     </div>
     <div class="wide">
       <div class="ptabs" role="tablist" aria-label="Versions of this activity">
@@ -129,37 +129,29 @@ __NAV__
         <button type="button" role="tab" id="tabI" aria-controls="panI" aria-selected="false" tabindex="-1">For instructors</button>
       </div>
       <div class="ppanel" role="tabpanel" id="panS" aria-labelledby="tabS" tabindex="0">
-        <div class="lab">
-          <div class="pscreen" id="sScreen">
-            <svg id="lpSvg" viewBox="0 0 520 200" width="100%" style="max-width:540px;display:block;background:#F4E3D3;border-radius:6px" role="img" aria-labelledby="lpD">
-              <desc id="lpD">Three drawings of a mouth, in order, showing the lip shapes for one word. The panel beside it names each shape.</desc>
-              <g id="lpG"></g>
-            </svg>
-            <p class="prog" id="lpCap" aria-live="polite"></p>
-          </div>
-          <div>
-            <p class="phase" id="sPhase">Ready</p>
-            <p class="mtitle" id="sTitle">Read my lips</p>
-            <p class="mtext" id="sText" aria-live="polite">Each word is shown as three mouth shapes, one per sound, with no audio. Which word is it? Sometimes the honest answer is that you can’t tell.</p>
-            <div class="pchoices" id="sCh" role="group" aria-label="Your answer" hidden></div>
-            <div id="sRes"></div>
-            <div class="mrow"><button class="nbtn" id="sGo" type="button">Start</button></div>
-          </div>
+        <div class="ytwrap">
+          <iframe src="https://www.youtube-nocookie.com/embed/2k8fHR9jKVM?rel=0&amp;cc_load_policy=1" title="Video: the McGurk effect" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </div>
+        <ol class="ytsteps">
+          <li><b>Watch and listen.</b> What sound does the speaker make?</li>
+          <li><b>Play it again with your eyes closed.</b> Does the sound change?</li>
+          <li><b>Open your eyes partway through.</b> Can you stop your eyes changing what you hear?</li>
+        </ol>
+        <p class="ytlink">Video not loading? <a href="https://www.youtube.com/watch?v=2k8fHR9jKVM">Watch it on YouTube</a>.</p>
       </div>
       <div class="ppanel" role="tabpanel" id="panI" aria-labelledby="tabI" tabindex="0" hidden>
         <div class="iguide">
           <div>
             <span class="itime">About 10 minutes, plus an optional live demo</span>
             <h3>Run it in class</h3>
-            <ol><li>Run the student version with the class voting on each word.</li><li>Live demo: silently mouth “bat”, “pat” and “mat” in random order and ask the class to call out which. Then mouth “fan” and “pan”.</li><li>Discuss which sounds the lips show (where the mouth closes) and which they hide (whether the voice is on).</li><li>Connect to your room: where do you stand when you speak? What happens when you talk while writing on the board?</li></ol>
+            <ol><li>Play the video once and ask everyone to write down the sound they heard, without discussing it. Then play it again with eyes closed and compare.</li><li>Live demo: silently mouth “bat”, “pat” and “mat” in random order and ask the class to call out which. Then mouth “fan” and “pan”.</li><li>Discuss which sounds the lips show (where the mouth closes) and which they hide (whether the voice is on).</li><li>Connect to your room: where do you stand when you speak? What happens when you talk while writing on the board?</li></ol>
           </div>
           <div class="icard">
             <h3>Ask the room</h3>
-            <ul><li>Why could you tell “fan” from “pan”, but not “bat” from “pat”?</li><li>What does hearing add that the lips can’t?</li><li>Who in this room depends most on seeing your face, or on captions?</li></ul>
+            <ul><li>Why did the sound change when you closed your eyes?</li><li>Why can you tell “fan” from “pan” by the lips, but not “bat” from “pat”?</li><li>What does hearing add that the lips can’t?</li><li>Who in this room depends most on seeing your face, or on captions?</li></ul>
             <h3>Connect it to your course</h3>
             <p>Face the room when you speak, don’t talk while writing on the board, use a microphone when you have one, and turn on captions for video. Seeing the speaker helps everyone, and it helps most when the room is noisy.</p>
-            <h3>Good to know</h3><p>The McGurk effect is easiest to experience in a dubbed video, and many demonstration videos exist online. Watch with your eyes closed, then open.</p>
+            <h3>Good to know</h3><p>The effect usually works even when you know about it. Not everyone experiences it, and its strength varies from person to person.</p>
           </div>
         </div>
       </div>
@@ -184,7 +176,7 @@ __NAV__
     <h2 class="sec"><span class="n">In noise</span>The face fills in what the ear misses</h2>
     <p>William Sumby and Irwin Pollack tested how well people understood spoken words in noise, with and without seeing the speaker’s face. Seeing the face helped across noise levels, and because there is so much more to recover when the sound is poor, the face added the most in the noisiest conditions.</p>
     <h2 class="sec"><span class="n">What lips show</span>Where, not whether</h2>
-    <p>The lips show where in the mouth a sound is made: “p”, “b” and “m” all close the lips; “f” and “v” put the teeth on the lip. They can’t show whether the voice is on, which is the difference between “p” and “b”. Hearing supplies that. That is why the activity above has words you can read and words you can’t.</p>
+    <p>The lips show where in the mouth a sound is made: “p”, “b” and “m” all close the lips; “f” and “v” put the teeth on the lip. They can’t show whether the voice is on, which is the difference between “p” and “b”. Hearing supplies that. That is why “fan” and “pan” look different on the lips, but “bat” and “pat” don’t.</p>
     <h2 class="sec"><span class="n">Captions</span>A large literature, with caveats</h2>
     <p>In a 2015 review, Morton Ann Gernsbacher listed more than 100 studies reporting that same-language captions improve comprehension of, attention to and memory for videos. Captions are especially helpful for people watching in a second language, people learning to read, and people who are deaf or hard of hearing. Critics note that much of this evidence comes from those groups, and that well-controlled studies with typical hearing students are fewer. For many students, though, captions are essential, and they are required for accessibility in most educational settings.</p>
   </div>
@@ -226,7 +218,7 @@ __NAV__
         <li><a href="https://doi.org/10.1121/1.1907309">Sumby, W. H., &amp; Pollack, I. (1954). Visual contribution to speech intelligibility in noise. <i>Journal of the Acoustical Society of America, 26</i>(2), 212–215.</a></li>
         <li><a href="https://doi.org/10.1177/2372732215602130">Gernsbacher, M. A. (2015). Video captions benefit everyone. <i>Policy Insights from the Behavioral and Brain Sciences, 2</i>(1), 195–202.</a></li>
       </ol>
-      <p style="font-size:16px;color:var(--ink-2)">The mouth shapes are simplified drawings for this page, not recordings of a speaker. The brain drawing is a simplified illustration.</p>
+      <p style="font-size:16px;color:var(--ink-2)">The video is hosted on YouTube. The brain drawing is a simplified illustration.</p>
     </div>
   </footer>
 </article>
@@ -267,40 +259,6 @@ const barRow=(l,val,mx,lab,c)=>`<div class="row"><span>${l}</span><div class="ba
 const sw=ms=>new Promise(r=>setTimeout(r,ms));
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 
-let RUN=null;
-function ask(opts,lab){return new Promise(res=>{const c=$('sCh');c.setAttribute('aria-label',lab||'Your answer');c.innerHTML=opts.map((t,j)=>`<button type="button" data-v="${j}">${t}</button>`).join('');c.hidden=false;RUN.res=res;c.querySelector('button').focus()})}
-$('sCh').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!RUN||!RUN.res||b.disabled)return;const r=RUN.res;RUN.res=null;$('sCh').querySelectorAll('button').forEach(x=>x.disabled=true);r(+b.dataset.v)});
-function mark(right,chosen){$('sCh').querySelectorAll('button').forEach((b,j)=>{if(j===right)b.classList.add('ok');else if(j===chosen)b.classList.add('no')})}
-function hideCh(){$('sCh').hidden=true;$('sCh').innerHTML=''}
-function nextBtn(label){return new Promise(res=>{const g=$('sGo');g.textContent=label;g.hidden=false;g.disabled=false;g.focus();g.onclick=()=>{g.onclick=null;g.hidden=true;res()}})}
-function say(phase,title,text){if(phase!=null)$('sPhase').textContent=phase;if(title!=null)$('sTitle').textContent=title;if(text!=null)$('sText').innerHTML=text}
-function startRun(fn){$('sGo').addEventListener('click',async()=>{if(RUN)return;RUN={};const g=$('sGo');g.hidden=true;$('sRes').innerHTML='';try{await fn()}finally{hideCh();g.onclick=null;g.textContent='Try again';g.hidden=false;g.disabled=false;RUN=null}})}
-
-/* ---------- lip reading ---------- */
-const NV='#13294B',LIP='#B5473A',IN='#3B1C1C',TEETH='#FFFFFF';
-const SH={
- closed:{n:'lips closed',d:`<path d="M10 45 Q60 30 110 45 Q60 60 10 45Z" fill="${LIP}"/><line x1="12" y1="45" x2="108" y2="45" stroke="${IN}" stroke-width="3"/>`},
- open:{n:'mouth open',d:`<path d="M10 40 Q60 0 110 40 Q60 95 10 40Z" fill="${LIP}"/><path d="M22 40 Q60 14 98 40 Q60 80 22 40Z" fill="${IN}"/>`},
- teethlip:{n:'top teeth on lower lip',d:`<path d="M10 38 Q60 12 110 38 Q60 70 10 38Z" fill="${LIP}"/><path d="M24 36 Q60 26 96 36 L96 44 Q60 40 24 44Z" fill="${TEETH}"/>`},
- round:{n:'lips rounded',d:`<ellipse cx="60" cy="42" rx="26" ry="24" fill="${LIP}"/><ellipse cx="60" cy="42" rx="11" ry="10" fill="${IN}"/>`},
- wide:{n:'lips spread wide',d:`<path d="M2 42 Q60 20 118 42 Q60 66 2 42Z" fill="${LIP}"/><path d="M14 42 Q60 30 106 42 Q60 54 14 42Z" fill="${IN}"/><path d="M20 39 Q60 30 100 39 L100 42 L20 42Z" fill="${TEETH}"/>`},
- teeth:{n:'teeth together, lips apart',d:`<path d="M10 42 Q60 18 110 42 Q60 68 10 42Z" fill="${LIP}"/><path d="M22 42 Q60 28 98 42 Q60 56 22 42Z" fill="${IN}"/><rect x="26" y="36" width="68" height="12" fill="${TEETH}"/>`}};
-const W=[
- {s:['teethlip','open','teeth'],o:['fan','pan','man'],a:0,f:'The teeth on the lower lip give away the “f”. “p” and “m” would close the lips instead.'},
- {s:['closed','open','teeth'],o:['bat','pat','mat'],a:3,f:'“b”, “p” and “m” all close the lips. The difference, whether the voice is on and whether air goes through the nose, can’t be seen. Only the sound tells them apart.'},
- {s:['round','wide','teeth'],o:['wheat','feet','beat'],a:0,f:'Rounded lips at the start mean “w”. “f” would show teeth on the lip, and “b” closed lips.'},
- {s:['closed','wide','teeth'],o:['beat','peat','meet'],a:3,f:'All three start with closed lips. Seeing tells you it is one of these; hearing must do the rest.'},
- {s:['teethlip','wide','teeth'],o:['feet','beet','heat'],a:0,f:'Teeth on the lip: “f” (or “v”). “b” closes the lips; “h” shows nothing special.'},
- {s:['teeth','open','teeth'],o:['tan','Dan','nan'],a:3,f:'“t”, “d” and “n” are made behind the teeth with the tongue, so they look the same from outside.'}];
-startRun(async()=>{let right=0;const order=shuf([...W]);
- for(let i=0;i<order.length;i++){const w=order[i];
-  $('lpG').innerHTML=w.s.map((k,j)=>`<g transform="translate(${30+j*165},50)"><rect x="-10" y="-30" width="140" height="130" rx="14" fill="#E9CBB0"/>${SH[k].d}<text x="60" y="92" text-anchor="middle" font-family="Source Sans 3,sans-serif" font-size="18" font-weight="700" fill="${NV}">${j+1}</text></g>`).join('');
-  $('lpCap').textContent=w.s.map((k,j)=>`${j+1}: ${SH[k].n}`).join(' · ');
-  say(`Word ${i+1} of ${order.length}`,'Which word is it?','Each picture is one sound, left to right.');
-  const opts=[...w.o,'Can’t tell from the lips'];const a=await ask(opts,'Which word is it?');if(!RUN)return;mark(w.a,a);if(a===w.a)right++;
-  say(null,w.a===3?'It could be any of them':`It’s “${w.o[w.a]}”`,(a===w.a?'<b class="ok">Right.</b> ':'<b class="no">Not quite.</b> ')+w.f);
-  if(i<order.length-1){await nextBtn('Next word');if(!RUN)return;hideCh()}}
- say('What happened',`${right} of ${W.length} right`,'The lips show where a sound is made, but not whether the voice is on. Hearing and seeing each carry part of the message, and the brain combines them. In a noisy room, or with a hard-to-hear speaker, the face carries more of the load.')});
 
 /* ---------- predict the findings ---------- */
 const PI=[
