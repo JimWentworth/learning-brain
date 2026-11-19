@@ -28,11 +28,15 @@ const st=document.createElement('style');st.textContent=CSS;document.head.append
 const MARKUP=`<div class="lbnav" id="lbnav">
   <button class="lbnav-btn" id="lbnavBtn" aria-expanded="false" aria-controls="lbnavPanel">
     <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-    Topics
+    All topics
     <svg class="chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
-  <nav class="lbnav-panel" id="lbnavPanel" aria-label="Topics" tabindex="-1" hidden>
-    <div class="lbnav-head"><p id="lbnavTitle">Topics</p></div>
+  <nav class="lbnav-panel" id="lbnavPanel" aria-label="All topics in The Learning Brain" tabindex="-1" hidden>
+    <div class="lbnav-head">
+      <p>The Learning Brain</p>
+      <label class="lbnav-sr" for="lbnavQ">Find a topic</label>
+      <input id="lbnavQ" type="search" placeholder="Find a topic, e.g. sleep" autocomplete="off">
+    </div>
     <div id="lbnavBody"></div>
   </nav>
 </div>`;
@@ -44,17 +48,27 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const ALL={};SITE.forEach(g=>g.items.forEach((it,k)=>{ALL[it.id]={...it,u:url(it.id),series:g.title,k,g}}));
 const me=ALL[CUR];
 
-/* menu: this page's series, then a link to the full index on the home page */
-if(me){$('lbnavTitle').textContent=me.series;panel.setAttribute('aria-label','Topics in '+me.series);
- body.innerHTML='<ul class="lbnav-series">'+me.g.items.map(it=>it.id===CUR?`<li class="lbnav-item here"><span aria-current="page"><span>${esc(it.t)}</span><small>You are here</small></span></li>`:`<li class="lbnav-item"><a href="${url(it.id)}"><span>${esc(it.t)}</span></a></li>`).join('')+'</ul>'
- +`<ul class="lbnav-foot"><li class="lbnav-item lbnav-all"><a href="${HOME}#pagesT"><span>All topics, with search</span><small>Home</small></a></li></ul>`;}
-else{$('lbnavTitle').textContent='All series';
- body.innerHTML='<ul class="lbnav-series">'+SITE.map(g=>`<li class="lbnav-item"><a href="${CUR==='home'?'':HOME}#${g.anchor}"><span>${esc(g.title)}</span><small>${g.items.length} topics</small></a></li>`).join('')+'</ul>';}
-function open(o){panel.hidden=!o;btn.setAttribute('aria-expanded',o);if(o)panel.focus()}
+/* menu: every series as an expandable list (the current page's series starts open), with a search box */
+const q=$('lbnavQ');
+function item(it){if(it.id===CUR)return`<li class="lbnav-item here"><span aria-current="page"><span>${esc(it.t)}</span><small>You are here</small></span></li>`;
+ return`<li class="lbnav-item"><a href="${url(it.id)}"><span>${esc(it.t)}</span></a></li>`}
+function full(){let h='<section class="lbnav-group" aria-labelledby="lbg0"><h2 class="lbnav-gt" id="lbg0">Illustrated pages</h2><ul>';
+ SITE.forEach((g,i)=>{const id='lbc'+i,open=g.items.some(it=>it.id===CUR);
+  h+=`<li><button class="lbnav-dis" aria-expanded="${open}" aria-controls="${id}">${esc(g.title)}<small>${g.items.length} topics</small><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M4 2l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><ul class="lbnav-sub" id="${id}"${open?'':' hidden'}>${g.items.map(item).join('')}</ul></li>`});
+ if(CUR!=='home')h+=`<li class="lbnav-item lbnav-all"><a href="${HOME}"><span>Home</span></a></li>`;
+ h+='</ul></section>';body.innerHTML=h;
+ body.querySelectorAll('.lbnav-dis').forEach(b=>b.onclick=()=>{const o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!o);$(b.getAttribute('aria-controls')).hidden=o})}
+function search(s){const words=s.toLowerCase().split(/\s+/).filter(Boolean);const hit=t=>words.every(w=>t.toLowerCase().includes(w));
+ const mk=t=>{let o=esc(t);words.forEach(w=>{o=o.replace(new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>')});return o};const rows=[];
+ SITE.forEach(g=>g.items.forEach(it=>{if(hit(it.t+' '+g.title))rows.push([it.t,it.id===CUR?null:url(it.id),g.title])}));
+ body.innerHTML=rows.length?`<ul class="lbnav-res" aria-label="${rows.length} matching topics">${rows.slice(0,60).map(([t,u,where])=>`<li class="lbnav-item">${u?`<a href="${u}"><span>${mk(t)}</span><small>${esc(where)}</small></a>`:`<span><span>${mk(t)}</span><small>${esc(where)}</small></span>`}</li>`).join('')}</ul>`:`<p class="lbnav-empty">No topics match “${esc(s)}”.</p>`}
+q.oninput=()=>q.value.trim()?search(q.value.trim()):full();
+function open(o){panel.hidden=!o;btn.setAttribute('aria-expanded',o);if(o){q.value='';full();(matchMedia('(pointer:fine)').matches?q:panel).focus()}}
 btn.onclick=()=>open(panel.hidden);
 body.addEventListener('click',e=>{if(e.target.closest('a'))open(false)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden){open(false);btn.focus()}});
 document.addEventListener('pointerdown',e=>{if(!panel.hidden&&!$('lbnav').contains(e.target))open(false)});
+full();
 
 /* bottom of page: previous/next in the series, then 3 related topics (fills <div id="lbmore">) */
 function more(){const el=$('lbmore');if(!el||!me)return;const its=me.g.items,p=its[me.k-1],n=its[me.k+1];

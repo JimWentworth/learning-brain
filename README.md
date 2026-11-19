@@ -37,7 +37,7 @@ cd site && python3 -m http.server 8000   # then open http://localhost:8000/
 
 ## Links and the menu
 
-- **The menu, previous/next links, related topics and the home page's topic cards all come from one file, `site/assets/nav.js`.** Each page loads it with `<script src="../assets/nav.js" data-page="<id>">`, and it works out every link from its own address. That means the site works at a domain root (Vercel) or in a sub-folder (GitHub Pages).
+- **The menu (every series as an expandable list, with a search box), previous/next links, related topics and the home page's topic cards all come from one file, `site/assets/nav.js`.** Each page loads it with `<script src="../assets/nav.js" data-page="<id>">`, and it works out every link from its own address. That means the site works at a domain root (Vercel) or in a sub-folder (GitHub Pages).
 - **Links to other pages inside page content** are written in the sources as `@@LB:<id>@@` (for example `@@LB:lb10@@` or `@@LB:home@@#pagesT`). `build_site.py` turns them into relative links (`../lb10/`, `../#pagesT`) and stops with an error if a token names a page that doesn't exist.
 
 ## Adding things
